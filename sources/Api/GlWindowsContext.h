@@ -23,16 +23,16 @@ public:
 		FULLSCREEN_MODE_FAIL
 	};
 
-	GlWindowsContext(const CHAR *title, int width, int height, bool fullscreen);
-	GlWindowsContext(const CHAR *title, int width, int height, int x, int y);
-	GlWindowsContext(const CHAR *title, int width, int height, int glMajor, int glMinor, bool fullscreen);
-	GlWindowsContext(const CHAR *title, int width, int height, int glMajor, int glMinor, int x, int y);
+	GlWindowsContext(const XCHAR *title, int width, int height, bool fullscreen);
+	GlWindowsContext(const XCHAR *title, int width, int height, int x, int y);
+	GlWindowsContext(const XCHAR *title, int width, int height, int glMajor, int glMinor, bool fullscreen);
+	GlWindowsContext(const XCHAR *title, int width, int height, int glMajor, int glMinor, int x, int y);
 
 	~GlWindowsContext();
 
 	int mainLoop();
 
-	void setTitle(const CHAR *title);
+	void setTitle(const XCHAR *title);
 	void setResolution(int width, int height);
 	void setFullscreen(bool fullscreen);
 
@@ -63,7 +63,7 @@ private:
 	WindowParams _params;
 	bool _running;
 
-	void createWindow(const CHAR *title, int width, int height, int x = -1, int y = -1);
+	void createWindow(const XCHAR *title, int width, int height, int x = -1, int y = -1);
 	void createGraphicContext(int major = 0, int minor = 0);
 	void printGraphicInformation();
 	void addMeToWindowsList();

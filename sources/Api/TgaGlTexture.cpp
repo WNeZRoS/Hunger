@@ -1,6 +1,6 @@
 #include "TgaGlTexture.h"
-#include <GL/gl.h>
 #include <Windows.h>
+#include <GL/gl.h>
 #include <stdio.h>
 
 TgaGlTexture::TgaGlTexture() {

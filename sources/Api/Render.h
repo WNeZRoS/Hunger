@@ -9,7 +9,7 @@ public:
 	public:
 		virtual ~Painter() = 0;
 		virtual void setColor(char r, char g, char b, char a = 0xFF) = 0;
-		virtual void setLineWidth(int width) const = 0;
+		virtual void setLineWidth(int width) = 0;
 		virtual void pixel(float x, float y, float z = 99.0f) const = 0;
 		virtual void line(float fromX, float fromY, float toX, float toY, float z = 99.0f) const = 0;
 		virtual void rect(float fromX, float fromY, float toX, float toY, float z = 99.0f, bool fill = true) const = 0;

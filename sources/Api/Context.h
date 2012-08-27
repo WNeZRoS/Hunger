@@ -13,7 +13,7 @@ public:
 
 	virtual Render * getRender() const { return _render; }
 
-	virtual void setTitle(const CHAR *title) = 0;
+	virtual void setTitle(const XCHAR *title) = 0;
 	virtual void setResolution(int width, int height) = 0;
 	virtual void setFullscreen(bool fullscreen) = 0;
 

@@ -1,6 +1,9 @@
 #include "GlTexture.h"
 #include "TextureAtlas.h"
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
 #include <GL/gl.h>
 #include <iostream>
 

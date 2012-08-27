@@ -1,7 +1,10 @@
 #include "GlRender.h"
-
-#include <GL/gl.h>
 #include "TgaGlTexture.h"
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
+#include <GL/gl.h>
 
 GlRender::GlRender(int width, int height) {
 	_renderStopped = false;
@@ -80,7 +83,7 @@ void GlRender::GlPainter::setColor(char r, char g, char b, char a) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void GlRender::GlPainter::setLineWidth(int width) const {
+void GlRender::GlPainter::setLineWidth(int width) {
 	glLineWidth(width);
 }
 

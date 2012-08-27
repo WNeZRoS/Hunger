@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Api">
+      <UniqueIdentifier>{6dbed603-e47f-4c13-b399-f7202d6e7a73}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\sources\Api\AbstractClasses.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\compatibility.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\Control.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\GlRender.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\GlTexture.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\GlWindowsContext.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\Sprite.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\TextureAtlas.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\TgaGlTexture.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\TileSprite.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\World.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\sources\Api\World.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Api.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\compatibility.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Context.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Control.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Entity.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\GlRender.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\GlTexture.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\GlWindowsContext.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Map.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Render.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Sprite.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Texture.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\TextureAtlas.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\TgaGlTexture.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\TileSprite.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -2,10 +2,10 @@
 #define COMPATIBILITY_H
 
 #ifdef UNICODE
-	#define CHAR wchar_t
+	#define XCHAR wchar_t
 	#define _T(x) L##x
 #else
-	#define CHAR char
+	#define XCHAR char
 	#define _T(x) x
 #endif
 

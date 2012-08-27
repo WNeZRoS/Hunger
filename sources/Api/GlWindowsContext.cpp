@@ -17,7 +17,7 @@ using namespace std;
 
 GlWindowsContext ** GlWindowsContext::s_windows = NULL;
 
-GlWindowsContext::GlWindowsContext(const CHAR *title, int width, int height, bool fullscreen) {
+GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, bool fullscreen) {
 	if(title == NULL) throw TITLE_IS_NULL;
 	if(width <= 0) throw WIDTH_UNDER_ZERO;
 	if(height <= 0) throw HEIGHT_UNDER_ZERO;
@@ -34,7 +34,7 @@ GlWindowsContext::GlWindowsContext(const CHAR *title, int width, int height, boo
 	addMeToWindowsList();
 }
 
-GlWindowsContext::GlWindowsContext(const CHAR *title, int width, int height, int x, int y) {
+GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, int x, int y) {
 	if(title == NULL) throw TITLE_IS_NULL;
 	if(width <= 0) throw WIDTH_UNDER_ZERO;
 	if(height <= 0) throw HEIGHT_UNDER_ZERO;
@@ -48,7 +48,7 @@ GlWindowsContext::GlWindowsContext(const CHAR *title, int width, int height, int
 	addMeToWindowsList();
 }
 
-GlWindowsContext::GlWindowsContext(const CHAR *title, int width, int height, int glMajor, int glMinor, bool fullscreen) {
+GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, int glMajor, int glMinor, bool fullscreen) {
 	if(title == NULL) throw TITLE_IS_NULL;
 	if(width <= 0) throw WIDTH_UNDER_ZERO;
 	if(height <= 0) throw HEIGHT_UNDER_ZERO;
@@ -65,7 +65,7 @@ GlWindowsContext::GlWindowsContext(const CHAR *title, int width, int height, int
 	addMeToWindowsList();
 }
 
-GlWindowsContext::GlWindowsContext(const CHAR *title, int width, int height, int glMajor, int glMinor, int x, int y) {
+GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, int glMajor, int glMinor, int x, int y) {
 	if(title == NULL) throw TITLE_IS_NULL;
 	if(width <= 0) throw WIDTH_UNDER_ZERO;
 	if(height <= 0) throw HEIGHT_UNDER_ZERO;
@@ -141,7 +141,7 @@ GlWindowsContext::~GlWindowsContext() {
 	}
 }
 
-void GlWindowsContext::createWindow(const CHAR *title, int width, int height, int x, int y) {
+void GlWindowsContext::createWindow(const XCHAR *title, int width, int height, int x, int y) {
 	_hInstance = (HINSTANCE) GetModuleHandle(NULL);
 
 	// register window class
@@ -328,7 +328,7 @@ void GlWindowsContext::setFullscreen(bool fullscreen) {
 	if(_params.fullscreen == fullscreen) setResolution(_params.width, _params.height);
 }
 
-void GlWindowsContext::setTitle(const CHAR *title) {
+void GlWindowsContext::setTitle(const XCHAR *title) {
 	SetWindowText(_hWnd, title);
 }
 

@@ -10,7 +10,7 @@ public:
 	public:
 		~GlPainter();
 		void setColor(char r, char g, char b, char a = 0xFF);
-		void setLineWidth(int width) const;
+		void setLineWidth(int width);
 		void pixel(float x, float y, float z = 99.0f) const;
 		void line(float fromX, float fromY, float toX, float toY, float z = 99.0f) const;
 		void rect(float fromX, float fromY, float toX, float toY, float z = 99.0f, bool fill = true) const;
