@@ -5,7 +5,8 @@
 
 class Render;
 
-class Context {
+class Context
+{
 
 public:
 	virtual ~Context() = 0;
@@ -30,7 +31,7 @@ protected:
 	virtual void mouseKeyUpEvent(int key) { }
 
 protected:
-	Render * _render;
+	Render *_render;
 
 };
 

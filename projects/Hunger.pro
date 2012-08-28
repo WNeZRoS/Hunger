@@ -1,12 +1,13 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
-LIBS += -lopengl32 -lgdi32
+
+win32:LIBS += -lopengl32 -lgdi32
+unix:LIBS += -lgl
 
 SOURCES += \
     ../sources/Api/GlRender.cpp \
     ../sources/Api/Sprite.cpp \
-    ../sources/Api/TgaGlTexture.cpp \
     ../sources/Api/GlTexture.cpp \
     ../sources/Api/TextureAtlas.cpp \
     ../sources/Api/GlWindowsContext.cpp \
@@ -17,7 +18,10 @@ SOURCES += \
 	../sources/Api/World.cpp \
 	../sources/LevelMap.cpp \
 	../sources/main.cpp \
-    ../sources/Player.cpp
+    ../sources/Player.cpp \
+    ../sources/Api/TextureManager.cpp \
+    ../sources/Api/GlTextureManager.cpp \
+    ../sources/Api/TgaTexture.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -26,7 +30,6 @@ HEADERS += \
     ../sources/Api/Texture.h \
     ../sources/Api/compatibility.h \
     ../sources/Api/Sprite.h \
-    ../sources/Api/TgaGlTexture.h \
     ../sources/Api/GlTexture.h \
     ../sources/Api/TextureAtlas.h \
     ../sources/Api/GlWindowsContext.h \
@@ -38,7 +41,10 @@ HEADERS += \
 	../sources/Api/World.h \
     ../sources/LevelMap.h \
     ../sources/main.h \
-    ../sources/Player.h
+    ../sources/Player.h \
+    ../sources/Api/TextureManager.h \
+    ../sources/Api/GlTextureManager.h \
+    ../sources/Api/TgaTexture.h
 
 INCLUDEPATH += ../sources
 

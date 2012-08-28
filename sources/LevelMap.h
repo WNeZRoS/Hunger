@@ -5,20 +5,24 @@
 #include "Api/TextureAtlas.h"
 #include "Api/Map.h"
 
-struct Point {
+struct Point
+{
 	int x, y;
 };
 
-struct Rect {
+struct Rect
+{
 	int top, left, bottom, right;
 };
 
-class LevelMap : public Map {
+class LevelMap : public Map
+{
 public:
 	// (  )(|=)(=Г)(=|)
 	// (==)(|-)(++)(-|)
 	// (||)(|_)(_L)(_|)
-	enum TileType {
+	enum TileType
+	{
 		WALL = 0, TOP_LEFT, T_DOWN, TOP_RIGHT, CL_TOP_LEFT, CL_T_DOWN, CL_TOP_RIGHT, FREE_1,
 		ROAD_LEFT, T_LEFT, CROSSROAD, T_RIGHT, CL_T_LEFT, CL_CROSSROAD, CL_T_RIGHT, FREE_2,
 		ROAD_UP, BOTTOM_LEFT, T_UP, BOTTOM_RIGHT, CL_BOTTOM_LEFT, CL_T_UP, CL_BOTTOM_RIGHT, FREE_3,
@@ -33,7 +37,7 @@ public:
 	void fillScreen(int width, int height, int minTileSize = 16);
 	void setCenter(int x, int y);
 
-	static LevelMap * load(const char * filename, const Texture *tiles);
+	static LevelMap * load(const char *filename, const Texture *tiles);
 
 	void draw() const;
 
@@ -52,10 +56,10 @@ public:
 	void mapCoordinatesToGlobal(const Point& map, Point& coord) const;
 
 private:
-	const TileType ** _map;
+	const TileType **_map;
 	int _width, _height;
 	Point _playerSpawn, _mobSpawn;
-	TextureAtlas * _tiles;
+	TextureAtlas *_tiles;
 
 	void setTileSize(int size);
 

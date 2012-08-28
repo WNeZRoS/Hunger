@@ -4,12 +4,17 @@
 #include "Sprite.h"
 #include "TextureAtlas.h"
 
-class TileSprite : public Sprite {
+class TileSprite : public Sprite
+{
 public:
-	struct Animation {
-		~Animation() { if(frames) delete [] frames; }
+	struct Animation
+	{
+		~Animation() {
+			if(frames) delete [] frames;
+		}
 
-		struct Frame {
+		struct Frame
+		{
 			int tileId;
 			int delay;
 		} *frames;
@@ -19,7 +24,7 @@ public:
 		struct { int x, y; } moveTo;
 	};
 
-	TileSprite(const TextureAtlas * atlas, int x, int y, int z);
+	static TileSprite * create(const TextureAtlas *atlas, float x, float y, float z);
 	~TileSprite();
 
 	void setTileId(int id);
@@ -37,7 +42,9 @@ protected:
 	int _currentFrameId;
 	unsigned long long _lastFrameTime;
 
-	const TextureAtlas * _texture;
+	const TextureAtlas *_texture;
+
+	TileSprite(const TextureAtlas *atlas, float x, float y, float z);
 };
 
 #endif // TILESPRITE_H

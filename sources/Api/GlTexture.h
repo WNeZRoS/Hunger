@@ -3,10 +3,18 @@
 
 #include "Texture.h"
 
+#ifndef DEFAULT_LINEAR_FILTER
+	#define DEFAULT_LINEAR_FILTER GL_LINEAR
+#endif
+
 class GlTextureAtlas;
 
-class GlTexture : public Texture {
+class GlTexture : public Texture
+{
 public:
+	typedef GlTexture * (*LoaderMethod)(const char *filename);
+
+	GlTexture(const char *imageData, unsigned int type, int width, int height);
 	~GlTexture();
 
 	void activate() const;
@@ -18,7 +26,6 @@ protected:
 	unsigned int _id;
 
 	GlTexture();
-
 	unsigned int getId() const;
 };
 

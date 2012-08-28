@@ -3,9 +3,11 @@
 
 class World;
 
-class Render {
+class Render
+{
 public:
-	class Painter {
+	class Painter
+	{
 	public:
 		virtual ~Painter() = 0;
 		virtual void setColor(char r, char g, char b, char a = 0xFF) = 0;
@@ -25,12 +27,14 @@ public:
 	virtual void render() const = 0;
 
 	virtual const World * getWorld() const = 0;
-	virtual void setWorld(const World * world) = 0;
+	virtual void setWorld(const World *world) = 0;
 
-	static Painter * getPainter() { return _Painter; }
+	static Painter * getPainter() {
+		return _Painter;
+	}
 
 protected:
-	static Painter * _Painter;
+	static Painter *_Painter;
 };
 
 #endif // RENDER_H

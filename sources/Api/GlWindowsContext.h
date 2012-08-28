@@ -6,10 +6,12 @@
 #include "Context.h"
 #include "Render.h"
 
-class GlWindowsContext : public Context {
+class GlWindowsContext : public Context
+{
 public:
 
-	enum Exceptions {
+	enum Exceptions
+	{
 		TITLE_IS_NULL,
 		WIDTH_UNDER_ZERO,
 		HEIGHT_UNDER_ZERO,
@@ -50,7 +52,8 @@ protected:
 
 private:
 
-	struct WindowParams {
+	struct WindowParams
+	{
 		int width;
 		int height;
 		bool fullscreen;
@@ -68,7 +71,7 @@ private:
 	void printGraphicInformation();
 	void addMeToWindowsList();
 
-	static GlWindowsContext ** s_windows;
+	static GlWindowsContext **s_windows;
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };
 

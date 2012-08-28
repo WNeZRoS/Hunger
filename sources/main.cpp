@@ -1,6 +1,5 @@
 #define OPENGL
 #include "main.h"
-#include "Api/TgaGlTexture.h"
 #include "LevelMap.h"
 
 #include <iostream>
@@ -47,19 +46,24 @@ bool Main::initialize() {
 	Control::instance().addEvent(Control::STATE_PRESSED, Control::KEY_RIGHT, this,
 								   reinterpret_cast<Control::CallBackMethod>(&Main::keyRightEvent));
 
-	Texture * tilesTexture = TgaGlTexture::load("map.tga");
+	Texture *tilesTexture = TextureManager::instance()->load("map");
 	if(!tilesTexture) return false;
-	LevelMap * map = LevelMap::load("test.map", tilesTexture);
+	LevelMap *map = LevelMap::load("test.map", tilesTexture);
 	if(!map) return false;
 
-	World * world = new World();
+	World *world = new World();
 	world->setMap(map);
 	_render->setWorld(world);
 
-	Texture * playerTexture = TgaGlTexture::load("player.tga");
+	Texture *playerTexture = TextureManager::instance()->load("player");
 	if(!playerTexture) return false;
 	_player = new Player(map, playerTexture);
 	world->addEntity(_player);
+
+	Texture *p1 = TextureManager::instance()->load("player");
+	Texture *p2 = TextureManager::instance()->load("player");
+	TextureManager::instance()->unload(p1);
+	TextureManager::instance()->unload(p2);
 
 	return true;
 }

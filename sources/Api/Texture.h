@@ -3,15 +3,21 @@
 
 class TextureAtlas;
 
-class Texture {
+class Texture
+{
 public:
 	virtual ~Texture() = 0;
 
 	virtual void activate() const = 0;
 	virtual void deactivate() const = 0;
 
-	int getWidth() const { return _width; }
-	int getHeight() const { return _height; }
+	int getWidth() const {
+		return _width;
+	}
+
+	int getHeight() const {
+		return _height;
+	}
 
 	virtual TextureAtlas * toAtlas(int rowSize, int columnSize) const = 0;
 

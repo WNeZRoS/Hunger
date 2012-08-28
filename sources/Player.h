@@ -4,7 +4,8 @@
 #include "Api/Api.h"
 #include "LevelMap.h"
 
-class Player : public Entity {
+class Player : public Entity
+{
 public:
 	Player(const LevelMap *map, const Texture *texture);
 	~Player();

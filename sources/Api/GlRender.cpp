@@ -1,5 +1,5 @@
 #include "GlRender.h"
-#include "TgaGlTexture.h"
+#include "GlTextureManager.h"
 
 #ifdef WIN32
 #include <Windows.h>
@@ -26,6 +26,9 @@ GlRender::GlRender(int width, int height) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	_Painter = new GlPainter;
+
+	// Create texture manager instance
+	GlTextureManager::instance("./");
 
 	setResolution(width, height);
 	setWorld(NULL);

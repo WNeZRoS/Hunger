@@ -30,7 +30,7 @@ LevelMap::~LevelMap() {
 }
 
 LevelMap * LevelMap::load(const char * filename, const Texture *tiles) {
-	FILE * file = fopen(filename, "r");
+	FILE *file = fopen(filename, "r");
 	if(!file) {
 		printf("Can't load file: %s\n", filename);
 		return NULL;

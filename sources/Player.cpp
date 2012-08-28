@@ -12,7 +12,7 @@ Player::Player(const LevelMap *map, const Texture *texture) {
 
 	Point pos = {_x - _tileSize / 2, _y - _tileSize / 2};
 	_map->globalCoordinatesToScreen(pos, pos);
-	_sprite = new TileSprite(texture->toAtlas(4, 4), pos.x, pos.y, _z);
+	_sprite = TileSprite::create(texture->toAtlas(4, 4), pos.x, pos.y, _z);
 	_sprite->setScale(_map->getTileSize());
 
 	_moveAnimationLeft.frames = new TileSprite::Animation::Frame[2];
@@ -61,6 +61,7 @@ void Player::move(int x, int y) {
 	if(_map->isCanGoTo(phis, _x + x*pts2w, _y + y*pts2w)) {
 		_x += x*_tileSize/12;
 		_y += y*_tileSize/12;
+
 		if(_map->isOutOfBounds(_x, _y)) _map->setBackToMap(_x, _y);
 		Point pos = {_x - _tileSize / 2, _y - _tileSize / 2};
 		_map->globalCoordinatesToScreen(pos, pos);

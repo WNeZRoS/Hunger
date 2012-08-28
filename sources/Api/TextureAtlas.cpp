@@ -1,7 +1,13 @@
 #include "TextureAtlas.h"
 #include "Render.h"
+#include "TextureManager.h"
 #include <cmath>
 #include <iostream>
+
+TextureAtlas * TextureAtlas::create(const Texture *texture, int tilesInRow, int tilesInColumn) {
+	if(tilesInRow <= 0 || tilesInColumn <= 0 || !texture) return NULL;
+	return new TextureAtlas(texture, tilesInRow, tilesInColumn);
+}
 
 TextureAtlas::TextureAtlas(const Texture *texture, int tilesInRow, int tilesInColumn) {
 	_tileWidth = 1.0f / tilesInRow;
@@ -9,7 +15,11 @@ TextureAtlas::TextureAtlas(const Texture *texture, int tilesInRow, int tilesInCo
 	_texture = texture;
 }
 
-void TextureAtlas::drawTile(int tileId, int x, int y, int z, int width, int height) const {
+TextureAtlas::~TextureAtlas() {
+	TextureManager::instance()->unload(_texture);
+}
+
+void TextureAtlas::drawTile(int tileId, float x, float y, float z, float width, float height) const {
 	if(tileId < 0) return;
 
 	float tileX = _tileWidth * tileId;

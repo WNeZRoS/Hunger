@@ -3,17 +3,20 @@
 
 #include "Texture.h"
 
-class TextureAtlas {
+class TextureAtlas
+{
 public:
-	TextureAtlas(const Texture *texture, int tilesInRow, int tilesInColumn);
+	static TextureAtlas * create(const Texture *texture, int tilesInRow, int tilesInColumn);
 	~TextureAtlas();
 
-	void drawTile(int tileId, int x, int y, int z = 0,
-						  int width = 1, int height = 1) const;
+	void drawTile(int tileId, float x, float y, float z = 0,
+						  float width = 1, float height = 1) const;
 
 protected:
 	float _tileWidth, _tileHeight;
 	const Texture *_texture;
+
+	TextureAtlas(const Texture *texture, int tilesInRow, int tilesInColumn);
 };
 
 #endif // TEXTUREATLAS_H

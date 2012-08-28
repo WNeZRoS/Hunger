@@ -1,7 +1,12 @@
 #include "TileSprite.h"
 #include "compatibility.h"
 
-TileSprite::TileSprite(const TextureAtlas * atlas, int x, int y, int z) : Sprite(x, y, z) {
+TileSprite * TileSprite::create(const TextureAtlas *atlas, float x, float y, float z) {
+	if(!atlas) return NULL;
+	return new TileSprite(atlas, x, y, z);
+}
+
+TileSprite::TileSprite(const TextureAtlas * atlas, float x, float y, float z) : Sprite(x, y, z) {
 	_texture = atlas;
 	_tileId = 0;
 	_animation.frames = 0;
@@ -11,7 +16,7 @@ TileSprite::TileSprite(const TextureAtlas * atlas, int x, int y, int z) : Sprite
 }
 
 TileSprite::~TileSprite() {
-
+	delete _texture;
 }
 
 int TileSprite::getTileId() const {

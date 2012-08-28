@@ -15,7 +15,7 @@
 
 using namespace std;
 
-GlWindowsContext ** GlWindowsContext::s_windows = NULL;
+GlWindowsContext **GlWindowsContext::s_windows = NULL;
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, bool fullscreen) {
 	if(title == NULL) throw TITLE_IS_NULL;

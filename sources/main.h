@@ -4,7 +4,8 @@
 #include "Api/Api.h"
 #include "Player.h"
 
-class Main : public Controller {
+class Main : public Controller
+{
 public:
 	Main();
 	~Main();
@@ -19,9 +20,9 @@ public:
 
 private:
 
-	Context * _context;
-	Render * _render;
-	Player * _player;
+	Context *_context;
+	Render *_render;
+	Player *_player;
 };
 
 #endif // MAIN_H

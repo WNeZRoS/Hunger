@@ -9,6 +9,7 @@
 #include "Sprite.h"
 #include "Texture.h"
 #include "TextureAtlas.h"
+#include "TextureManager.h"
 #include "TileSprite.h"
 #include "World.h"
 

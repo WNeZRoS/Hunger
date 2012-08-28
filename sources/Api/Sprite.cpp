@@ -1,21 +1,23 @@
 #include "Sprite.h"
 #include "Render.h"
+#include "TextureManager.h"
+#include "compatibility.h"
 
-Sprite::Sprite(const Texture *texture, int x, int y, int z) {
-	setPosition(x, y);
-	setScale(1.0f);
-	_z = z;
-	_texture = texture;
+Sprite * Sprite::create(const Texture *texture, float x, float y, float z) {
+	if(!texture) return NULL;
+	Sprite *sprite = new Sprite(x, y, z);
+	sprite->_texture = texture;
+	return sprite;
 }
 
-Sprite::Sprite(int x, int y, int z) {
+Sprite::Sprite(float x, float y, float z) {
 	setPosition(x, y);
 	setScale(1.0f);
 	_z = z;
 }
 
 Sprite::~Sprite() {
-
+	TextureManager::instance()->unload(_texture);
 }
 
 void Sprite::setPosition(int x, int y) {

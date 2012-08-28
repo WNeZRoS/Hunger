@@ -4,9 +4,11 @@
 #include "Render.h"
 #include "World.h"
 
-class GlRender : public Render {
+class GlRender : public Render
+{
 public:
-	class GlPainter : public Painter {
+	class GlPainter : public Painter
+	{
 	public:
 		~GlPainter();
 		void setColor(char r, char g, char b, char a = 0xFF);
@@ -27,7 +29,7 @@ public:
 	void render() const;
 
 	const World * getWorld() const;
-	void setWorld(const World * world);
+	void setWorld(const World *world);
 
 private:
 	int _width;

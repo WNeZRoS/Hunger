@@ -3,9 +3,11 @@
 
 #include "Texture.h"
 
-class Sprite {
+class Sprite
+{
 public:
-	Sprite(const Texture * texture, int x, int y, int z);
+	static Sprite * create(const Texture *texture, float x, float y, float z);
+
 	~Sprite();
 	void draw();
 
@@ -17,11 +19,11 @@ public:
 	void setScale(float scale);
 
 protected:
-	int _x, _y, _z;
+	float _x, _y, _z;
 	float _scale;
-	const Texture * _texture;
+	const Texture *_texture;
 
-	Sprite(int x, int y, int z);
+	Sprite(float x, float y, float z);
 };
 
 #endif // SPRITE_H

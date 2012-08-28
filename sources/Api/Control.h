@@ -3,22 +3,28 @@
 
 #include <vector>
 
-class Controller {
-public: virtual ~Controller() = 0;
+class Controller
+{
+public:
+	virtual ~Controller() = 0;
 };
 
-class Control {
+class Control
+{
 public:
 
 	struct Event;
 	typedef void (Controller::*CallBackMethod)(const Event& event, int x, int y);
 	typedef void (*CallBackFunction)(const Event& event, int x, int y);
-	union CallBack {
+
+	union CallBack
+	{
 		CallBackMethod m;
 		CallBackFunction f;
 	};
 
-	enum KeyState {
+	enum KeyState
+	{
 		STATE_NO_PRESSED,
 		STATE_PRESSED,
 		STATE_PRESS,
@@ -26,7 +32,8 @@ public:
 		STATE_ANY
 	};
 
-	enum Keys {
+	enum Keys
+	{
 		NO_KEY = 0,
 		MOUSE_LEFT = 1,
 		MOUSE_MIDDLE = 2,
@@ -40,7 +47,8 @@ public:
 		KEY_EXIT = 27
 	};
 
-	struct Event {
+	struct Event
+	{
 		KeyState state;
 		Keys key;
 		Controller *instance;
