@@ -1,5 +1,6 @@
 #include "TgaTexture.h"
 #include "GlTexture.h"
+#include "Logger.h"
 #include "compatibility.h"
 
 #ifdef WIN32
@@ -7,7 +8,6 @@
 #endif
 
 #include <GL/gl.h>
-#include <iostream>
 #include <fstream>
 
 using namespace std;
@@ -16,7 +16,7 @@ Texture * TgaTexture::loadGl(const char *filename) {
 	ifstream file(filename, ios::in | ios::binary);
 
 	if(!file.is_open()) {
-		cout << "Cannot open file: " << filename << endl;
+		Log::logger << Log::error << "Cannot open file: " << filename;
 		return NULL;
 	}
 
@@ -25,12 +25,12 @@ Texture * TgaTexture::loadGl(const char *filename) {
 
 	file.read(TGAcompare, sizeof(TGAcompare));
 	if(file.gcount() != sizeof(TGAcompare)) {
-		cout << "Wrong TGA header" << endl;
+		Log::logger << Log::error << "Wrong TGA header";
 		file.close();
 		return NULL;
 	}
 	if(memcmp(TGAheader, TGAcompare, sizeof(TGAheader)) != 0) {
-		cout << "Cann't memcmp" << endl;
+		Log::logger << Log::error << "Cann't memcmp";
 		file.close();
 		return NULL;
 	}
@@ -38,7 +38,7 @@ Texture * TgaTexture::loadGl(const char *filename) {
 	unsigned char header[6];
 	file.read((char*) header, sizeof(header));
 	if(file.gcount() != sizeof(header)) {
-		cout << "Wrong header" << endl;
+		Log::logger << Log::error << "Wrong header";
 		file.close();
 		return NULL;
 	}
@@ -48,7 +48,7 @@ Texture * TgaTexture::loadGl(const char *filename) {
 
 	if(width <= 0 || height <= 0 || (header[4] != 24 && header[4] != 32)) {
 		file.close();
-		cout << "Wrong width/height or wrong bpp of texture." << endl;
+		Log::logger << Log::error << "Wrong width/height or wrong bpp of texture.";
 		return NULL;
 	}
 
@@ -61,7 +61,7 @@ Texture * TgaTexture::loadGl(const char *filename) {
 	if(imageData == NULL || (unsigned int) file.gcount() != imageSize) {
 		if(imageData) delete [] imageData;
 		file.close();
-		cout << "Error reading to ImageData." << endl;
+		Log::logger << Log::error << "Error reading to ImageData.";
 		return NULL;
 	}
 

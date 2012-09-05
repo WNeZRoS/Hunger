@@ -27,9 +27,10 @@ public:
 	{
 		STATE_NO_PRESSED,
 		STATE_PRESSED,
-		STATE_PRESS,
+		STATE_DOWN,
+		STATE_UP,
 		STATE_MOUSE_MOVE,
-		STATE_ANY
+		STATE_ANY // No contains STATE_MOUSE_MOVE
 	};
 
 	enum Keys
@@ -79,7 +80,7 @@ public:
 protected:
 	Control();
 
-	void callCallBack(const Event& event, int x, int y) const;
+	void callCallBack(const Controller *instance, CallBack callback, KeyState state, Keys key, int x, int y) const;
 
 	std::vector<Event> _events;
 	int _mouseX, _mouseY;

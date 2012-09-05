@@ -19,3 +19,31 @@ unsigned long long getCurrentTime() {
 #endif
 }
 
+void getTime(Time& currentTime) {
+#ifdef WIN32
+	SYSTEMTIME sm;
+	GetLocalTime(&sm);
+	currentTime.year = sm.wYear;
+	currentTime.month = sm.wMonth;
+	currentTime.dayOfWeek = sm.wDayOfWeek;
+	currentTime.day = sm.wDay;
+	currentTime.hour = sm.wHour;
+	currentTime.minute = sm.wMinute;
+	currentTime.second = sm.wSecond;
+	currentTime.milliseconds = sm.wMilliseconds;
+#else
+	// TODO: Fix it
+	time_t timet;
+	time(timet);
+	tm local = localtime(timet);
+	currentTime.year = local.tm_year;
+	currentTime.month = local.tm_mon;
+	currentTime.dayOfWeek = local.tm_wday;
+	currentTime.day = local.tm_mday;
+	currentTime.hour = local.tm_hout;
+	currentTime.minute = local.tm_min;
+	currentTime.second = local.tm_sec;
+	currentTime.milliseconds = getCurrentTime() % 1000;
+#endif
+}
+

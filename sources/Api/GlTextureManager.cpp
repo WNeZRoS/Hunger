@@ -1,8 +1,8 @@
 #include "GlTextureManager.h"
 #include "TgaTexture.h"
+#include "Logger.h"
 #include "compatibility.h"
 #include <string>
-#include <iostream>
 
 GlTextureManager::GlTextureManager(const char *texturesPath) : TextureManager(texturesPath) {
 }
@@ -24,7 +24,7 @@ Texture * GlTextureManager::loadTexture(const char *textureFilePath) {
 		&& AllowedExtensions[i].method != NULL; i++) {
 		std::string fullpath = path + AllowedExtensions[i].name;
 		GlTexture *texture = AllowedExtensions[i].method(fullpath.c_str());
-		std::cout << "Texture (" << fullpath << ") " << (texture ? "created" : "is null") << std::endl;
+		Log::logger << Log::debug << "Texture (" << fullpath << ") " << (texture ? "created" : "is null");
 		if(texture) return texture;
 	}
 	return NULL;

@@ -17,6 +17,18 @@
 #define NULL 0
 #endif
 
+struct Time {
+	unsigned short year;
+	unsigned short month;
+	unsigned short dayOfWeek;
+	unsigned short day;
+	unsigned short hour;
+	unsigned short minute;
+	unsigned short second;
+	unsigned short milliseconds;
+};
+
 unsigned long long getCurrentTime();
+void getTime(Time& time);
 
 #endif // COMPATIBILITY_H

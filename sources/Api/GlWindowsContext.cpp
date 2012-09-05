@@ -1,6 +1,7 @@
 #include "GlWindowsContext.h"
 #include "GlRender.h"
 #include "Control.h"
+#include "Logger.h"
 
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -8,8 +9,6 @@
 #ifdef WIN32
 	#include <GL/wglext.h>
 #endif
-
-#include <iostream>
 
 #define WINDOW_CLASS_NAME _T("SimpleGL")
 
@@ -226,17 +225,17 @@ void GlWindowsContext::createGraphicContext(int major, int minor) {
 }
 
 void GlWindowsContext::printGraphicInformation() {
-	cout << "OpenGL render context information:" << endl;
-	cout << "  Renderer: " << glGetString(GL_RENDERER) << endl;
-	cout << "  Vendor: " << glGetString(GL_VENDOR) << endl;
-	cout << "  Version:" << glGetString(GL_VERSION) << endl;
+	Log::logger << Log::info << "OpenGL render context information:";
+	Log::logger << Log::info << "  Renderer: " << glGetString(GL_RENDERER);
+	Log::logger << Log::info << "  Vendor: " << glGetString(GL_VENDOR);
+	Log::logger << Log::info << "  Version:" << glGetString(GL_VERSION);
 
 #ifdef GL_MAJOR_VERSION
 	int major, minor;
 	glGetIntegerv(GL_MAJOR_VERSION, &major);
 	glGetIntegerv(GL_MINOR_VERSION, &minor);
-	cout << "  GLSL version:" << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
-	cout << "  OpenGL version:" << major << "." << minor << endl;
+	Log::logger << Log::info << "  GLSL version:" << glGetString(GL_SHADING_LANGUAGE_VERSION);
+	Log::logger << Log::info << "  OpenGL version:" << major << "." << minor;
 #endif
 }
 
@@ -424,7 +423,6 @@ void GlWindowsContext::lostFocusEvent() {
 }
 
 void GlWindowsContext::keyDownEvent(int key) {
-	cout << "key: " << key << endl;
 	switch(key) {
 	case 87: // W
 		Control::instance().keyboardEvent(Control::STATE_PRESSED, Control::KEY_UP);

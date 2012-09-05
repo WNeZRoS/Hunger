@@ -30,13 +30,22 @@
     <ClCompile Include="..\sources\Api\TextureAtlas.cpp">
       <Filter>Api</Filter>
     </ClCompile>
-    <ClCompile Include="..\sources\Api\TgaGlTexture.cpp">
-      <Filter>Api</Filter>
-    </ClCompile>
     <ClCompile Include="..\sources\Api\TileSprite.cpp">
       <Filter>Api</Filter>
     </ClCompile>
     <ClCompile Include="..\sources\Api\World.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\LevelMap.cpp" />
+    <ClCompile Include="..\sources\main.cpp" />
+    <ClCompile Include="..\sources\Player.cpp" />
+    <ClCompile Include="..\sources\Api\GlTextureManager.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\TextureManager.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\TgaTexture.cpp">
       <Filter>Api</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,10 +92,19 @@
     <ClInclude Include="..\sources\Api\TextureAtlas.h">
       <Filter>Api</Filter>
     </ClInclude>
-    <ClInclude Include="..\sources\Api\TgaGlTexture.h">
+    <ClInclude Include="..\sources\Api\TileSprite.h">
       <Filter>Api</Filter>
     </ClInclude>
-    <ClInclude Include="..\sources\Api\TileSprite.h">
+    <ClInclude Include="..\sources\LevelMap.h" />
+    <ClInclude Include="..\sources\main.h" />
+    <ClInclude Include="..\sources\Player.h" />
+    <ClInclude Include="..\sources\Api\GlTextureManager.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\TextureManager.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\TgaTexture.h">
       <Filter>Api</Filter>
     </ClInclude>
   </ItemGroup>

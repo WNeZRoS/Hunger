@@ -2,7 +2,6 @@
 #include "Render.h"
 #include "TextureManager.h"
 #include <cmath>
-#include <iostream>
 
 TextureAtlas * TextureAtlas::create(const Texture *texture, int tilesInRow, int tilesInColumn) {
 	if(tilesInRow <= 0 || tilesInColumn <= 0 || !texture) return NULL;

@@ -70,9 +70,10 @@ void Control::idle() {
 
 	for(std::vector<Event>::const_iterator it = _events.begin(); it != _events.end(); it++) {
 		Event e = *it;
+		if(e.key == NO_KEY) continue;
 		if(((_keys[e.key] == STATE_NO_PRESSED || _keys[e.key] == STATE_PRESSED)
 							&& e.state == _keys[e.key]) || e.state == STATE_ANY)
-			callCallBack(e, _mouseX, _mouseY);
+			callCallBack(e.instance, e.callback, _keys[e.key], e.key, _mouseX, _mouseY);
 	}
 }
 
@@ -84,12 +85,12 @@ void Control::keyboardEvent(KeyState state, Keys key) {
 	if(_keys[key] == state) return;
 
 	_keys[key] = state;
+	state = state == STATE_NO_PRESSED ? STATE_UP : STATE_DOWN;
 
 	for(std::vector<Event>::iterator it = _events.begin(); it != _events.end(); it++) {
 		Event e = *it;
-		if(e.key == key && ((state == STATE_NO_PRESSED && e.state == STATE_PRESS) ||
-				state == e.state || e.state == STATE_ANY))
-			callCallBack(e, _mouseX, _mouseY);
+		if(e.key == key && (state == e.state || e.state == STATE_ANY))
+			callCallBack(e.instance, e.callback, state, key, _mouseX, _mouseY);
 	}
 }
 
@@ -97,12 +98,12 @@ void Control::mouseEvent(KeyState state, Keys key) {
 	if(_keys[key] == state) return;
 
 	_keys[key] = state;
+	state = state == STATE_NO_PRESSED ? STATE_UP : STATE_DOWN;
 
 	for(std::vector<Event>::iterator it = _events.begin(); it != _events.end(); it++) {
 		Event e = *it;
-		if(e.key == key && ((state == STATE_NO_PRESSED && e.state == STATE_PRESS) ||
-				state == e.state || e.state == STATE_ANY))
-			callCallBack(e, _mouseX, _mouseY);
+		if(e.key == key && (state == e.state || e.state == STATE_ANY))
+			callCallBack(e.instance, e.callback, state, key, _mouseX, _mouseY);
 	}
 }
 
@@ -113,11 +114,13 @@ void Control::mouseMoveEvent(int x, int y) {
 	for(std::vector<Event>::iterator it = _events.begin(); it != _events.end(); it++) {
 		Event e = *it;
 		if(e.state == STATE_MOUSE_MOVE && isKeyPressed(e.key))
-			callCallBack(e, x, y);
+			callCallBack(e.instance, e.callback, STATE_MOUSE_MOVE, e.key, x, y);
 	}
 }
 
-void Control::callCallBack(const Event &event, int x, int y) const {
+void Control::callCallBack(const Controller *instance, CallBack callback, KeyState state, Keys key, int x, int y) const {
+	Event event = { state, key, const_cast<Controller*>(instance), callback };
+
 	if(event.callback.f) {
 		if(!event.instance) event.callback.f(event, x, y);
 		else (event.instance->*(event.callback.m))(event, x, y);

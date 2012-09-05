@@ -14,6 +14,7 @@ public:
 	void keyDownEvent(const Control::Event& event, int x, int y);
 	void keyLeftEvent(const Control::Event& event, int x, int y);
 	void keyRightEvent(const Control::Event& event, int x, int y);
+	void keyNoEvent(const Control::Event &event, int x, int y);
 
 	bool initialize();
 	int work();
@@ -23,6 +24,8 @@ private:
 	Context *_context;
 	Render *_render;
 	Player *_player;
+
+	int _moveX, _moveY;
 };
 
 #endif // MAIN_H

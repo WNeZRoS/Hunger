@@ -1,6 +1,8 @@
 #include "Player.h"
+#include "Api/Logger.h"
 
 Player::Player(const LevelMap *map, const Texture *texture) {
+	_speed = 3;
 	_z = 10;
 	_map = const_cast<LevelMap*>(map);
 	_phisTileSize = _map->getTileSize()/1.5;
@@ -52,17 +54,42 @@ Player::~Player() {
 	delete [] _moveAnimationDown.frames;
 }
 
-void Player::move(int x, int y) {
-	int wall = (_tileSize - _phisTileSize) / 2;
-	int pts2 = _phisTileSize / 2 + wall / 1.5;
-	int pts2w = _tileSize / 2 + wall / 3;
-	Rect phis = { _y - x*pts2, _x - y*pts2, _y + x*pts2, _x + y*pts2 };
+bool Player::move(int x, int y) {
+	Log::logger << Log::debug << "Pos: " << _x << ", " << _y;
+	Point position = { _x, _y };
+	Point dir = { x, y };
+	if(_map->moveInDirection(position, dir, _speed)) {
+		_x = position.x;
+		_y = position.y;
 
-	if(_map->isCanGoTo(phis, _x + x*pts2w, _y + y*pts2w)) {
-		_x += x*_tileSize/12;
-		_y += y*_tileSize/12;
+		position.x -= _tileSize / 2;
+		position.y -= _tileSize / 2;
+		_map->globalCoordinatesToScreen(position, position);
+		_sprite->setPosition(position.x, position.y);
+
+		if(x == -1) _sprite->replaceAnimation(_moveAnimationLeft);
+		else if(x == 1) _sprite->replaceAnimation(_moveAnimationRight);
+		else if(y == -1) _sprite->replaceAnimation(_moveAnimationUp);
+		else if(y == 1) _sprite->replaceAnimation(_moveAnimationDown);
+		return true;
+	}
+	return false;
+
+	//int wall = (_tileSize - _phisTileSize) / 2;
+	//int pts2 = _phisTileSize / 2 + wall / 1.5;
+	//int pts2w = _tileSize / 2 + wall / 3;
+
+	//Point position = { _x, _y };
+	//Point moveTo = { _x + x * _speed * _tileSize / 12, _y + y * _speed * _tileSize / 12 };
+
+	/*if(_map->isCanGoTo(position, moveTo)) {
+		//_x += x*_tileSize/12;
+		//_y += y*_tileSize/12;
+		_x = position.x;
+		_y = position.y;
 
 		if(_map->isOutOfBounds(_x, _y)) _map->setBackToMap(_x, _y);
+
 		Point pos = {_x - _tileSize / 2, _y - _tileSize / 2};
 		_map->globalCoordinatesToScreen(pos, pos);
 		_sprite->setPosition(pos.x, pos.y);
@@ -71,7 +98,7 @@ void Player::move(int x, int y) {
 		else if(x == 1) _sprite->replaceAnimation(_moveAnimationRight);
 		else if(y == -1) _sprite->replaceAnimation(_moveAnimationUp);
 		else if(y == 1) _sprite->replaceAnimation(_moveAnimationDown);
-	}
+	}*/
 }
 
 void Player::draw() const {

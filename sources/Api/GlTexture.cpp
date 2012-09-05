@@ -1,11 +1,11 @@
 #include "GlTexture.h"
 #include "TextureAtlas.h"
+#include "Logger.h"
 
 #ifdef WIN32
 #include <Windows.h>
 #endif
 #include <GL/gl.h>
-#include <iostream>
 
 GlTexture::GlTexture(const char *imageData, GLuint type, int width, int height) {
 	glGenTextures(1, &_id);
@@ -23,7 +23,7 @@ GlTexture::GlTexture(const char *imageData, GLuint type, int width, int height) 
 
 GlTexture::GlTexture() {
 	_id = 0;
-	std::cout << "GlTexture " << _id << std::endl;
+	Log::logger << Log::debug << "GlTexture " << _id;
 }
 
 GlTexture::~GlTexture() {
@@ -46,6 +46,6 @@ void GlTexture::deactivate() const {
 }
 
 TextureAtlas * GlTexture::toAtlas(int rowSize, int columnSize) const {
-	std::cout << "GlTexture to Atlas " << _id << std::endl;
+	Log::logger << Log::debug << "GlTexture to Atlas " << _id;
 	return TextureAtlas::create(this, rowSize, columnSize);
 }

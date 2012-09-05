@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-win32:LIBS += -lopengl32 -lgdi32
+win32:LIBS += -lopengl32 -lgdi32 -static
 unix:LIBS += -lgl
 
 SOURCES += \
@@ -21,7 +21,8 @@ SOURCES += \
     ../sources/Player.cpp \
     ../sources/Api/TextureManager.cpp \
     ../sources/Api/GlTextureManager.cpp \
-    ../sources/Api/TgaTexture.cpp
+    ../sources/Api/TgaTexture.cpp \
+    ../sources/Api/Logger.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -44,7 +45,8 @@ HEADERS += \
     ../sources/Player.h \
     ../sources/Api/TextureManager.h \
     ../sources/Api/GlTextureManager.h \
-    ../sources/Api/TgaTexture.h
+    ../sources/Api/TgaTexture.h \
+    ../sources/Api/Logger.h
 
 INCLUDEPATH += ../sources
-
+Debug: QMAKE_CXXFLAGS += -DDEBUG

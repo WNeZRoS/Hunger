@@ -1,7 +1,7 @@
 #include "TextureManager.h"
+#include "Logger.h"
 #include <string>
 #include <cstring>
-#include <iostream>
 
 TextureManager *TextureManager::_TextureManagerInstance = 0;
 
@@ -32,7 +32,7 @@ Texture * TextureManager::load(const char *textureName) {
 		TextureInfo& info = *it;
 		if(std::strcmp(info.texturename, textureName) == 0) {
 			info.usage++;
-			std::cout << "find loaded texture " << info.usage << std::endl;
+			Log::logger << Log::debug << "find loaded texture " << info.usage;
 			return info.texture;
 		}
 	}
@@ -61,7 +61,7 @@ void TextureManager::unload(const Texture *texture) {
 		TextureInfo& info = *it;
 		if(info.texture == texture) {
 			info.usage--;
-			std::cout << "delete " << info.texturename << " for " << info.usage << std::endl;
+			Log::logger << Log::debug << "delete " << info.texturename << " for " << info.usage;
 			if(info.usage == 0) {
 				delete info.texture;
 				_textures.erase(it, it);
