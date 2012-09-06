@@ -1,14 +1,20 @@
 #define OPENGL
 #include "main.h"
 #include "LevelMap.h"
+#include "Food.h"
 #include "Api/Logger.h"
+#include "Api/Random.h"
 
 Main::Main() {
 	_moveX = _moveY = 0;
+	Random::start(getCurrentTime());
 	//Log::logger.openLog("log.txt");
 }
 
 Main::~Main() {
+	delete _map;
+	delete _player;
+	delete _context;
 }
 
 void Main::keyUpEvent(const Control::Event& event, int x, int y) {
@@ -68,18 +74,24 @@ bool Main::initialize() {
 	Control::instance().addEvent(Control::STATE_ANY, Control::KEY_RIGHT, this,
 								   reinterpret_cast<Control::CallBackMethod>(&Main::keyRightEvent));
 
-	Texture *tilesTexture = TextureManager::instance()->load("map");
-	if(!tilesTexture) return false;
-	LevelMap *map = LevelMap::load("test.map", tilesTexture);
-	if(!map) return false;
+	_map = LevelMap::load("test.map", "map");
+	if(!_map) return false;
 
 	World *world = new World();
-	world->setMap(map);
+	world->setMap(_map);
 	_render->setWorld(world);
 
-	Texture *playerTexture = TextureManager::instance()->load("player");
-	if(!playerTexture) return false;
-	_player = new Player(map, playerTexture);
+	Point *roads;
+	int roadCount = 0;
+	_map->getRoads(roads, roadCount);
+	int values[4] = { 0, 1, 2, 3 };
+	int chances[4] = { 75, 10, 5, 10 };
+	for(int i = 0; i < roadCount; i++) {
+		Food *food = new Food(_map, TextureAtlas::Loader("food", 2, 2), Random::rand(values, chances, 4), roads[i]);
+		world->addEntity(food);
+	}
+
+	_player = new Player(_map, "player");
 	world->addEntity(_player);
 
 	return true;
@@ -88,7 +100,6 @@ bool Main::initialize() {
 int Main::work() {
 	_context->mainLoop();
 	Log::logger << Log::info << "Exiting...";
-	delete _context;
 	return 0;
 }
 

@@ -21,12 +21,8 @@ GlTexture::GlTexture(const char *imageData, GLuint type, int width, int height) 
 	_height = height;
 }
 
-GlTexture::GlTexture() {
-	_id = 0;
-	Log::logger << Log::debug << "GlTexture " << _id;
-}
-
 GlTexture::~GlTexture() {
+	Log::logger << Log::debug << "gltexture delete";
 	if(_id != 0) {
 		glDeleteTextures(1, &_id);
 		_id = 0;
@@ -43,9 +39,4 @@ void GlTexture::activate() const {
 
 void GlTexture::deactivate() const {
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-TextureAtlas * GlTexture::toAtlas(int rowSize, int columnSize) const {
-	Log::logger << Log::debug << "GlTexture to Atlas " << _id;
-	return TextureAtlas::create(this, rowSize, columnSize);
 }

@@ -3,18 +3,17 @@
 using namespace std;
 using namespace Log;
 
-Logger& Log::logger = Logger::instance();
-
 Logger::Logger() {
 	_basicLogger = new BasicLogger(NULL);
 }
 
 Logger& Logger::instance() {
-	static Logger logger;
-	return logger;
+	static Logger * logger_instance = new Logger();
+	return *logger_instance;
 }
 
 Logger::~Logger() {
+	*this << Log::info << "Log is closed";
 	closeLog();
 }
 

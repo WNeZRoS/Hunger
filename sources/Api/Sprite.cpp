@@ -3,43 +3,57 @@
 #include "TextureManager.h"
 #include "compatibility.h"
 
-Sprite * Sprite::create(const Texture *texture, float x, float y, float z) {
-	if(!texture) return NULL;
-	Sprite *sprite = new Sprite(x, y, z);
-	sprite->_texture = texture;
-	return sprite;
-}
-
-Sprite::Sprite(float x, float y, float z) {
+SpriteBase::SpriteBase(float x, float y, float z) {
 	setPosition(x, y);
 	setScale(1.0f);
 	_z = z;
 }
 
-Sprite::~Sprite() {
-	TextureManager::instance()->unload(_texture);
+SpriteBase::~SpriteBase() {
+
 }
 
-void Sprite::setPosition(int x, int y) {
+void SpriteBase::setPosition(int x, int y) {
 	_x = x;
 	_y = y;
 }
 
-void Sprite::setScale(float scale) {
+void SpriteBase::setScale(float scale) {
 	_scale = scale;
 }
 
-void Sprite::getPosition(int &x, int &y) const {
+void SpriteBase::getPosition(int &x, int &y) const {
 	x = _x;
 	y = _y;
 }
 
-int Sprite::getX() const {
+int SpriteBase::getX() const {
 	return _x;
 }
 
-int Sprite::getY() const {
+int SpriteBase::getY() const {
 	return _y;
+}
+
+// Sprite class
+
+Sprite * Sprite::create(const Texture::Name texture, float x, float y, float z) {
+	if(!texture) return NULL;
+	Sprite *sprite = new Sprite(x, y, z);
+	sprite->_texture = LOAD_TEXTURE(texture);
+	if(!sprite->_texture) {
+		delete sprite;
+		return NULL;
+	}
+	return sprite;
+}
+
+Sprite::Sprite(float x, float y, float z) : SpriteBase(x, y, z) {
+
+}
+
+Sprite::~Sprite() {
+	if(_texture) UNLOAD_TEXTURE(_texture);
 }
 
 void Sprite::draw() {

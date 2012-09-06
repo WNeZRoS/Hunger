@@ -7,7 +7,7 @@
 class Player : public Entity
 {
 public:
-	Player(const LevelMap *map, const Texture *texture);
+	Player(const LevelMap *map, const Texture::Name texture);
 	~Player();
 	bool move(int x, int y);
 	void draw() const;

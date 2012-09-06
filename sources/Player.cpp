@@ -1,20 +1,19 @@
 #include "Player.h"
 #include "Api/Logger.h"
 
-Player::Player(const LevelMap *map, const Texture *texture) {
+Player::Player(const LevelMap *map, const Texture::Name texture) {
 	_speed = 3;
 	_z = 10;
 	_map = const_cast<LevelMap*>(map);
-	_phisTileSize = _map->getTileSize()/1.5;
 	_tileSize = _map->getTileSize();
 
 	_map->getPlayerSpawnPosition(_x, _y);
 	_x += _tileSize / 2;
 	_y += _tileSize / 2;
 
-	Point pos = {_x - _tileSize / 2, _y - _tileSize / 2};
+	Point pos(_x - _tileSize / 2, _y - _tileSize / 2);
 	_map->globalCoordinatesToScreen(pos, pos);
-	_sprite = TileSprite::create(texture->toAtlas(4, 4), pos.x, pos.y, _z);
+	_sprite = TileSprite::create(TextureAtlas::Loader(texture, 4, 4), pos.x, pos.y, _z);
 	_sprite->setScale(_map->getTileSize());
 
 	_moveAnimationLeft.frames = new TileSprite::Animation::Frame[2];
@@ -22,28 +21,24 @@ Player::Player(const LevelMap *map, const Texture *texture) {
 	_moveAnimationLeft.loop = 1;
 	_moveAnimationLeft.frames[0].tileId = 0; _moveAnimationLeft.frames[0].delay = 150;
 	_moveAnimationLeft.frames[1].tileId = 4; _moveAnimationLeft.frames[1].delay = 150;
-	_moveAnimationLeft.moveSpeed = 0;
 
 	_moveAnimationRight.frames = new TileSprite::Animation::Frame[2];
 	_moveAnimationRight.framesCount = 2;
 	_moveAnimationRight.loop = 1;
 	_moveAnimationRight.frames[0].tileId = 1; _moveAnimationRight.frames[0].delay = 150;
 	_moveAnimationRight.frames[1].tileId = 5; _moveAnimationRight.frames[1].delay = 150;
-	_moveAnimationRight.moveSpeed = 0;
 
 	_moveAnimationUp.frames = new TileSprite::Animation::Frame[2];
 	_moveAnimationUp.framesCount = 2;
 	_moveAnimationUp.loop = 1;
 	_moveAnimationUp.frames[0].tileId = 2; _moveAnimationUp.frames[0].delay = 150;
 	_moveAnimationUp.frames[1].tileId = 6; _moveAnimationUp.frames[1].delay = 150;
-	_moveAnimationUp.moveSpeed = 0;
 
 	_moveAnimationDown.frames = new TileSprite::Animation::Frame[2];
 	_moveAnimationDown.framesCount = 2;
 	_moveAnimationDown.loop = 1;
 	_moveAnimationDown.frames[0].tileId = 3; _moveAnimationDown.frames[0].delay = 150;
 	_moveAnimationDown.frames[1].tileId = 7; _moveAnimationDown.frames[1].delay = 150;
-	_moveAnimationDown.moveSpeed = 0;
 }
 
 Player::~Player() {
@@ -56,14 +51,13 @@ Player::~Player() {
 
 bool Player::move(int x, int y) {
 	Log::logger << Log::debug << "Pos: " << _x << ", " << _y;
-	Point position = { _x, _y };
-	Point dir = { x, y };
+	Point position( _x, _y );
+	Point dir( x, y );
 	if(_map->moveInDirection(position, dir, _speed)) {
 		_x = position.x;
 		_y = position.y;
 
-		position.x -= _tileSize / 2;
-		position.y -= _tileSize / 2;
+		position -= _tileSize / 2.0f;
 		_map->globalCoordinatesToScreen(position, position);
 		_sprite->setPosition(position.x, position.y);
 

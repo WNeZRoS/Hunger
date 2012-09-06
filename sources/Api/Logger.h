@@ -45,7 +45,6 @@ class Logger : public BasicLogger
 {
 public:
 	static Logger& instance();
-	~Logger();
 
 	void openLog(const char *filename);
 	void closeLog();
@@ -78,6 +77,7 @@ public:
 	}
 protected:
 	Logger();
+	~Logger(); // Never called
 
 private:
 	BasicLogger *_basicLogger;
@@ -87,7 +87,7 @@ private:
 };
 
 
-extern Logger& logger;
+#define logger Logger::instance()
 };
 
 #endif // LOGGER_H

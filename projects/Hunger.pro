@@ -22,7 +22,11 @@ SOURCES += \
     ../sources/Api/TextureManager.cpp \
     ../sources/Api/GlTextureManager.cpp \
     ../sources/Api/TgaTexture.cpp \
-    ../sources/Api/Logger.cpp
+    ../sources/Api/Logger.cpp \
+    ../sources/Food.cpp \
+    ../sources/Api/Point.cpp \
+    ../sources/Api/Texture.cpp \
+    ../sources/Api/Random.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -46,7 +50,10 @@ HEADERS += \
     ../sources/Api/TextureManager.h \
     ../sources/Api/GlTextureManager.h \
     ../sources/Api/TgaTexture.h \
-    ../sources/Api/Logger.h
+    ../sources/Api/Logger.h \
+    ../sources/Food.h \
+    ../sources/Api/Point.h \
+    ../sources/Api/Random.h
 
 INCLUDEPATH += ../sources
 Debug: QMAKE_CXXFLAGS += -DDEBUG

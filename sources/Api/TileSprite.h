@@ -4,7 +4,7 @@
 #include "Sprite.h"
 #include "TextureAtlas.h"
 
-class TileSprite : public Sprite
+class TileSprite : public SpriteBase
 {
 public:
 	struct Animation
@@ -20,11 +20,9 @@ public:
 		} *frames;
 		int framesCount;
 		unsigned int loop;
-		int moveSpeed;
-		struct { int x, y; } moveTo;
 	};
 
-	static TileSprite * create(const TextureAtlas *atlas, float x, float y, float z);
+	static TileSprite * create(const TextureAtlas::Loader atlasLoader, float x, float y, float z);
 	~TileSprite();
 
 	void setTileId(int id);

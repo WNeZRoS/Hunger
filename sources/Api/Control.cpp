@@ -42,7 +42,7 @@ void Control::removeEvent(const Event& event) {
 		Event e = *it;
 		if ((e.state == event.state || event.state == STATE_ANY) &&
 				(e.key == event.key || event.key == NO_KEY))
-			_events.erase(it, it);
+			_events.erase(it);
 	}
 }
 

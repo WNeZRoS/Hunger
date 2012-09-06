@@ -13,19 +13,16 @@ class GlTexture : public Texture
 {
 public:
 	typedef GlTexture * (*LoaderMethod)(const char *filename);
-
-	GlTexture(const char *imageData, unsigned int type, int width, int height);
 	~GlTexture();
 
 	void activate() const;
 	void deactivate() const;
 
-	TextureAtlas * toAtlas(int rowSize, int columnSize) const;
-
+	friend class TgaTexture;
 protected:
 	unsigned int _id;
 
-	GlTexture();
+	GlTexture(const char *imageData, unsigned int type, int width, int height);
 	unsigned int getId() const;
 };
 

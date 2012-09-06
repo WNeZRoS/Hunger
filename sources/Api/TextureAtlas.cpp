@@ -2,6 +2,20 @@
 #include "Render.h"
 #include "TextureManager.h"
 #include <cmath>
+#include "Logger.h"
+
+TextureAtlas::Loader::Loader(const Texture::Name texture, int rows, int columns) {
+	this->texture = texture;
+	this->rows = rows;
+	this->columns = columns;
+}
+
+TextureAtlas * TextureAtlas::Loader::load() const {
+	if(rows <= 0 || columns <= 0 || !texture) return NULL;
+	Texture * t = LOAD_TEXTURE(texture);
+	if(!t) return NULL;
+	return t->toAtlas(rows, columns);
+}
 
 TextureAtlas * TextureAtlas::create(const Texture *texture, int tilesInRow, int tilesInColumn) {
 	if(tilesInRow <= 0 || tilesInColumn <= 0 || !texture) return NULL;
@@ -15,7 +29,12 @@ TextureAtlas::TextureAtlas(const Texture *texture, int tilesInRow, int tilesInCo
 }
 
 TextureAtlas::~TextureAtlas() {
-	TextureManager::instance()->unload(_texture);
+	_texture->_atlas = 0;
+	Log::logger << Log::debug << "atlas deleted";
+}
+
+void TextureAtlas::unload() const {
+	_texture->atlasUnload();
 }
 
 void TextureAtlas::drawTile(int tileId, float x, float y, float z, float width, float height) const {

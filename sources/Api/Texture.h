@@ -2,28 +2,33 @@
 #define TEXTURE_H
 
 class TextureAtlas;
+class TextureManager;
 
 class Texture
 {
 public:
-	virtual ~Texture() = 0;
+	typedef const char * Name;
 
 	virtual void activate() const = 0;
 	virtual void deactivate() const = 0;
 
-	int getWidth() const {
-		return _width;
-	}
+	int getWidth() const;
+	int getHeight() const;
 
-	int getHeight() const {
-		return _height;
-	}
-
-	virtual TextureAtlas * toAtlas(int rowSize, int columnSize) const = 0;
+	friend class TextureAtlas;
+	friend class TextureManager;
 
 protected:
 	int _width;
 	int _height;
+	mutable TextureAtlas *_atlas;
+	mutable int _atlasUsage;
+
+	Texture();
+	virtual ~Texture();
+
+	TextureAtlas * toAtlas(int rowSize, int columnSize) const;
+	void atlasUnload() const;
 };
 
 #endif // TEXTURE_H

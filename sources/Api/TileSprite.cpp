@@ -1,12 +1,13 @@
 #include "TileSprite.h"
 #include "compatibility.h"
 
-TileSprite * TileSprite::create(const TextureAtlas *atlas, float x, float y, float z) {
+TileSprite * TileSprite::create(const TextureAtlas::Loader atlasLoader, float x, float y, float z) {
+	TextureAtlas * atlas = atlasLoader.load();
 	if(!atlas) return NULL;
 	return new TileSprite(atlas, x, y, z);
 }
 
-TileSprite::TileSprite(const TextureAtlas * atlas, float x, float y, float z) : Sprite(x, y, z) {
+TileSprite::TileSprite(const TextureAtlas *atlas, float x, float y, float z) : SpriteBase(x, y, z) {
 	_texture = atlas;
 	_tileId = 0;
 	_animation.frames = 0;
@@ -16,7 +17,7 @@ TileSprite::TileSprite(const TextureAtlas * atlas, float x, float y, float z) : 
 }
 
 TileSprite::~TileSprite() {
-	delete _texture;
+	_texture->unload();
 }
 
 int TileSprite::getTileId() const {
@@ -47,20 +48,7 @@ void TileSprite::draw() {
 	if(_animation.frames && _animation.framesCount > 0) {
 		if(_lastFrameTime + _animation.frames[_currentFrameId].delay <= getCurrentTime()) {
 			_tileId = _animation.frames[_currentFrameId].tileId;
-			if(_animation.moveSpeed > 0) {
-				if(ABS(_animation.moveTo.x - _x) < _animation.moveSpeed)
-					_x = _animation.moveTo.x;
-				else if(_animation.moveTo.x - _x != 0)
-					_x += (_animation.moveTo.x - _x < 0 ? -1 : 1) * _animation.moveSpeed;
 
-				if(ABS(_animation.moveTo.y - _y) < _animation.moveSpeed)
-					_y = _animation.moveTo.y;
-				else if(_animation.moveTo.y - _y != 0)
-					_y += (_animation.moveTo.y - _y < 0 ? -1 : 1) * _animation.moveSpeed;
-
-				if(_animation.moveTo.x == _x && _animation.moveTo.y == _y)
-					_animation.moveSpeed = 0;
-			}
 			_currentFrameId++;
 			_lastFrameTime = getCurrentTime();
 			if(_currentFrameId >= _animation.framesCount) {

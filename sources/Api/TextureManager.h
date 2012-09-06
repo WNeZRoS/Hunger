@@ -2,7 +2,18 @@
 #define TEXTUREMANAGER_H
 
 #include "Texture.h"
-#include <vector>
+#include <list>
+
+#define LOAD_TEXTURE(name) TextureManagerWrapper::load(name, __FILE__, __LINE__)
+#define UNLOAD_TEXTURE(texture) TextureManagerWrapper::unload(texture, __FILE__, __LINE__)
+
+class TextureManagerWrapper {
+public:
+	static Texture * load(const char *texturename, const char *sourcename, int line);
+	static void unload(const Texture* texture, const char *sourcename, int line);
+};
+
+// TODO: for better work need use texturename instead texture for construct other clases
 
 class TextureManager
 {
@@ -16,6 +27,8 @@ public:
 
 	~TextureManager();
 
+	friend class TextureManagerWrapper;
+protected:
 	/** Load texture from texture path.
 
 		@param textureName
@@ -39,7 +52,7 @@ protected:
 	virtual Texture * loadTexture(const char *textureFilePath);
 
 	char *_texturesPath;
-	std::vector<TextureInfo> _textures;
+	std::list<TextureInfo> _textures;
 	static TextureManager *_TextureManagerInstance;
 };
 

@@ -36,7 +36,7 @@ GlRender::GlRender(int width, int height) {
 
 
 GlRender::~GlRender() {
-
+	delete GlTextureManager::instance();
 }
 
 void GlRender::render() const {

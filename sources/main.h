@@ -23,6 +23,7 @@ private:
 
 	Context *_context;
 	Render *_render;
+	LevelMap *_map;
 	Player *_player;
 
 	int _moveX, _moveY;

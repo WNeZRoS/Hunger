@@ -4,19 +4,14 @@
 #include "Api/Texture.h"
 #include "Api/TextureAtlas.h"
 #include "Api/Map.h"
-#include <fstream>
-
-struct Point
-{
-	int x, y;
-	bool operator == (const Point& p) { return x == p.x && y == p.y; }
-	bool operator != (const Point& p) { return !(*this == p); }
-};
+#include "Api/Point.h"
 
 struct Rect
 {
 	int top, left, bottom, right;
 };
+
+// TODO: add food (tablet, apple, cake) spawn position to .map
 
 class LevelMap : public Map
 {
@@ -42,6 +37,7 @@ public:
 
 		const TileType& type() const;
 		bool haveRoadAt(const Point& pos, int tileSize) const;
+		bool isRoad() const;
 		bool canSetToRoad(Point& pos, int tileSize) const;
 
 		friend std::istream& operator >> (std::istream& in, Tile& t);
@@ -54,20 +50,20 @@ public:
 		bool isRightCenter(const Point& pos, int halfSize) const;
 	};
 
-	LevelMap(const Tile **map, int width, int height, const Texture *tiles,
+	LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
 			 const Point& playerSpawn, const Point& mobSpawn);
 	~LevelMap();
 
 	void fillScreen(int width, int height, int minTileSize = 16);
 	void setCenter(int x, int y);
 
-	static LevelMap * load(const char *filename, const Texture *tiles);
+	static LevelMap * load(const char *filename, const Texture::Name tiles);
 
 	void draw() const;
 
-	const Tile& getTileByCoords(const Point& coord) const;
 	void getPlayerSpawnPosition(int& x, int& y) const;
 	void getMobSpawnPosition(int& x, int& y) const;
+	void getRoads(Point*& roads, int& size) const;
 
 	void globalCoordinatesToMap(const Point& coord, Point& map) const;
 	void globalCoordinatesToScreen(const Point& global, Point& screen) const;
@@ -83,12 +79,8 @@ private:
 
 	void setTileSize(int size);
 
+	const Tile& getTileByCoords(const Point& coord) const;
 	void getPositions(const Point& pos, Point& tilePos, Point& roadPos) const;
-	//bool isOneTile(int x1, int y1, int x2, int y2) const;
-	//bool isCanGoTo(Point& from, const Point& to) const;
-	//bool isOutOfBounds(int x, int y) const;
-	//void setBackToMap(int& x, int& y) const;
-	//static bool isTileHaveEnterAt(const TileType& tile, const Point& coord);
 };
 
 #endif // LEVELMAP_H
