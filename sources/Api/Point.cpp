@@ -6,6 +6,12 @@ Point::Point(int x, int y) { this->x = x; this->y = y; }
 bool Point::operator == (const Point& p) const { return x == p.x && y == p.y; }
 bool Point::operator != (const Point& p) const { return !(*this == p); }
 
+bool Point::operator > (const Point& p) const { return x > p.x && y > p.y; }
+bool Point::operator >= (const Point& p) const { return x >= p.x && y >= p.y; }
+
+bool Point::operator < (const Point& p) const { return x < p.x && y < p.y; }
+bool Point::operator <= (const Point& p) const { return x <= p.x && y <= p.y; }
+
 Point& Point::operator = (const Point& p) { x = p.x; y = p.y; return *this; }
 Point& Point::operator = (const int& v) { x = v; y = v; return *this; }
 

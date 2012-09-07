@@ -3,7 +3,7 @@
 
 #include "Map.h"
 #include "Entity.h"
-#include <vector>
+#include <list>
 
 class World
 {
@@ -17,15 +17,16 @@ public:
 	Map * getMap() const;
 
 	int addEntity(const Entity *entity);
-	void removeEntity(const Entity *entity);
+	void removeEntity(Entity *entity);
 	const Entity * getEntity(int id) const;
 	unsigned int getEntitiesCount() const;
 
 	void setScreenSize(int width, int height);
 
+	void updated(const Entity *upd);
 protected:
 	Map *_map;
-	std::vector<const Entity*> _entities;
+	std::list<const Entity*> _entities;
 	int _width, _height;
 };
 

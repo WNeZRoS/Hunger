@@ -61,8 +61,8 @@ public:
 
 	void draw() const;
 
-	void getPlayerSpawnPosition(int& x, int& y) const;
-	void getMobSpawnPosition(int& x, int& y) const;
+	Point getPlayerSpawnPosition() const;
+	Point getMobSpawnPosition() const;
 	void getRoads(Point*& roads, int& size) const;
 
 	void globalCoordinatesToMap(const Point& coord, Point& map) const;

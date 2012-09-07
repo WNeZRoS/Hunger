@@ -8,8 +8,10 @@ World::World() {
 
 World::~World() {
 	if(_map) delete _map;
-	for(vector<const Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
+	for(list<const Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
 		delete *it;
+
+	_entities.clear();
 }
 
 void World::setMap(const Map *map) {
@@ -23,16 +25,22 @@ Map * World::getMap() const {
 int World::addEntity(const Entity *entity) {
 	if(!entity) return -1;
 	_entities.push_back(entity);
+	const_cast<Entity*>(entity)->onChangeWorld(this);
 	return _entities.size() - 1;
 }
 
-void World::removeEntity(const Entity *entity) {
-	for(vector<const Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
-		if(*it == entity) _entities.erase(it, it);
+void World::removeEntity(Entity *entity) {
+	for(list<const Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
+		if(*it == entity) {
+			delete entity;
+			_entities.erase(it);
+		}
 }
 
 const Entity * World::getEntity(int id) const {
-	return _entities.at(id);
+	for(list<const Entity*>::const_iterator it = _entities.begin(); it != _entities.end(); it++)
+		if(--id == 0) return *it;
+	return NULL;
 }
 
 unsigned int World::getEntitiesCount() const {
@@ -46,11 +54,25 @@ void World::setScreenSize(int width, int height) {
 	if(_map) _map->fillScreen(width, height);
 }
 
+void World::updated(const Entity *upd) {
+	int size = upd->getPhysSize() / 4.0f;
+	Point start = upd->getPosition() - size;
+	Point end = upd->getPosition() + size;
+
+	for(list<const Entity*>::const_iterator it = _entities.begin(); it != _entities.end(); it++) {
+		const Entity* e = *it;
+		if(e != upd && e->isOverlap(start, end))
+			const_cast<Entity*>(e)->onOverlapBy(upd, this);
+	}
+}
+
 void World::draw() const {
 	if(_map) _map->draw();
 
-	for(vector<const Entity*>::const_iterator it = _entities.begin(); it != _entities.end(); it++) {
-		const Entity* e = *it;
-		e->draw();
+	for(int c = Entity::START; c != Entity::END; c++) {
+		for(list<const Entity*>::const_iterator it = _entities.begin(); it != _entities.end(); it++) {
+			const Entity* e = *it;
+			if(e->getCategory() == c) e->draw();
+		}
 	}
 }

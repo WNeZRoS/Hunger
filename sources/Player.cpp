@@ -1,20 +1,10 @@
 #include "Player.h"
 #include "Api/Logger.h"
 
-Player::Player(const LevelMap *map, const Texture::Name texture) {
+Player::Player(const Texture::Name texture) {
+	_sprite = TileSprite::create(TextureAtlas::Loader(texture, 4, 4), 0, 0, 10);
+
 	_speed = 3;
-	_z = 10;
-	_map = const_cast<LevelMap*>(map);
-	_tileSize = _map->getTileSize();
-
-	_map->getPlayerSpawnPosition(_x, _y);
-	_x += _tileSize / 2;
-	_y += _tileSize / 2;
-
-	Point pos(_x - _tileSize / 2, _y - _tileSize / 2);
-	_map->globalCoordinatesToScreen(pos, pos);
-	_sprite = TileSprite::create(TextureAtlas::Loader(texture, 4, 4), pos.x, pos.y, _z);
-	_sprite->setScale(_map->getTileSize());
 
 	_moveAnimationLeft.frames = new TileSprite::Animation::Frame[2];
 	_moveAnimationLeft.framesCount = 2;
@@ -49,15 +39,45 @@ Player::~Player() {
 	delete [] _moveAnimationDown.frames;
 }
 
-bool Player::move(int x, int y) {
-	Log::logger << Log::debug << "Pos: " << _x << ", " << _y;
-	Point position( _x, _y );
-	Point dir( x, y );
-	if(_map->moveInDirection(position, dir, _speed)) {
-		_x = position.x;
-		_y = position.y;
+void Player::onChangeWorld(const World *world) {
+	_world = const_cast<World*>(world);
+	_map = reinterpret_cast<LevelMap*>(world->getMap());
+	_tileSize = _map->getTileSize();
+	_position = _map->getPlayerSpawnPosition();
+	_position += (_tileSize / 2.0f);
 
-		position -= _tileSize / 2.0f;
+	Point pos = _position - (_tileSize / 2.0f);
+	_map->globalCoordinatesToScreen(pos, pos);
+	_sprite->setPosition(pos.x, pos.y);
+	_sprite->setScale(_map->getTileSize());
+}
+
+void Player::onOverlapBy(const Entity *overlap, const World *world) {
+	// TODO
+}
+
+const Entity::Category Player::getCategory() const {
+	return PLAYER;
+}
+
+int Player::getPhysSize() const {
+	return _tileSize;
+}
+
+bool Player::isOverlap(const Point &center, int radius) const {
+	return false; // TODO
+}
+
+bool Player::isOverlap(const Point &start, const Point &end) const {
+	return false; // TODO
+}
+
+bool Player::move(int x, int y) {
+	Log::logger << Log::debug << "Pos: " << _position;
+	Point dir( x, y );
+	if(_map->moveInDirection(_position, dir, _speed)) {
+
+		Point position = _position - (_tileSize / 2.0f);
 		_map->globalCoordinatesToScreen(position, position);
 		_sprite->setPosition(position.x, position.y);
 
@@ -65,6 +85,9 @@ bool Player::move(int x, int y) {
 		else if(x == 1) _sprite->replaceAnimation(_moveAnimationRight);
 		else if(y == -1) _sprite->replaceAnimation(_moveAnimationUp);
 		else if(y == 1) _sprite->replaceAnimation(_moveAnimationDown);
+
+		_world->updated(this);
+
 		return true;
 	}
 	return false;

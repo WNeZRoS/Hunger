@@ -222,16 +222,16 @@ const LevelMap::Tile& LevelMap::getTileByCoords(const Point& coord) const {
 	return _map[coord.y][coord.x];
 }
 
-void LevelMap::getPlayerSpawnPosition(int& x, int& y) const {
+Point LevelMap::getPlayerSpawnPosition() const {
 	Point pos(_playerSpawn.x, _playerSpawn.y);
 	mapCoordinatesToGlobal(pos, pos);
-	x = pos.x; y = pos.y;
+	return pos;
 }
 
-void LevelMap::getMobSpawnPosition(int& x, int& y) const {
+Point LevelMap::getMobSpawnPosition() const {
 	Point pos(_mobSpawn.x * _tileSize, _mobSpawn.y * _tileSize);
 	mapCoordinatesToGlobal(pos, pos);
-	x = pos.x; y = pos.y;
+	return pos;
 }
 
 void LevelMap::getRoads(Point*& roads, int& size) const {

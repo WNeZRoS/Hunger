@@ -17,6 +17,11 @@ struct Point
 	bool operator == (const Point& p) const;
 	bool operator != (const Point& p) const;
 
+	bool operator > (const Point& p) const;
+	bool operator >= (const Point& p) const;
+	bool operator < (const Point& p) const;
+	bool operator <= (const Point& p) const;
+
 	Point& operator = (const Point& p);
 	Point& operator = (const int& v);
 

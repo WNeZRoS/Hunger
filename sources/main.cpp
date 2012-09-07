@@ -81,18 +81,18 @@ bool Main::initialize() {
 	world->setMap(_map);
 	_render->setWorld(world);
 
+	_player = new Player("player");
+	world->addEntity(_player);
+
 	Point *roads;
 	int roadCount = 0;
 	_map->getRoads(roads, roadCount);
 	int values[4] = { 0, 1, 2, 3 };
 	int chances[4] = { 75, 10, 5, 10 };
 	for(int i = 0; i < roadCount; i++) {
-		Food *food = new Food(_map, TextureAtlas::Loader("food", 2, 2), Random::rand(values, chances, 4), roads[i]);
-		world->addEntity(food);
+		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2),
+								  Random::rand(values, chances, 4), roads[i]));
 	}
-
-	_player = new Player(_map, "player");
-	world->addEntity(_player);
 
 	return true;
 }

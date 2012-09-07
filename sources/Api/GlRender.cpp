@@ -18,7 +18,7 @@ GlRender::GlRender(int width, int height) {
 	//glDepthFunc(GL_LEQUAL);
 	//glClearDepth(1.0f);
 
-	glShadeModel(GL_SMOOTH);
+	//glShadeModel(GL_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
