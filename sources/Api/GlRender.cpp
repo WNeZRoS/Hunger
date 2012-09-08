@@ -1,5 +1,6 @@
 #include "GlRender.h"
 #include "GlTextureManager.h"
+#include "Control.h"
 
 #ifdef WIN32
 #include <Windows.h>
@@ -37,6 +38,8 @@ GlRender::GlRender(int width, int height) {
 
 GlRender::~GlRender() {
 	delete GlTextureManager::instance();
+	delete _Painter;
+	if(_world) delete _world;
 }
 
 void GlRender::render() const {
@@ -47,6 +50,8 @@ void GlRender::render() const {
 
 	glColor3f(1, 1, 1);
 	if(_world) _world->draw();
+
+	Control::instance().drawHud();
 }
 
 void GlRender::stopRender() {

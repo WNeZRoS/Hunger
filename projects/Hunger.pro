@@ -26,7 +26,8 @@ SOURCES += \
     ../sources/Food.cpp \
     ../sources/Api/Point.cpp \
     ../sources/Api/Texture.cpp \
-    ../sources/Api/Random.cpp
+    ../sources/Api/Random.cpp \
+    ../sources/StickHud.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -53,7 +54,8 @@ HEADERS += \
     ../sources/Api/Logger.h \
     ../sources/Food.h \
     ../sources/Api/Point.h \
-    ../sources/Api/Random.h
+    ../sources/Api/Random.h \
+    ../sources/StickHud.h
 
 INCLUDEPATH += ../sources
 Debug: QMAKE_CXXFLAGS += -DDEBUG

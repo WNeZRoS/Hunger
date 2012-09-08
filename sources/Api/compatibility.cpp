@@ -7,7 +7,10 @@
 #include <sys/time.h>
 #endif
 
-unsigned long long getCurrentTime() {
+#include <cmath>
+#include <limits>
+
+Timestamp getCurrentTime() {
 #ifdef WIN32
 	SYSTEMTIME st;
 	GetSystemTime(&st);
@@ -47,3 +50,6 @@ void getTime(Time& currentTime) {
 #endif
 }
 
+bool equal(float a, float b) {
+	return std::fabs(a - b) < 2*std::numeric_limits<float>::epsilon();
+}

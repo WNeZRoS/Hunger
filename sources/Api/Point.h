@@ -8,14 +8,18 @@ namespace Log
 	class BasicLogger;
 };
 
+struct Point_i;
+
 struct Point
 {
-	int x, y;
+	float x, y;
 
 	Point();
-	Point(int x, int y);
+	Point(float x, float y);
 	bool operator == (const Point& p) const;
 	bool operator != (const Point& p) const;
+	bool operator == (const float& v) const;
+	bool operator != (const float& v) const;
 
 	bool operator > (const Point& p) const;
 	bool operator >= (const Point& p) const;
@@ -23,31 +27,79 @@ struct Point
 	bool operator <= (const Point& p) const;
 
 	Point& operator = (const Point& p);
-	Point& operator = (const int& v);
+	Point& operator = (const float& v);
 
 	Point& operator += (const Point& p);
 	Point& operator -= (const Point& p);
 	Point& operator *= (const Point& p);
 	Point& operator /= (const Point& p);
 
-	Point& operator += (const int& v);
-	Point& operator -= (const int& v);
-	Point& operator *= (const int& v);
-	Point& operator /= (const int& v);
+	Point& operator += (const float& v);
+	Point& operator -= (const float& v);
+	Point& operator *= (const float& v);
+	Point& operator /= (const float& v);
 
 	const Point operator + (const Point& p) const;
 	const Point operator - (const Point& p) const;
 	const Point operator * (const Point& p) const;
 	const Point operator / (const Point& p) const;
 
-	const Point operator + (const int& v) const;
-	const Point operator - (const int& v) const;
-	const Point operator * (const int& v) const;
-	const Point operator / (const int& v) const;
+	const Point operator + (const float& v) const;
+	const Point operator - (const float& v) const;
+	const Point operator * (const float& v) const;
+	const Point operator / (const float& v) const;
+
+	Point_i toPoint_i() const;
 
 	friend std::istream& operator >> (std::istream& in, Point& p);
 	friend std::ostream& operator << (std::ostream& out, const Point& p);
 	friend Log::BasicLogger& operator << (Log::BasicLogger& out, const Point& p);
 };
 
-#endif // POINT_H
+struct Point_i
+{
+	int x, y;
+
+	Point_i();
+	Point_i(int x, int y);
+	bool operator == (const Point_i& p) const;
+	bool operator != (const Point_i& p) const;
+	bool operator == (const int& v) const;
+	bool operator != (const int& v) const;
+
+	bool operator > (const Point_i& p) const;
+	bool operator >= (const Point_i& p) const;
+	bool operator < (const Point_i& p) const;
+	bool operator <= (const Point_i& p) const;
+
+	Point_i& operator = (const Point_i& p);
+	Point_i& operator = (const int& v);
+
+	Point_i& operator += (const Point_i& p);
+	Point_i& operator -= (const Point_i& p);
+	Point_i& operator *= (const Point_i& p);
+	Point_i& operator /= (const Point_i& p);
+
+	Point_i& operator += (const int& v);
+	Point_i& operator -= (const int& v);
+	Point_i& operator *= (const int& v);
+	Point_i& operator /= (const int& v);
+
+	const Point_i operator + (const Point_i& p) const;
+	const Point_i operator - (const Point_i& p) const;
+	const Point_i operator * (const Point_i& p) const;
+	const Point_i operator / (const Point_i& p) const;
+
+	const Point_i operator + (const int& v) const;
+	const Point_i operator - (const int& v) const;
+	const Point_i operator * (const int& v) const;
+	const Point_i operator / (const int& v) const;
+
+	Point toPoint() const;
+
+	friend std::istream& operator >> (std::istream& in, Point_i& p);
+	friend std::ostream& operator << (std::ostream& out, const Point_i& p);
+	friend Log::BasicLogger& operator << (Log::BasicLogger& out, const Point_i& p);
+};
+
+#endif // Point_i_H

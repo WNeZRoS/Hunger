@@ -1,6 +1,7 @@
 #ifndef TILESPRITE_H
 #define TILESPRITE_H
 
+#include "compatibility.h"
 #include "Sprite.h"
 #include "TextureAtlas.h"
 
@@ -38,7 +39,7 @@ protected:
 	int _tileId;
 	Animation _animation;
 	int _currentFrameId;
-	unsigned long long _lastFrameTime;
+	Timestamp _lastFrameTime;
 
 	const TextureAtlas *_texture;
 

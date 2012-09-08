@@ -19,7 +19,7 @@ public:
 
 	virtual ~Entity() = 0;
 
-	virtual void draw() const = 0;
+	virtual void draw() = 0;
 	virtual void onChangeWorld(const World *world) = 0;
 	virtual void onOverlapBy(const Entity *overlap, const World *world) = 0;
 

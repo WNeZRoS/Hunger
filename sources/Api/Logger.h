@@ -88,6 +88,7 @@ private:
 
 
 #define logger Logger::instance()
+#define Debug logger << Log::debug
 };
 
 #endif // LOGGER_H

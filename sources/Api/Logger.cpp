@@ -5,6 +5,8 @@ using namespace Log;
 
 Logger::Logger() {
 	_basicLogger = new BasicLogger(NULL);
+	cout.setf(std::ios::fixed, std::ios::floatfield);
+	cout.setf(std::ios::showpoint);
 }
 
 Logger& Logger::instance() {
@@ -20,6 +22,8 @@ Logger::~Logger() {
 void Logger::openLog(const char *filename) {
 	if(_log.is_open()) closeLog();
 	_log.open(filename, ios::out);
+	_log.setf(std::ios::fixed, std::ios::floatfield);
+	_log.setf(std::ios::showpoint);
 	_basicLogger = new BasicLogger(&_log);
 }
 

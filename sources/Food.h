@@ -1,10 +1,7 @@
 #ifndef FOOD_H
 #define FOOD_H
 
-#include "Api/Entity.h"
-#include "Api/TextureAtlas.h"
-#include "Api/Point.h"
-#include "Api/World.h"
+#include "Api/Api.h"
 #include "LevelMap.h"
 
 class Food : public Entity
@@ -13,7 +10,7 @@ public:
 	Food(const TextureAtlas::Loader atlas, int tileId, const Point& position);
 	~Food();
 
-	void draw() const;
+	void draw();
 
 	void onChangeWorld(const World *world);
 	void onOverlapBy(const Entity *overlap, const World *world);

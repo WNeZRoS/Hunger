@@ -9,6 +9,19 @@ public:
 	virtual ~Controller() = 0;
 };
 
+class Hud
+{
+public:
+	virtual ~Hud() = 0;
+
+	virtual void draw() const = 0;
+	virtual bool isVisible() const = 0;
+
+	virtual bool start(int x, int y) = 0;
+	virtual void update(int x, int y) = 0;
+	virtual void end() = 0;
+};
+
 class Control
 {
 public:
@@ -72,6 +85,10 @@ public:
 	void addEvent(KeyState state, Keys key, const Controller *instance, const CallBackMethod& callback);
 	void removeEvent(const Event& event);
 	void removeEvent(Keys key, KeyState state = STATE_ANY);
+	void removeEvent(Controller *controller);
+
+	void addHud(const Hud *hud);
+	void removeHud(const Hud *hud);
 
 	void keyboardEvent(KeyState state, Keys key);
 	void mouseEvent(KeyState state, Keys key);
@@ -83,11 +100,13 @@ protected:
 	void callCallBack(const Controller *instance, CallBack callback, KeyState state, Keys key, int x, int y) const;
 
 	std::vector<Event> _events;
+	std::vector<Hud*> _huds;
+
 	int _mouseX, _mouseY;
 	KeyState _keys[256];
 	unsigned long long _lastIdleTime;
 
-	static Control _Control;
+	//static Control _Control;
 };
 
 #endif // CONTROL_H

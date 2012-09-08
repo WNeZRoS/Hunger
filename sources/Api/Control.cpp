@@ -1,9 +1,10 @@
 #include "Control.h"
 #include "compatibility.h"
 
-Control Control::_Control;
+//Control Control::_Control;
 
 Controller::~Controller() { }
+Hud::~Hud() { }
 
 Control::Control() {
 	_mouseX = _mouseY = 0;
@@ -16,7 +17,8 @@ Control::~Control() {
 }
 
 Control& Control::instance() {
-	return _Control;
+	static Control * _Control = new Control();
+	return *_Control;
 }
 
 void Control::addEvent(const Event &event) {
@@ -51,6 +53,27 @@ void Control::removeEvent(Keys key, KeyState state) {
 	removeEvent(event);
 }
 
+void Control::removeEvent(Controller *controller) {
+	for(std::vector<Event>::iterator it = _events.begin(); it != _events.end(); it++) {
+		Event e = *it;
+		if(e.instance == controller) _events.erase(it);
+	}
+}
+
+void Control::addHud(const Hud *hud) {
+	_huds.push_back(const_cast<Hud*>(hud));
+}
+
+void Control::removeHud(const Hud *hud) {
+	for(std::vector<Hud*>::iterator it = _huds.begin(); it != _huds.end(); it++) {
+		Hud *e = *it;
+		if(e == hud) {
+			_huds.erase(it);
+			delete e;
+		}
+	}
+}
+
 bool Control::isKeyPressed(Keys key) {
 	if(key == NO_KEY) return true;
 	return _keys[key] == STATE_PRESSED;
@@ -78,7 +101,10 @@ void Control::idle() {
 }
 
 void Control::drawHud() const {
-	// No hud
+	for(std::vector<Hud*>::const_iterator it = _huds.begin(); it != _huds.end(); it++) {
+		Hud *h = *it;
+		if(h->isVisible()) h->draw();
+	}
 }
 
 void Control::keyboardEvent(KeyState state, Keys key) {
@@ -100,6 +126,20 @@ void Control::mouseEvent(KeyState state, Keys key) {
 	_keys[key] = state;
 	state = state == STATE_NO_PRESSED ? STATE_UP : STATE_DOWN;
 
+	if(key == MOUSE_LEFT) {
+		switch(state) {
+		case STATE_UP:
+			for(std::vector<Hud*>::const_iterator it = _huds.begin(); it != _huds.end(); it++)
+				reinterpret_cast<Hud*>(*it)->end();
+			break;
+		case STATE_DOWN:
+			for(std::vector<Hud*>::const_iterator it = _huds.begin(); it != _huds.end(); it++)
+				reinterpret_cast<Hud*>(*it)->start(_mouseX, _mouseY);
+			break;
+		default: break;
+		}
+	}
+
 	for(std::vector<Event>::iterator it = _events.begin(); it != _events.end(); it++) {
 		Event e = *it;
 		if(e.key == key && (state == e.state || e.state == STATE_ANY))
@@ -110,6 +150,11 @@ void Control::mouseEvent(KeyState state, Keys key) {
 void Control::mouseMoveEvent(int x, int y) {
 	_mouseX = x;
 	_mouseY = y;
+
+	if(isKeyPressed(MOUSE_LEFT)) {
+		for(std::vector<Hud*>::const_iterator it = _huds.begin(); it != _huds.end(); it++)
+			reinterpret_cast<Hud*>(*it)->update(_mouseX, _mouseY);
+	}
 
 	for(std::vector<Event>::iterator it = _events.begin(); it != _events.end(); it++) {
 		Event e = *it;

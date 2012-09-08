@@ -4,17 +4,11 @@
 #include "Api/Api.h"
 #include "Player.h"
 
-class Main : public Controller
+class Main
 {
 public:
 	Main();
 	~Main();
-
-	void keyUpEvent(const Control::Event& event, int x, int y);
-	void keyDownEvent(const Control::Event& event, int x, int y);
-	void keyLeftEvent(const Control::Event& event, int x, int y);
-	void keyRightEvent(const Control::Event& event, int x, int y);
-	void keyNoEvent(const Control::Event &event, int x, int y);
 
 	bool initialize();
 	int work();
@@ -25,8 +19,6 @@ private:
 	Render *_render;
 	LevelMap *_map;
 	Player *_player;
-
-	int _moveX, _moveY;
 };
 
 #endif // MAIN_H

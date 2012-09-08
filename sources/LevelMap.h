@@ -1,10 +1,7 @@
 #ifndef LEVELMAP_H
 #define LEVELMAP_H
 
-#include "Api/Texture.h"
-#include "Api/TextureAtlas.h"
-#include "Api/Map.h"
-#include "Api/Point.h"
+#include "Api/Api.h"
 
 struct Rect
 {
@@ -44,14 +41,14 @@ public:
 	private:
 		TileType _type;
 
-		bool isCenterUp(const Point& pos, int halfSize) const;
-		bool isCenterBottom(const Point& pos, int halfSize) const;
-		bool isLeftCenter(const Point& pos, int halfSize) const;
-		bool isRightCenter(const Point& pos, int halfSize) const;
+		bool isCenterUp(const Point& pos, float halfSize) const;
+		bool isCenterBottom(const Point& pos, float halfSize) const;
+		bool isLeftCenter(const Point& pos, float halfSize) const;
+		bool isRightCenter(const Point& pos, float halfSize) const;
 	};
 
 	LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
-			 const Point& playerSpawn, const Point& mobSpawn);
+			 const Point_i& playerSpawn, const Point_i& mobSpawn);
 	~LevelMap();
 
 	void fillScreen(int width, int height, int minTileSize = 16);
@@ -65,22 +62,22 @@ public:
 	Point getMobSpawnPosition() const;
 	void getRoads(Point*& roads, int& size) const;
 
-	void globalCoordinatesToMap(const Point& coord, Point& map) const;
+	void globalCoordinatesToMap(const Point& coord, Point_i& map) const;
 	void globalCoordinatesToScreen(const Point& global, Point& screen) const;
-	void mapCoordinatesToGlobal(const Point& map, Point& coord) const;
+	void mapCoordinatesToGlobal(const Point_i& map, Point& coord) const;
 
 	bool moveInDirection(Point& from, const Point& dir, float speed = 1.0f) const;
-	int distance(Point tile1, const Point& tile2) const;
+	float distance(Point tile1, const Point& tile2) const;
 private:
 	const Tile **_map;
 	int _width, _height;
-	Point _playerSpawn, _mobSpawn;
+	Point_i _playerSpawn, _mobSpawn;
 	TextureAtlas *_tiles;
 
 	void setTileSize(int size);
 
-	const Tile& getTileByCoords(const Point& coord) const;
-	void getPositions(const Point& pos, Point& tilePos, Point& roadPos) const;
+	const Tile& getTileByCoords(const Point_i& coord) const;
+	void getPositions(const Point& pos, Point_i& tilePos, Point& roadPos) const;
 };
 
 #endif // LEVELMAP_H

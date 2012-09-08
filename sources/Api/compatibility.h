@@ -17,6 +17,8 @@
 #define NULL 0
 #endif
 
+typedef unsigned long long Timestamp;
+
 struct Time {
 	unsigned short year;
 	unsigned short month;
@@ -28,7 +30,8 @@ struct Time {
 	unsigned short milliseconds;
 };
 
-unsigned long long getCurrentTime();
+Timestamp getCurrentTime();
 void getTime(Time& time);
+bool equal(float a, float b);
 
 #endif // COMPATIBILITY_H

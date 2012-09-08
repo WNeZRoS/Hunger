@@ -1,5 +1,3 @@
-#include "Api/compatibility.h"
-#include "Api/Logger.h"
 #include "LevelMap.h"
 #include <cmath>
 #include <fstream>
@@ -29,11 +27,11 @@ istream& operator >> (istream& in, LevelMap::Tile& t) {
 	return in;
 }
 
-bool LevelMap::Tile::haveRoadAt(const Point &pos, int tileSize) const {
+bool LevelMap::Tile::haveRoadAt(const Point& pos, int tileSize) const {
 	if(pos.x < 0 || pos.y < 0 || pos.y > tileSize || pos.x > tileSize)
 		return false;
 
-	int halfSize = tileSize / 2;
+	float halfSize = 0.5f * tileSize;
 
 	switch(_type) {
 	case TOP_LEFT:
@@ -41,33 +39,33 @@ bool LevelMap::Tile::haveRoadAt(const Point &pos, int tileSize) const {
 		return isCenterBottom(pos, halfSize) || isRightCenter(pos, halfSize);
 	case T_DOWN:
 	case CL_T_DOWN:
-		return isCenterBottom(pos, halfSize) || pos.y == halfSize;
+		return isCenterBottom(pos, halfSize) || equal(pos.y, halfSize);
 	case TOP_RIGHT:
 	case CL_TOP_RIGHT:
 		return isCenterBottom(pos, halfSize) || isLeftCenter(pos, halfSize);
 	case ROAD_LEFT:
-		return pos.y == halfSize;
+		return equal(pos.y, halfSize);
 	case ROAD_UP:
-		return pos.x == halfSize;
+		return equal(pos.x, halfSize);
 	case T_LEFT:
 	case CL_T_LEFT:
-		return isRightCenter(pos, halfSize) || pos.x == halfSize;
+		return isRightCenter(pos, halfSize) || equal(pos.x, halfSize);
 	case CROSSROAD:
 	case CL_CROSSROAD:
 	case CL_CROSSROAD_LEFT:
 	case CL_CROSSROAD_TOP:
 	case CL_CROSSROAD_BOTTOM:
 	case CL_CROSSROAD_RIGHT:
-		return pos.x == halfSize || pos.y == halfSize;
+		return pos.x == halfSize || equal(pos.y, halfSize);
 	case T_RIGHT:
 	case CL_T_RIGHT:
-		return isLeftCenter(pos, halfSize) || pos.x == halfSize;
+		return isLeftCenter(pos, halfSize) || equal(pos.x, halfSize);
 	case BOTTOM_LEFT:
 	case CL_BOTTOM_LEFT:
 		return isCenterUp(pos, halfSize) || isRightCenter(pos, halfSize);
 	case T_UP:
 	case CL_T_UP:
-		return isCenterUp(pos, halfSize) || pos.y == halfSize;
+		return isCenterUp(pos, halfSize) || equal(pos.y, halfSize);
 	case BOTTOM_RIGHT:
 	case CL_BOTTOM_RIGHT:
 		return isCenterUp(pos, halfSize) || isLeftCenter(pos, halfSize);
@@ -83,42 +81,46 @@ bool LevelMap::Tile::isRoad() const {
 			|| _type == T_LEFT || _type == T_RIGHT || _type == CROSSROAD;
 }
 
-bool LevelMap::Tile::canSetToRoad(Point &pos, int tileSize) const {
-	int halfSize = tileSize / 2.0f;
-	int dx = ABS(pos.x - halfSize), dy = ABS(pos.y - halfSize);
+bool LevelMap::Tile::canSetToRoad(Point& pos, int tileSize) const {
+	if(this->haveRoadAt(pos, tileSize)) return true;
+	float halfSize = 0.5f * tileSize;
+	float dx = ABS(pos.x - halfSize), dy = ABS(pos.y - halfSize);
+	//float maxd = tileSize / 16.0f;
 
-	bool result = false;
-	if(dx > 0 && dx < tileSize / 16.0f) {
-		pos.x = halfSize;
-		result = true;
-	}
-	if(dy > 0 && dy < tileSize / 16.0f) {
-		pos.y = halfSize;
-		result = true;
-	}
-	return result;
+
+	bool hx = this->haveRoadAt(Point(halfSize, pos.y), tileSize);
+	bool hy = this->haveRoadAt(Point(pos.x, halfSize), tileSize);
+
+	if(hx)
+		if(hy)
+			if(dx < dy) pos.x = halfSize;
+			else pos.y = halfSize;
+		else pos.x = halfSize;
+	else if(hy) pos.y = halfSize;
+
+	return hx || hy;
 }
 
-bool LevelMap::Tile::isCenterUp(const Point& pos, int halfSize) const {
-	return pos.x == halfSize && pos.y <= halfSize;
+bool LevelMap::Tile::isCenterUp(const Point& pos, float halfSize) const {
+	return equal(pos.x, halfSize) && pos.y <= halfSize;
 }
 
-bool LevelMap::Tile::isCenterBottom(const Point& pos, int halfSize) const {
-	return pos.x == halfSize && pos.y >= halfSize;
+bool LevelMap::Tile::isCenterBottom(const Point& pos, float halfSize) const {
+	return equal(pos.x, halfSize) && pos.y >= halfSize;
 }
 
-bool LevelMap::Tile::isLeftCenter(const Point& pos, int halfSize) const {
-	return pos.x <= halfSize && pos.y == halfSize;
+bool LevelMap::Tile::isLeftCenter(const Point& pos, float halfSize) const {
+	return pos.x <= halfSize && equal(pos.y, halfSize);
 }
 
-bool LevelMap::Tile::isRightCenter(const Point& pos, int halfSize) const {
-	return pos.x >= halfSize && pos.y == halfSize;
+bool LevelMap::Tile::isRightCenter(const Point& pos, float halfSize) const {
+	return pos.x >= halfSize && equal(pos.y, halfSize);
 }
 
 // LevelMap class
 
 LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
-				   const Point& playerSpawn, const Point& mobSpawn) {
+				   const Point_i& playerSpawn, const Point_i& mobSpawn) {
 	if(!map || !tiles || width <= 0 || height <= 0) throw;
 
 	_map = map;
@@ -162,7 +164,7 @@ LevelMap * LevelMap::load(const char *filename, const Texture::Name tiles) {
 		for(int x = 0; x < width; x++) file >> map[y][x];
 	}
 
-	Point playerSpawn, mobSpawn;
+	Point_i playerSpawn, mobSpawn;
 	file >> playerSpawn.x >> playerSpawn.y;
 	file >> mobSpawn.x >> mobSpawn.y;
 
@@ -199,38 +201,42 @@ void LevelMap::setCenter(int x, int y) {
 	}
 }
 
-void LevelMap::globalCoordinatesToMap(const Point& coord, Point& map) const {
-	map.x = (_tileSize * _width / 2.0f) + coord.x;
-	map.y = (_tileSize * _height / 2.0f) + coord.y;
-	map.x /= _tileSize;
-	map.y /= _tileSize;
-	if(map.x < 0) map.x = 0; else if(map.x >= _width) map.x = _width - 1;
-	if(map.y < 0) map.y = 0; else if(map.y >= _height) map.y = _height - 1;
+void LevelMap::globalCoordinatesToMap(const Point& coord, Point_i& map) const {
+	Point mapf(coord.x / _tileSize + _width / 2.0f, coord.y / _tileSize + _height / 2.0f);
+	if(mapf.x < 0) mapf.x = 0; else if(mapf.x >= _width) mapf.x = _width - 1;
+	if(mapf.y < 0) mapf.y = 0; else if(mapf.y >= _height) mapf.y = _height - 1;
+	map = mapf.toPoint_i();
+	//map.x = (_tileSize * _width / 2.0f) + coord.x;
+	//map.y = (_tileSize * _height / 2.0f) + coord.y;
+	//map.x /= _tileSize;
+	//map.y /= _tileSize;
+	//if(map.x < 0) map.x = 0; else if(map.x >= _width) map.x = _width - 1;
+	//if(map.y < 0) map.y = 0; else if(map.y >= _height) map.y = _height - 1;
 }
 
 void LevelMap::globalCoordinatesToScreen(const Point& global, Point& screen) const {
-	screen.x = _xOffset + (_tileSize * _width / 2.0f) + global.x;
-	screen.y = _yOffset + (_tileSize * _height / 2.0f) + global.y;
+	screen.x = global.x + (_tileSize * _width / 2.0f) + _xOffset;
+	screen.y = global.y + (_tileSize * _height / 2.0f) + _yOffset;
 }
 
-void LevelMap::mapCoordinatesToGlobal(const Point& map, Point& coord) const {
-	coord.x = _tileSize * (map.x - _width / 2.0f);
-	coord.y = _tileSize * (map.y - _height / 2.0f);
+void LevelMap::mapCoordinatesToGlobal(const Point_i& map, Point& coord) const {
+	coord.x = (1.0f * map.x - _width / 2.0f) * _tileSize;
+	coord.y = (1.0f * map.y - _height / 2.0f) * _tileSize;
 }
 
-const LevelMap::Tile& LevelMap::getTileByCoords(const Point& coord) const {
+const LevelMap::Tile& LevelMap::getTileByCoords(const Point_i& coord) const {
 	return _map[coord.y][coord.x];
 }
 
 Point LevelMap::getPlayerSpawnPosition() const {
-	Point pos(_playerSpawn.x, _playerSpawn.y);
-	mapCoordinatesToGlobal(pos, pos);
+	Point pos;
+	mapCoordinatesToGlobal(_playerSpawn, pos);
 	return pos;
 }
 
 Point LevelMap::getMobSpawnPosition() const {
-	Point pos(_mobSpawn.x * _tileSize, _mobSpawn.y * _tileSize);
-	mapCoordinatesToGlobal(pos, pos);
+	Point pos;
+	mapCoordinatesToGlobal(_mobSpawn, pos);
 	return pos;
 }
 
@@ -239,13 +245,16 @@ void LevelMap::getRoads(Point*& roads, int& size) const {
 	for(int y = 1; y < _height - 1; y++)
 		for(int x = 1; x < _width - 1; x++)
 			if((_playerSpawn.x != x || _playerSpawn.y != y) && _map[y][x].isRoad()) {
-				Point point(x, y);
-				mapCoordinatesToGlobal(point, point);
+				Point_i ipoint(x, y);
+				Point point;
+				mapCoordinatesToGlobal(ipoint, point);
+				Log::logger << Log::debug << ipoint << " -> " << point;
 				vRoads.push_back(point);
 			}
 
-	roads = vRoads.data();
 	size = vRoads.size();
+	roads = new Point[size];
+	for(int i = 0; i < size; i++) roads[i] = vRoads.at(i);
 }
 
 void LevelMap::draw() const {
@@ -261,21 +270,21 @@ void LevelMap::draw() const {
 	}
 }
 
-void LevelMap::getPositions(const Point& pos, Point& tilePos, Point& roadPos) const {
+void LevelMap::getPositions(const Point& pos, Point_i& tilePos, Point& roadPos) const {
 	this->globalCoordinatesToMap(pos, tilePos);
 	this->mapCoordinatesToGlobal(tilePos, roadPos);
 	roadPos = pos - roadPos;
 }
 
 bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const {
-	Point fromTilePos, roadPos;
+	Point_i fromTilePos;
+	Point roadPos;
 	this->getPositions(from, fromTilePos, roadPos);
 
 	Log::logger << Log::debug << "from tile " << getTileByCoords(fromTilePos).type() << " "
 				<< fromTilePos << " road pos " << roadPos << " " << _tileSize;
 
-	if(!getTileByCoords(fromTilePos).haveRoadAt(roadPos, _tileSize)) return false;
-
+	//if(!getTileByCoords(fromTilePos).haveRoadAt(roadPos, _tileSize)) return false;
 
 	Point newPos = from + dir * speed;
 	if(newPos.x <= - _width * _tileSize / 2.0f) newPos.x += _width * _tileSize;
@@ -283,7 +292,8 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	if(newPos.y <= - _height * _tileSize / 2.0f) newPos.y += _height * _tileSize;
 	else if(newPos.y >= _height * _tileSize / 2.0f) newPos.y -= _height * _tileSize;
 
-	Point newTilePos, newRoadPos;
+	Point_i newTilePos;
+	Point newRoadPos;
 	this->getPositions(newPos, newTilePos, newRoadPos);
 
 	Log::logger << Log::debug << "new tile " << getTileByCoords(newTilePos).type() << " "
@@ -308,6 +318,6 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	return false;
 }
 
-int LevelMap::distance(Point tile1, const Point &tile2) const {
+float LevelMap::distance(Point tile1, const Point &tile2) const {
 	return std::max(ABS(tile1.x - tile2.x), ABS(tile1.y - tile2.y));
 }

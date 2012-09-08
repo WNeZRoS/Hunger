@@ -10,6 +10,8 @@
 	#include <GL/wglext.h>
 #endif
 
+#include <windowsx.h>
+
 #define WINDOW_CLASS_NAME _T("SimpleGL")
 
 using namespace std;
@@ -387,25 +389,25 @@ LRESULT CALLBACK GlWindowsContext::WindowProc(HWND hWnd, UINT msg, WPARAM wParam
 		current->_running = false;
 		break;
 	case WM_MOUSEMOVE:
-		current->mouseMoveEvent(0, 0);
+		current->mouseMoveEvent(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_LBUTTONDOWN:
-		current->mouseKeyDownEvent(0);
+		current->mouseKeyDownEvent(Control::MOUSE_LEFT);
 		break;
 	case WM_LBUTTONUP:
-		current->mouseKeyUpEvent(0);
+		current->mouseKeyUpEvent(Control::MOUSE_LEFT);
 		break;
 	case WM_RBUTTONDOWN:
-		current->mouseKeyDownEvent(1);
+		current->mouseKeyDownEvent(Control::MOUSE_RIGHT);
 		break;
 	case WM_RBUTTONUP:
-		current->mouseKeyUpEvent(1);
+		current->mouseKeyUpEvent(Control::MOUSE_RIGHT);
 		break;
 	case WM_MBUTTONDOWN:
-		current->mouseKeyDownEvent(2);
+		current->mouseKeyDownEvent(Control::MOUSE_MIDDLE);
 		break;
 	case WM_MBUTTONUP:
-		current->mouseKeyUpEvent(2);
+		current->mouseKeyUpEvent(Control::MOUSE_MIDDLE);
 		break;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);

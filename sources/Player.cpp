@@ -1,10 +1,11 @@
 #include "Player.h"
-#include "Api/Logger.h"
 
 Player::Player(const Texture::Name texture) {
 	_sprite = TileSprite::create(TextureAtlas::Loader(texture, 4, 4), 0, 0, 10);
 
 	_speed = 3;
+	_moveDirection = 0;
+	_lastMoveTime = getCurrentTime();
 
 	_moveAnimationLeft.frames = new TileSprite::Animation::Frame[2];
 	_moveAnimationLeft.framesCount = 2;
@@ -29,14 +30,13 @@ Player::Player(const Texture::Name texture) {
 	_moveAnimationDown.loop = 1;
 	_moveAnimationDown.frames[0].tileId = 3; _moveAnimationDown.frames[0].delay = 150;
 	_moveAnimationDown.frames[1].tileId = 7; _moveAnimationDown.frames[1].delay = 150;
+
+	_controller = new PlayerController(this);
 }
 
 Player::~Player() {
 	delete _sprite;
-	delete [] _moveAnimationLeft.frames;
-	delete [] _moveAnimationRight.frames;
-	delete [] _moveAnimationUp.frames;
-	delete [] _moveAnimationDown.frames;
+	delete _controller;
 }
 
 void Player::onChangeWorld(const World *world) {
@@ -72,52 +72,95 @@ bool Player::isOverlap(const Point &start, const Point &end) const {
 	return false; // TODO
 }
 
-bool Player::move(int x, int y) {
-	Log::logger << Log::debug << "Pos: " << _position;
-	Point dir( x, y );
-	if(_map->moveInDirection(_position, dir, _speed)) {
+bool Player::moveInDirection(int x, int y) {
+	if(_moveDirection == 0) _lastMoveTime = getCurrentTime();
+	_moveDirection = Point_i(x % 2, y % 2);
+	return true;
+}
 
-		Point position = _position - (_tileSize / 2.0f);
+void Player::stop() {
+	_moveDirection = 0;
+}
+
+void Player::draw() {
+	this->move();
+	_sprite->draw();
+}
+
+void Player::move() {
+	Timestamp current = getCurrentTime();
+	if(_moveDirection == 0 || _lastMoveTime + 50 > current) return;
+
+	move((current - _lastMoveTime) / 50.0f * _moveDirection.x,
+		 (current - _lastMoveTime) / 50.0f * _moveDirection.y);
+	_lastMoveTime = current;
+}
+
+bool Player::move(float x, float y) {
+	Point dir( x, y );
+	Point position = _position;
+	Log::logger << Log::debug << "Pos: " << _position << " Dir: " << dir << " " << x << " " << y;
+	if(_map->moveInDirection(position, dir, _speed)) {
+		dir = position - _position; // mini bug: incert animation when go throught portal
+		_position = position;
+
+		if(dir.x < 0) _sprite->replaceAnimation(_moveAnimationLeft);
+		else if(dir.x > 0) _sprite->replaceAnimation(_moveAnimationRight);
+		else if(dir.y < 0) _sprite->replaceAnimation(_moveAnimationUp);
+		else if(dir.y > 0) _sprite->replaceAnimation(_moveAnimationDown);
+
+		position = _position - (_tileSize / 2.0f);
 		_map->globalCoordinatesToScreen(position, position);
 		_sprite->setPosition(position.x, position.y);
-
-		if(x == -1) _sprite->replaceAnimation(_moveAnimationLeft);
-		else if(x == 1) _sprite->replaceAnimation(_moveAnimationRight);
-		else if(y == -1) _sprite->replaceAnimation(_moveAnimationUp);
-		else if(y == 1) _sprite->replaceAnimation(_moveAnimationDown);
 
 		_world->updated(this);
 
 		return true;
 	}
 	return false;
-
-	//int wall = (_tileSize - _phisTileSize) / 2;
-	//int pts2 = _phisTileSize / 2 + wall / 1.5;
-	//int pts2w = _tileSize / 2 + wall / 3;
-
-	//Point position = { _x, _y };
-	//Point moveTo = { _x + x * _speed * _tileSize / 12, _y + y * _speed * _tileSize / 12 };
-
-	/*if(_map->isCanGoTo(position, moveTo)) {
-		//_x += x*_tileSize/12;
-		//_y += y*_tileSize/12;
-		_x = position.x;
-		_y = position.y;
-
-		if(_map->isOutOfBounds(_x, _y)) _map->setBackToMap(_x, _y);
-
-		Point pos = {_x - _tileSize / 2, _y - _tileSize / 2};
-		_map->globalCoordinatesToScreen(pos, pos);
-		_sprite->setPosition(pos.x, pos.y);
-
-		if(x == -1) _sprite->replaceAnimation(_moveAnimationLeft);
-		else if(x == 1) _sprite->replaceAnimation(_moveAnimationRight);
-		else if(y == -1) _sprite->replaceAnimation(_moveAnimationUp);
-		else if(y == 1) _sprite->replaceAnimation(_moveAnimationDown);
-	}*/
 }
 
-void Player::draw() const {
-	_sprite->draw();
+Player::PlayerController::PlayerController(Player *player) {
+	_player = player;
+	_moveX = _moveY = 0;
+
+	addControlEventForKey(Control::KEY_UP);
+	addControlEventForKey(Control::KEY_DOWN);
+	addControlEventForKey(Control::KEY_LEFT);
+	addControlEventForKey(Control::KEY_RIGHT);
+}
+
+Player::PlayerController::~PlayerController() {
+	Control::instance().removeEvent(this);
+}
+
+void Player::PlayerController::addControlEventForKey(Control::Keys key) {
+	Control::instance().addEvent(Control::STATE_DOWN, key, this,
+								 reinterpret_cast<Control::CallBackMethod>(&Player::PlayerController::keyDownEvent));
+	Control::instance().addEvent(Control::STATE_UP, key, this,
+								 reinterpret_cast<Control::CallBackMethod>(&Player::PlayerController::keyUpEvent));
+}
+
+void Player::PlayerController::keyDownEvent(const Control::Event &event, int x, int y) {
+	switch(event.key) {
+	case Control::KEY_UP: _moveY = -1; break;
+	case Control::KEY_DOWN: _moveY = 1; break;
+	case Control::KEY_LEFT: _moveX = -1; break;
+	case Control::KEY_RIGHT: _moveX = 1; break;
+	default: return;
+	}
+
+	_player->moveInDirection(_moveX, _moveY);
+}
+
+void Player::PlayerController::keyUpEvent(const Control::Event &event, int x, int y) {
+	switch(event.key) {
+	case Control::KEY_UP: if(_moveY == -1) _moveY = 0; break;
+	case Control::KEY_DOWN: if(_moveY == 1) _moveY = 0; break;
+	case Control::KEY_LEFT: if(_moveX == -1) _moveX = 0; break;
+	case Control::KEY_RIGHT: if(_moveX == 1) _moveX = 0; break;
+	default: return;
+	}
+
+	_player->moveInDirection(_moveX, _moveY);
 }

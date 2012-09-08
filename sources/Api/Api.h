@@ -8,6 +8,7 @@
 #include "Logger.h"
 #include "Map.h"
 #include "Point.h"
+#include "Random.h"
 #include "Sprite.h"
 #include "Texture.h"
 #include "TextureAtlas.h"
