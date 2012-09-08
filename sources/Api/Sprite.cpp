@@ -13,7 +13,7 @@ SpriteBase::~SpriteBase() {
 
 }
 
-void SpriteBase::setPosition(int x, int y) {
+void SpriteBase::setPosition(float x, float y) {
 	_x = x;
 	_y = y;
 }
@@ -22,16 +22,16 @@ void SpriteBase::setScale(float scale) {
 	_scale = scale;
 }
 
-void SpriteBase::getPosition(int &x, int &y) const {
+void SpriteBase::getPosition(float &x, float &y) const {
 	x = _x;
 	y = _y;
 }
 
-int SpriteBase::getX() const {
+float SpriteBase::getX() const {
 	return _x;
 }
 
-int SpriteBase::getY() const {
+float SpriteBase::getY() const {
 	return _y;
 }
 

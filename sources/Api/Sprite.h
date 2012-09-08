@@ -9,11 +9,11 @@ public:
 	virtual ~SpriteBase() = 0;
 	virtual void draw() = 0;
 
-	int getX() const;
-	int getY() const;
-	void getPosition(int &x, int &y) const;
+	float getX() const;
+	float getY() const;
+	void getPosition(float &x, float &y) const;
 
-	void setPosition(int x, int y);
+	void setPosition(float x, float y);
 	void setScale(float scale);
 
 protected:

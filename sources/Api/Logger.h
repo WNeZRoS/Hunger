@@ -57,7 +57,7 @@ public:
 
 	BasicLogger& operator << (const LOG_LEVEL& type) {
 #ifndef DEBUG
-		if(type == L_DEBUG) {
+		if(type == debug) {
 			return *this;
 		}
 #endif

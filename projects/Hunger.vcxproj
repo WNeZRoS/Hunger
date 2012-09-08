@@ -18,15 +18,21 @@
     <ClCompile Include="..\sources\Api\GlTexture.cpp" />
     <ClCompile Include="..\sources\Api\GlTextureManager.cpp" />
     <ClCompile Include="..\sources\Api\GlWindowsContext.cpp" />
+    <ClCompile Include="..\sources\Api\Logger.cpp" />
+    <ClCompile Include="..\sources\Api\Point.cpp" />
+    <ClCompile Include="..\sources\Api\Random.cpp" />
     <ClCompile Include="..\sources\Api\Sprite.cpp" />
+    <ClCompile Include="..\sources\Api\Texture.cpp" />
     <ClCompile Include="..\sources\Api\TextureAtlas.cpp" />
     <ClCompile Include="..\sources\Api\TextureManager.cpp" />
     <ClCompile Include="..\sources\Api\TgaTexture.cpp" />
     <ClCompile Include="..\sources\Api\TileSprite.cpp" />
     <ClCompile Include="..\sources\Api\World.cpp" />
+    <ClCompile Include="..\sources\Food.cpp" />
     <ClCompile Include="..\sources\LevelMap.cpp" />
     <ClCompile Include="..\sources\main.cpp" />
     <ClCompile Include="..\sources\Player.cpp" />
+    <ClCompile Include="..\sources\StickHud.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sources\Api\Api.h" />
@@ -38,7 +44,10 @@
     <ClInclude Include="..\sources\Api\GlTexture.h" />
     <ClInclude Include="..\sources\Api\GlTextureManager.h" />
     <ClInclude Include="..\sources\Api\GlWindowsContext.h" />
+    <ClInclude Include="..\sources\Api\Logger.h" />
     <ClInclude Include="..\sources\Api\Map.h" />
+    <ClInclude Include="..\sources\Api\Point.h" />
+    <ClInclude Include="..\sources\Api\Random.h" />
     <ClInclude Include="..\sources\Api\Render.h" />
     <ClInclude Include="..\sources\Api\Sprite.h" />
     <ClInclude Include="..\sources\Api\Texture.h" />
@@ -47,9 +56,11 @@
     <ClInclude Include="..\sources\Api\TgaTexture.h" />
     <ClInclude Include="..\sources\Api\TileSprite.h" />
     <ClInclude Include="..\sources\Api\World.h" />
+    <ClInclude Include="..\sources\Food.h" />
     <ClInclude Include="..\sources\LevelMap.h" />
     <ClInclude Include="..\sources\main.h" />
     <ClInclude Include="..\sources\Player.h" />
+    <ClInclude Include="..\sources\StickHud.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B9B75AC9-8F3A-494C-80FD-B355AD9D5EED}</ProjectGuid>

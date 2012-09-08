@@ -120,7 +120,7 @@ bool LevelMap::Tile::isRightCenter(const Point& pos, float halfSize) const {
 // LevelMap class
 
 LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
-				   const Point_i& playerSpawn, const Point_i& mobSpawn) {
+				   const Point_i& playerSpawn, const Point_i& mobSpawn, Array<Point_i> foodSpawn) {
 	if(!map || !tiles || width <= 0 || height <= 0) throw;
 
 	_map = map;
@@ -129,6 +129,7 @@ LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name 
 	_tiles = TextureAtlas::Loader(tiles, 8, 4).load();
 	_playerSpawn = playerSpawn;
 	_mobSpawn = mobSpawn;
+	_foodSpawn = foodSpawn;
 
 	_tileSize = 1;
 	_xOffset = 0;
@@ -165,10 +166,15 @@ LevelMap * LevelMap::load(const char *filename, const Texture::Name tiles) {
 	}
 
 	Point_i playerSpawn, mobSpawn;
-	file >> playerSpawn.x >> playerSpawn.y;
-	file >> mobSpawn.x >> mobSpawn.y;
+	file >> playerSpawn >> mobSpawn;
 
-	return new LevelMap(const_cast<const Tile**>(map), width, height, tiles, playerSpawn, mobSpawn);
+	Array<Point_i> foodSpawn;
+	file >> foodSpawn.size;
+	foodSpawn.rebuild(foodSpawn.size);
+	for(unsigned int i = 0; i < foodSpawn.size; i++)
+		file >> foodSpawn[i];
+
+	return new LevelMap(const_cast<const Tile**>(map), width, height, tiles, playerSpawn, mobSpawn, foodSpawn);
 }
 
 void LevelMap::fillScreen(int width, int height, int minTileSize) {
@@ -240,21 +246,26 @@ Point LevelMap::getMobSpawnPosition() const {
 	return pos;
 }
 
-void LevelMap::getRoads(Point*& roads, int& size) const {
+Array<Point> LevelMap::getFoodSpawns() const {
+	Array<Point> foodSpawn(_foodSpawn.size);
+	for(unsigned int i = 0; i < foodSpawn.size; i++) {
+		mapCoordinatesToGlobal(_foodSpawn[i], foodSpawn[i]);
+	}
+	return foodSpawn;
+}
+
+void LevelMap::getRoads(Array<Point>& roads) const {
 	vector<Point> vRoads;
-	for(int y = 1; y < _height - 1; y++)
-		for(int x = 1; x < _width - 1; x++)
-			if((_playerSpawn.x != x || _playerSpawn.y != y) && _map[y][x].isRoad()) {
-				Point_i ipoint(x, y);
+	for(Point_i i(1,1); i.y < _height - 1; i.y++)
+		for(i.x = 1; i.x < _width - 1; i.x++)
+			if(_playerSpawn != i && _map[i.y][i.x].isRoad() && !_foodSpawn.contains(i)) {
 				Point point;
-				mapCoordinatesToGlobal(ipoint, point);
-				Log::logger << Log::debug << ipoint << " -> " << point;
+				mapCoordinatesToGlobal(i, point);
+				//Log::logger << Log::debug << i << " -> " << point;
 				vRoads.push_back(point);
 			}
 
-	size = vRoads.size();
-	roads = new Point[size];
-	for(int i = 0; i < size; i++) roads[i] = vRoads.at(i);
+	roads.copy(vRoads.data(), vRoads.size());
 }
 
 void LevelMap::draw() const {
@@ -262,7 +273,6 @@ void LevelMap::draw() const {
 
 	for(int y = -_yOffset / _tileSize - 1; y + _tileSize > 0 && y <= _height; y++) {
 		for(int x = -_xOffset / _tileSize - 1; x + _tileSize > 0 && x <= _width; x++) {
-
 			_tiles->drawTile(_map[y >= _height ? _height - 1 : (y < 0 ? 0 : y)]
 												 [x >= _width ? _width - 1 : (x < 0 ? 0 : x)].type(),
 							 _xOffset + x * _tileSize, _yOffset + y * _tileSize, 0, _tileSize, _tileSize);

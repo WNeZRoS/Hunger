@@ -48,6 +48,20 @@
     <ClCompile Include="..\sources\Api\TgaTexture.cpp">
       <Filter>Api</Filter>
     </ClCompile>
+    <ClCompile Include="..\sources\Food.cpp" />
+    <ClCompile Include="..\sources\StickHud.cpp" />
+    <ClCompile Include="..\sources\Api\Logger.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\Point.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\Random.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\Texture.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sources\Api\World.h">
@@ -105,6 +119,17 @@
       <Filter>Api</Filter>
     </ClInclude>
     <ClInclude Include="..\sources\Api\TgaTexture.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Food.h" />
+    <ClInclude Include="..\sources\StickHud.h" />
+    <ClInclude Include="..\sources\Api\Logger.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Point.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Random.h">
       <Filter>Api</Filter>
     </ClInclude>
   </ItemGroup>

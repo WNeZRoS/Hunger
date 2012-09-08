@@ -32,14 +32,17 @@ bool Main::initialize() {
 	_player = new Player("player");
 	world->addEntity(_player);
 
-	Point *roads;
-	int roadCount = 0;
-	_map->getRoads(roads, roadCount);
-	int values[4] = { 0, 1, 2, 3 };
-	int chances[4] = { 75, 10, 5, 10 };
-	for(int i = 0; i < roadCount; i++) {
-		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2),
-								  Random::rand(values, chances, 4), roads[i]));
+	Array<Point> roads;
+	_map->getRoads(roads);
+	for(unsigned int i = 0; i < roads.size; i++) {
+		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), 0, roads[i]));
+	}
+
+	int values[3] = { 1, 2, 3 };
+	int chances[3] = { 40, 20, 40 };
+	Array<Point> foods = _map->getFoodSpawns();
+	for(unsigned int i = 0; i < foods.size; i++) {
+		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), Random::rand(values, chances, 3), foods[i]));
 	}
 
 	return true;

@@ -102,8 +102,7 @@ void Control::idle() {
 
 void Control::drawHud() const {
 	for(std::vector<Hud*>::const_iterator it = _huds.begin(); it != _huds.end(); it++) {
-		Hud *h = *it;
-		if(h->isVisible()) h->draw();
+		if((*it)->isVisible()) (*it)->draw();
 	}
 }
 

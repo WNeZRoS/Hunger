@@ -13,8 +13,6 @@ public:
 	static void unload(const Texture* texture, const char *sourcename, int line);
 };
 
-// TODO: for better work need use texturename instead texture for construct other clases
-
 class TextureManager
 {
 public:

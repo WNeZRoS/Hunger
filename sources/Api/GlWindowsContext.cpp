@@ -347,6 +347,7 @@ int GlWindowsContext::mainLoop() {
 			Control::instance().idle();
 			drawEvent();
 			SwapBuffers(_hDC);
+			Sleep(2);
 		}
 	}
 
@@ -417,11 +418,11 @@ void GlWindowsContext::activateEvent(bool activate) { }
 void GlWindowsContext::closeEvent() { }
 
 void GlWindowsContext::gotFocusEvent() {
-	_render->resumeRender();
+	if(_render) _render->resumeRender();
 }
 
 void GlWindowsContext::lostFocusEvent() {
-	_render->stopRender();
+	if(_render) _render->stopRender();
 }
 
 void GlWindowsContext::keyDownEvent(int key) {
@@ -480,5 +481,5 @@ void GlWindowsContext::mouseKeyUpEvent(int key) {
 }
 
 void GlWindowsContext::drawEvent() const {
-	_render->render();
+	if(_render) _render->render();
 }

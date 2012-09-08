@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <cmath>
 
 Player::Player(const Texture::Name texture) {
 	_sprite = TileSprite::create(TextureAtlas::Loader(texture, 4, 4), 0, 0, 10);
@@ -101,11 +102,14 @@ bool Player::move(float x, float y) {
 	Point position = _position;
 	Log::logger << Log::debug << "Pos: " << _position << " Dir: " << dir << " " << x << " " << y;
 	if(_map->moveInDirection(position, dir, _speed)) {
-		dir = position - _position; // mini bug: incert animation when go throught portal
+		dir = position - _position;
+		if(dir.x > 100 || dir.x < -100) dir.x *= -1;
+		if(dir.y > 100 || dir.y < -100) dir.y *= -1;
+
 		_position = position;
 
-		if(dir.x < 0) _sprite->replaceAnimation(_moveAnimationLeft);
-		else if(dir.x > 0) _sprite->replaceAnimation(_moveAnimationRight);
+		if(dir.x < 0 && std::abs(dir.x) > std::abs(dir.y)) _sprite->replaceAnimation(_moveAnimationLeft);
+		else if(dir.x > 0  && std::abs(dir.x) > std::abs(dir.y)) _sprite->replaceAnimation(_moveAnimationRight);
 		else if(dir.y < 0) _sprite->replaceAnimation(_moveAnimationUp);
 		else if(dir.y > 0) _sprite->replaceAnimation(_moveAnimationDown);
 

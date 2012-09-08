@@ -35,7 +35,6 @@ void Texture::atlasUnload() const {
 	if(_atlasUsage == 0) {
 		delete _atlas;
 		_atlas = 0;
-		UNLOAD_TEXTURE(this);
 	}
 	if(_atlasUsage < 0) Log::logger << Log::warning << "Atlas usage is lower that zero";
 }

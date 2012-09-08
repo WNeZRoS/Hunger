@@ -35,6 +35,7 @@ TextureAtlas::~TextureAtlas() {
 
 void TextureAtlas::unload() const {
 	_texture->atlasUnload();
+	UNLOAD_TEXTURE(_texture);
 }
 
 void TextureAtlas::drawTile(int tileId, float x, float y, float z, float width, float height) const {

@@ -72,8 +72,7 @@ void World::draw() {
 
 	for(int c = Entity::START; c != Entity::END; c++) {
 		for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
-			Entity* e = *it;
-			if(e->getCategory() == c) e->draw();
+			if((*it)->getCategory() == c) (*it)->draw();
 		}
 	}
 }
