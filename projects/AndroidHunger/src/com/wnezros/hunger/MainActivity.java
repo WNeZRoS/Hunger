@@ -74,7 +74,6 @@ public class MainActivity extends Activity {
 			try {
 				InputStream in = getAssets().open(filename);
 				File outFile = new File(dataPath, filename);
-				outFile.createNewFile();
 				OutputStream out = new FileOutputStream(outFile);
 				copyFile(in, out);
 				in.close();
@@ -82,6 +81,7 @@ public class MainActivity extends Activity {
 				out.close();
 			} catch(Exception e) {
 				Log.e("Hunger", "Copy error: " + e.getMessage());
+				e.printStackTrace();
 				return false;
 			}       
 		}

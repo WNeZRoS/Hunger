@@ -1,6 +1,9 @@
 #include "StickHud.h"
 #include "Api/Render.h"
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 StickHud::StickHud() {
 	_startX = _startY = -1;
 	_currentX = _currentY = 50;
@@ -37,14 +40,22 @@ void StickHud::update(int x, int y) {
 	_currentX = x;
 	_currentY = y;
 
-	int dx = _currentX - _startX;
-	int dy = _currentY - _startY;
+	float dx = _startX - _currentX;
+	float dy = _startY - _currentY;
+	float dg = std::sqrt(dx * dx + dy * dy);
 
-	bool pressed[4];
-	pressed[0] = dy < -_sensivity;
-	pressed[1] = dx > _sensivity;
-	pressed[2] = dy > _sensivity;
-	pressed[3] = dx < -_sensivity;
+	static const float pi8 = M_PI / 8;
+
+	bool pressed[4] = { false, false, false, false };
+	if(dg >= _sensivity) {
+		dx = std::acos(dx / dg); //		in [     0, PI   ]
+		//dy = std::asin(dy / dg); // 	in [ -PI/2, PI/2 ]
+		dg = dy / std::abs(dy) * dx; //	in [   -PI, PI   ]
+		pressed[0] = dg > pi8 && dg <= pi8*7;
+		pressed[1] = dg > pi8*5 || dg <= -pi8*5;
+		pressed[2] = dg > -pi8*7 && dg <= -pi8;
+		pressed[3] = dg > -pi8*3 && dg <= pi8*3;
+	}
 
 	for(int i = 0; i < 4; i++)
 		if(pressed[i] != _pressed[i]) {
