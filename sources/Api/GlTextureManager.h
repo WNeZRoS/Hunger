@@ -7,15 +7,7 @@
 class GlTextureManager : public TextureManager
 {
 public:
-	/** Create instance of GlTextureManager or get instance of TextureManager.
-
-	  @param texturesPath
-	  Default path to find textures, used only for create instace and later not used.
-	  Default value is `pwd`.
-
-	  @return Instance of TextureManager
-	  */
-	static TextureManager * instance(const char *texturesPath = "./");
+	static TextureManager * instance();
 
 private:
 	struct Extension
@@ -24,7 +16,7 @@ private:
 		GlTexture::LoaderMethod method;
 	};
 
-	GlTextureManager(const char *texturesPath = "./");
+	GlTextureManager();
 	Texture * loadTexture(const char *textureFilePath);
 };
 

@@ -4,7 +4,7 @@
 Player::Player(const Texture::Name texture) {
 	_sprite = TileSprite::create(TextureAtlas::Loader(texture, 4, 4), 0, 0, 10);
 
-	_speed = 3;
+	_speed = 1;
 	_moveDirection = 0;
 	_lastMoveTime = getCurrentTime();
 
@@ -43,14 +43,20 @@ Player::~Player() {
 void Player::onChangeWorld(const World *world) {
 	_world = const_cast<World*>(world);
 	_map = reinterpret_cast<LevelMap*>(world->getMap());
-	_tileSize = _map->getTileSize();
-	_position = _map->getPlayerSpawnPosition();
-	_position += (_tileSize / 2.0f);
+	if(!_map) return;
+	_position = _map->getPlayerSpawnPosition() + (_map->getOne() / 2.0f);
+	_speed = _map->getOne() / 15.0f;
+}
 
-	Point pos = _position - (_tileSize / 2.0f);
-	_map->globalCoordinatesToScreen(pos, pos);
-	_sprite->setPosition(pos.x, pos.y);
+void Player::onResize(const World *world) {
+	_world->setCenter(_position.x, _position.y);
 	_sprite->setScale(_map->getTileSize());
+}
+
+void Player::onWorldScroll(const World *world) {
+	Point position = _position - (_map->getOne() / 2.0f);
+	_map->globalCoordinatesToScreen(position, position);
+	_sprite->setPosition(position.x, position.y);
 }
 
 void Player::onOverlapBy(const Entity *overlap, const World *world) {
@@ -62,7 +68,7 @@ const Entity::Category Player::getCategory() const {
 }
 
 int Player::getPhysSize() const {
-	return _tileSize;
+	return _map ? _map->getOne() : 1;
 }
 
 bool Player::isOverlap(const Point &center, int radius) const {
@@ -113,10 +119,8 @@ bool Player::move(float x, float y) {
 		else if(dir.y < 0) _sprite->replaceAnimation(_moveAnimationUp);
 		else if(dir.y > 0) _sprite->replaceAnimation(_moveAnimationDown);
 
-		position = _position - (_tileSize / 2.0f);
-		_map->globalCoordinatesToScreen(position, position);
-		_sprite->setPosition(position.x, position.y);
-
+		onWorldScroll(_world);
+		_world->setCenter(_position.x, _position.y);
 		_world->updated(this);
 
 		return true;

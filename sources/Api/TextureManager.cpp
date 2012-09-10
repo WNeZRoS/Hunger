@@ -9,13 +9,7 @@ TextureManager * TextureManager::instance() {
 	return _TextureManagerInstance;
 }
 
-TextureManager::TextureManager(const char *texturesPath) {
-	if(texturesPath) {
-		_texturesPath = const_cast<char*>(texturesPath);
-	} else {
-		_texturesPath = new char[3];
-		std::strcpy(_texturesPath, "./");
-	}
+TextureManager::TextureManager() {
 }
 
 TextureManager::~TextureManager() {
@@ -36,10 +30,7 @@ Texture * TextureManager::load(const char *textureName) {
 		}
 	}
 
-	std::string texturePath(_texturesPath);
-	texturePath += textureName;
-
-	Texture *texture = loadTexture(texturePath.c_str());
+	Texture *texture = loadTexture(textureName);
 	if(texture) {
 		TextureInfo info;
 		info.texture = texture;
@@ -71,11 +62,13 @@ void TextureManager::unload(const Texture *texture) {
 }
 
 Texture * TextureManagerWrapper::load(const char *texturename, const char *sourcename, int line) {
-	Log::logger << Log::debug << "Load texture '" << texturename << "' from " << sourcename << ":" << line;
+	Log::logger << Log::debug << "Load texture '" << texturename << "' from "
+				<< (sourcename == NULL ? "unksrc" : sourcename) << ":" << line;
 	return TextureManager::instance()->load(texturename);
 }
 
 void TextureManagerWrapper::unload(const Texture* texture, const char *sourcename, int line) {
-	Log::logger << Log::debug << "Unload texture from " << sourcename << ":" << line;
+	Log::logger << Log::debug << "Unload texture from "
+				<< (sourcename == NULL ? "unksrc" : sourcename) << ":" << line;
 	return TextureManager::instance()->unload(texture);
 }

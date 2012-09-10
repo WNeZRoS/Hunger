@@ -4,12 +4,12 @@
 #include "compatibility.h"
 #include <string>
 
-GlTextureManager::GlTextureManager(const char *texturesPath) : TextureManager(texturesPath) {
+GlTextureManager::GlTextureManager() : TextureManager() {
 }
 
-TextureManager * GlTextureManager::instance(const char *texturesPath) {
+TextureManager * GlTextureManager::instance() {
 	if(!_TextureManagerInstance)
-		_TextureManagerInstance = new GlTextureManager(texturesPath);
+		_TextureManagerInstance = new GlTextureManager();
 	return _TextureManagerInstance;
 }
 

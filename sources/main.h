@@ -12,6 +12,7 @@ public:
 
 	bool initialize();
 	int work();
+	void cleanup();
 
 private:
 

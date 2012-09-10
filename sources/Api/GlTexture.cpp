@@ -2,10 +2,7 @@
 #include "TextureAtlas.h"
 #include "Logger.h"
 
-#ifdef WIN32
-#include <Windows.h>
-#endif
-#include <GL/gl.h>
+#include "GL/importgl.h"
 
 GlTexture::GlTexture(const char *imageData, GLuint type, int width, int height) {
 	glGenTextures(1, &_id);

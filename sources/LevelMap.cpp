@@ -1,6 +1,6 @@
 #include "LevelMap.h"
+#include "Api/FileManager.h"
 #include <cmath>
-#include <fstream>
 #include <vector>
 
 using namespace std;
@@ -120,7 +120,7 @@ bool LevelMap::Tile::isRightCenter(const Point& pos, float halfSize) const {
 // LevelMap class
 
 LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
-				   const Point_i& playerSpawn, const Point_i& mobSpawn, Array<Point_i> foodSpawn) {
+				   const Point_i& playerSpawn, const Point_i& mobSpawn, Array<Point_i>& foodSpawn) {
 	if(!map || !tiles || width <= 0 || height <= 0) throw;
 
 	_map = map;
@@ -145,16 +145,18 @@ LevelMap::~LevelMap() {
 }
 
 LevelMap * LevelMap::load(const char *filename, const Texture::Name tiles) {
-	ifstream file(filename, ios::in);
-	if(!file.is_open()) {
+	ifstream *file = FileManager::instance().read(filename);
+	if(!file || !file->is_open()) {
 		Log::logger << Log::error << "Can't load file: " << filename;
+		if(file) delete file;
 		return NULL;
 	}
 	int width, height;
-	file >> width >> height;
+	*file >> width >> height;
 
 	if(width <= 0 || height <= 0) {
 		Log::logger << Log::error << "Width/Height <= 0";
+		delete file;
 		return NULL;
 	}
 
@@ -162,18 +164,19 @@ LevelMap * LevelMap::load(const char *filename, const Texture::Name tiles) {
 
 	for(int y = 0; y < height; y++) {
 		map[y] = new Tile[width];
-		for(int x = 0; x < width; x++) file >> map[y][x];
+		for(int x = 0; x < width; x++) *file >> map[y][x];
 	}
 
 	Point_i playerSpawn, mobSpawn;
-	file >> playerSpawn >> mobSpawn;
+	*file >> playerSpawn >> mobSpawn;
 
 	Array<Point_i> foodSpawn;
-	file >> foodSpawn.size;
+	*file >> foodSpawn.size;
 	foodSpawn.rebuild(foodSpawn.size);
 	for(unsigned int i = 0; i < foodSpawn.size; i++)
-		file >> foodSpawn[i];
+		*file >> foodSpawn[i];
 
+	delete file;
 	return new LevelMap(const_cast<const Tile**>(map), width, height, tiles, playerSpawn, mobSpawn, foodSpawn);
 }
 
@@ -192,42 +195,42 @@ void LevelMap::setTileSize(int size) {
 	_tileSize = size;
 }
 
-void LevelMap::setCenter(int x, int y) {
-	if(_xOffset < 0) {
-		_xOffset = (_screenWidth - _tileSize * _width ) / 2 + x;
+void LevelMap::setCenter(float x, float y) {
+	if(_xOffset <= 0) {
+		_xOffset = (_screenWidth - _tileSize * _width ) / 2 - x;
 		if(_xOffset > 0) _xOffset = 0;
 		else if(_xOffset < _screenWidth - _tileSize * _width)
 			_xOffset = _screenWidth - _tileSize * _width;
 	}
-	if(_yOffset < 0) {
-		_yOffset = (_screenHeight - _tileSize * _height) / 2 + y;
+	if(_yOffset <= 0) {
+		_yOffset = (_screenHeight - _tileSize * _height) / 2 - y;
 		if(_yOffset > 0) _yOffset = 0;
 		else if(_yOffset < _screenHeight - _tileSize * _height)
 			_yOffset = _screenHeight - _tileSize * _height;
 	}
 }
 
-void LevelMap::globalCoordinatesToMap(const Point& coord, Point_i& map) const {
-	Point mapf(coord.x / _tileSize + _width / 2.0f, coord.y / _tileSize + _height / 2.0f);
-	if(mapf.x < 0) mapf.x = 0; else if(mapf.x >= _width) mapf.x = _width - 1;
-	if(mapf.y < 0) mapf.y = 0; else if(mapf.y >= _height) mapf.y = _height - 1;
-	map = mapf.toPoint_i();
-	//map.x = (_tileSize * _width / 2.0f) + coord.x;
-	//map.y = (_tileSize * _height / 2.0f) + coord.y;
-	//map.x /= _tileSize;
-	//map.y /= _tileSize;
-	//if(map.x < 0) map.x = 0; else if(map.x >= _width) map.x = _width - 1;
-	//if(map.y < 0) map.y = 0; else if(map.y >= _height) map.y = _height - 1;
+float LevelMap::getOne() const {
+	return 10.0f;
 }
 
 void LevelMap::globalCoordinatesToScreen(const Point& global, Point& screen) const {
-	screen.x = global.x + (_tileSize * _width / 2.0f) + _xOffset;
-	screen.y = global.y + (_tileSize * _height / 2.0f) + _yOffset;
+	//(1.0f * map.x - _width / 2.0f) =
+	// _xOffset + (x * _tileSize) = _xOffset + ( ( px + _width / 2.0f ) * _tileSize )
+	screen.x = ( global.x / getOne() + _width / 2.0f) * _tileSize + _xOffset;
+	screen.y = ( global.y / getOne() + _height / 2.0f) * _tileSize + _yOffset;
+}
+
+void LevelMap::globalCoordinatesToMap(const Point& coord, Point_i& map) const {
+	Point mapf(coord.x / getOne() + _width / 2.0f, coord.y / getOne() + _height / 2.0f);
+	if(mapf.x < 0) mapf.x = 0; else if(mapf.x >= _width) mapf.x = _width - 1;
+	if(mapf.y < 0) mapf.y = 0; else if(mapf.y >= _height) mapf.y = _height - 1;
+	map = mapf.toPoint_i();
 }
 
 void LevelMap::mapCoordinatesToGlobal(const Point_i& map, Point& coord) const {
-	coord.x = (1.0f * map.x - _width / 2.0f) * _tileSize;
-	coord.y = (1.0f * map.y - _height / 2.0f) * _tileSize;
+	coord.x = (1.0f * map.x - _width / 2.0f) * getOne();
+	coord.y = (1.0f * map.y - _height / 2.0f) * getOne();
 }
 
 const LevelMap::Tile& LevelMap::getTileByCoords(const Point_i& coord) const {
@@ -265,14 +268,14 @@ void LevelMap::getRoads(Array<Point>& roads) const {
 				vRoads.push_back(point);
 			}
 
-	roads.copy(vRoads.data(), vRoads.size());
+	roads.copy(&vRoads.at(0), vRoads.size());
 }
 
 void LevelMap::draw() const {
 	if(!_map || !_tiles) return;
 
-	for(int y = -_yOffset / _tileSize - 1; y + _tileSize > 0 && y <= _height; y++) {
-		for(int x = -_xOffset / _tileSize - 1; x + _tileSize > 0 && x <= _width; x++) {
+	for(int y = -_yOffset / _tileSize - 1; y * _tileSize <= _screenHeight; y++) {
+		for(int x = -_xOffset / _tileSize - 1; x * _tileSize <= _screenWidth; x++) {
 			_tiles->drawTile(_map[y >= _height ? _height - 1 : (y < 0 ? 0 : y)]
 												 [x >= _width ? _width - 1 : (x < 0 ? 0 : x)].type(),
 							 _xOffset + x * _tileSize, _yOffset + y * _tileSize, 0, _tileSize, _tileSize);
@@ -292,15 +295,15 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	this->getPositions(from, fromTilePos, roadPos);
 
 	Log::logger << Log::debug << "from tile " << getTileByCoords(fromTilePos).type() << " "
-				<< fromTilePos << " road pos " << roadPos << " " << _tileSize;
+				<< fromTilePos << " road pos " << roadPos;
 
 	//if(!getTileByCoords(fromTilePos).haveRoadAt(roadPos, _tileSize)) return false;
 
 	Point newPos = from + dir * speed;
-	if(newPos.x <= - _width * _tileSize / 2.0f) newPos.x += _width * _tileSize;
-	else if(newPos.x >= _width * _tileSize / 2.0f) newPos.x -= _width * _tileSize;
-	if(newPos.y <= - _height * _tileSize / 2.0f) newPos.y += _height * _tileSize;
-	else if(newPos.y >= _height * _tileSize / 2.0f) newPos.y -= _height * _tileSize;
+	if(newPos.x <= - _width * getOne() / 2.0f) newPos.x += _width * getOne();
+	else if(newPos.x >= _width * getOne() / 2.0f) newPos.x -= _width * getOne();
+	if(newPos.y <= - _height * getOne() / 2.0f) newPos.y += _height * getOne();
+	else if(newPos.y >= _height * getOne() / 2.0f) newPos.y -= _height * getOne();
 
 	Point_i newTilePos;
 	Point newRoadPos;
@@ -309,13 +312,13 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	Log::logger << Log::debug << "new tile " << getTileByCoords(newTilePos).type() << " "
 				<< newTilePos << " road pos " << newRoadPos;
 
-	if(getTileByCoords(newTilePos).haveRoadAt(newRoadPos, _tileSize)) {
+	if(getTileByCoords(newTilePos).haveRoadAt(newRoadPos, getOne())) {
 		from = newPos;
 		return true;
 	}
 
 	roadPos = newRoadPos;
-	if(getTileByCoords(newTilePos).canSetToRoad(roadPos, _tileSize)) {
+	if(getTileByCoords(newTilePos).canSetToRoad(roadPos, getOne())) {
 		Log::logger << Log::debug << "delta road " << (roadPos.x - newRoadPos.x) << " " << (roadPos.y - newRoadPos.y);
 		Point newPos2 = newPos + roadPos - newRoadPos;
 		if(newPos != newPos2 && newPos2 != from) {

@@ -48,11 +48,8 @@ public:
 	};
 
 	LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
-			 const Point_i& playerSpawn, const Point_i& mobSpawn, Array<Point_i> foodSpawn);
+			 const Point_i& playerSpawn, const Point_i& mobSpawn, Array<Point_i>& foodSpawn);
 	~LevelMap();
-
-	void fillScreen(int width, int height, int minTileSize = 16);
-	void setCenter(int x, int y);
 
 	static LevelMap * load(const char *filename, const Texture::Name tiles);
 
@@ -63,6 +60,7 @@ public:
 	Array<Point> getFoodSpawns() const;
 	void getRoads(Array<Point>& roads) const;
 
+	float getOne() const;
 	void globalCoordinatesToMap(const Point& coord, Point_i& map) const;
 	void globalCoordinatesToScreen(const Point& global, Point& screen) const;
 	void mapCoordinatesToGlobal(const Point_i& map, Point& coord) const;
@@ -76,6 +74,8 @@ private:
 	Array<Point_i> _foodSpawn;
 	TextureAtlas *_tiles;
 
+	void fillScreen(int width, int height, int minTileSize);
+	void setCenter(float x, float y);
 	void setTileSize(int size);
 
 	const Tile& getTileByCoords(const Point_i& coord) const;

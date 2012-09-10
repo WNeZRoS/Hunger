@@ -19,6 +19,12 @@
 
 typedef unsigned long long Timestamp;
 
+#ifdef __cplusplus
+#define EXTERN_C extern "C"
+#else
+#define EXTERN_C
+#endif
+
 struct Time {
 	unsigned short year;
 	unsigned short month;
@@ -33,6 +39,7 @@ struct Time {
 Timestamp getCurrentTime();
 void getTime(Time& time);
 bool equal(float a, float b);
+void msSleep(unsigned int millis);
 
 template <typename T>
 struct Array

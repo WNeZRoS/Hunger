@@ -13,6 +13,8 @@ public:
 	void draw();
 
 	void onChangeWorld(const World *world);
+	void onResize(const World *world);
+	void onWorldScroll(const World *world);
 	void onOverlapBy(const Entity *overlap, const World *world);
 	const Category getCategory() const;
 	int getPhysSize() const;
@@ -23,6 +25,7 @@ private:
 	LevelMap *_map;
 	TextureAtlas *_atlas;
 	int _tileId;
+	Point _screenPosition;
 };
 
 #endif // FOOD_H

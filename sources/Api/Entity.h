@@ -21,6 +21,8 @@ public:
 
 	virtual void draw() = 0;
 	virtual void onChangeWorld(const World *world) = 0;
+	virtual void onResize(const World *world) = 0;
+	virtual void onWorldScroll(const World *world) = 0;
 	virtual void onOverlapBy(const Entity *overlap, const World *world) = 0;
 
 	virtual bool isOverlap(const Point& center, int radius) const = 0;

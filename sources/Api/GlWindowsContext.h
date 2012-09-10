@@ -25,6 +25,7 @@ public:
 		FULLSCREEN_MODE_FAIL
 	};
 
+	GlWindowsContext(const XCHAR *title, int width, int height);
 	GlWindowsContext(const XCHAR *title, int width, int height, bool fullscreen);
 	GlWindowsContext(const XCHAR *title, int width, int height, int x, int y);
 	GlWindowsContext(const XCHAR *title, int width, int height, int glMajor, int glMinor, bool fullscreen);
@@ -39,16 +40,17 @@ public:
 	void setFullscreen(bool fullscreen);
 
 protected:
-	virtual void keyDownEvent(int key);
-	virtual void keyUpEvent(int key);
-	virtual void closeEvent();
-	virtual void gotFocusEvent();
-	virtual void lostFocusEvent();
-	virtual void activateEvent(bool activate);
-	virtual void mouseMoveEvent(int x, int y);
-	virtual void mouseKeyDownEvent(int key);
-	virtual void mouseKeyUpEvent(int key);
-	virtual void drawEvent() const;
+	void keyDownEvent(int key);
+	void keyUpEvent(int key);
+	void closeEvent();
+	void gotFocusEvent();
+	void lostFocusEvent();
+	void activateEvent(bool activate);
+	void mouseMoveEvent(int x, int y);
+	void mouseKeyDownEvent(int key);
+	void mouseKeyUpEvent(int key);
+	void drawEvent() const;
+	void resizeEvent(int width, int height);
 
 private:
 

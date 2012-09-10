@@ -5,6 +5,7 @@
 #include "Render.h"
 #include "Control.h"
 #include "Entity.h"
+#include "FileManager.h"
 #include "Logger.h"
 #include "Map.h"
 #include "Point.h"
@@ -18,7 +19,12 @@
 
 #ifdef OPENGL
 	#ifdef WIN32
-	#include "GlWindowsContext.h"
+		#include "GlWindowsContext.h"
+		typedef GlWindowsContext AppContext;
+	#endif
+	#ifdef ANDROID_NDK
+		#include "GlAndroidContext.h"
+		typedef GlAndroidContext AppContext;
 	#endif
 #endif
 

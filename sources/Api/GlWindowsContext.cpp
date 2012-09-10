@@ -3,20 +3,32 @@
 #include "Control.h"
 #include "Logger.h"
 
-#include <GL/gl.h>
-#include <GL/glext.h>
-
-#ifdef WIN32
-	#include <GL/wglext.h>
-#endif
+#include "GL/importgl.h"
 
 #include <windowsx.h>
 
 #define WINDOW_CLASS_NAME _T("SimpleGL")
+#define WINDOW_STYLE WS_CAPTION | WS_SYSMENU | WS_SIZEBOX
 
 using namespace std;
 
 GlWindowsContext **GlWindowsContext::s_windows = NULL;
+
+GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height) {
+	if(title == NULL) throw TITLE_IS_NULL;
+	if(width <= 0) throw WIDTH_UNDER_ZERO;
+	if(height <= 0) throw HEIGHT_UNDER_ZERO;
+
+	createWindow(title, width, height);
+	createGraphicContext();
+	printGraphicInformation();
+
+	_render = new GlRender(width, height);
+
+	setResolution(width, height);
+
+	addMeToWindowsList();
+}
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, bool fullscreen) {
 	if(title == NULL) throw TITLE_IS_NULL;
@@ -159,7 +171,7 @@ void GlWindowsContext::createWindow(const XCHAR *title, int width, int height, i
 	if(!RegisterClassEx(&wcx)) throw REGISTER_CLASS_FAIL;
 
 	// window's styles
-	DWORD style = WS_CAPTION | WS_SYSMENU;
+	DWORD style = WINDOW_STYLE;
 	DWORD exStyle = WS_EX_APPWINDOW;
 
 	if(x == -1) x = (GetSystemMetrics(SM_CXSCREEN) - width)  / 2;
@@ -272,7 +284,7 @@ void GlWindowsContext::setResolution(int width, int height) {
 
 		x = y = 0;
 	} else {
-		style = WS_CAPTION | WS_SYSMENU;
+		style = WINDOW_STYLE;
 		exStyle = WS_EX_APPWINDOW;
 
 		x = (GetSystemMetrics(SM_CXSCREEN) - width)  / 2;
@@ -410,6 +422,9 @@ LRESULT CALLBACK GlWindowsContext::WindowProc(HWND hWnd, UINT msg, WPARAM wParam
 	case WM_MBUTTONUP:
 		current->mouseKeyUpEvent(Control::MOUSE_MIDDLE);
 		break;
+	case WM_SIZE:
+		current->resizeEvent(LOWORD(lParam), HIWORD(lParam));
+		break;
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -482,4 +497,10 @@ void GlWindowsContext::mouseKeyUpEvent(int key) {
 
 void GlWindowsContext::drawEvent() const {
 	if(_render) _render->render();
+}
+
+void GlWindowsContext::resizeEvent(int width, int height) {
+	_params.width = width;
+	_params.height = height;
+	_render->setResolution(width, height);
 }

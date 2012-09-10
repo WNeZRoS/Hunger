@@ -10,14 +10,17 @@ public:
 	class GlPainter : public Painter
 	{
 	public:
+		GlPainter();
 		~GlPainter();
-		void setColor(char r, char g, char b, char a = 0xFF);
+		void setColor(char r, char g, char b, char a);
 		void setLineWidth(int width);
-		void pixel(float x, float y, float z = 99.0f) const;
-		void line(float fromX, float fromY, float toX, float toY, float z = 99.0f) const;
-		void rect(float fromX, float fromY, float toX, float toY, float z = 99.0f, bool fill = true) const;
-		void rectx(float fromX, float fromY, float toX, float toY, float z = 99.0f,
-				  float fromTexX = 0, float fromTexY = 0, float toTexX = 1, float toTexY = 1) const;
+		void pixel(float x, float y, float z) const;
+		void line(float fromX, float fromY, float toX, float toY, float z) const;
+		void rect(float fromX, float fromY, float toX, float toY, float z, bool fill) const;
+		void rectx(float fromX, float fromY, float toX, float toY, float z,
+				  float fromTexX, float fromTexY, float toTexX, float toTexY) const;
+	private:
+		char _color[4][4];
 	};
 
 	GlRender(int width, int height);

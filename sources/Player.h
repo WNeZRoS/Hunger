@@ -16,6 +16,8 @@ public:
 	void draw();
 
 	void onChangeWorld(const World *world);
+	void onResize(const World *world);
+	void onWorldScroll(const World *world);
 	void onOverlapBy(const Entity *overlap, const World *world);
 	const Category getCategory() const;
 	int getPhysSize() const;
@@ -47,7 +49,6 @@ private:
 	TileSprite::Animation _moveAnimationLeft, _moveAnimationRight, _moveAnimationUp, _moveAnimationDown;
 	PlayerController *_controller;
 
-	int _tileSize;
 	float _speed;
 	Point_i _moveDirection;
 	Timestamp _lastMoveTime;

@@ -21,6 +21,7 @@ public:
 	Entity * getEntity(int id) const;
 	unsigned int getEntitiesCount() const;
 
+	void setCenter(float x, float y);
 	void setScreenSize(int width, int height);
 
 	void updated(const Entity *upd);

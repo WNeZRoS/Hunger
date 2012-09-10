@@ -5,8 +5,9 @@ Food::Food(const TextureAtlas::Loader atlas, int tileId, const Point& position) 
 	_tileId = tileId;
 	_position = position;
 	_map = NULL;
+	_screenPosition = 0;
 
-	Log::logger << Log::debug << "new food at " << _position << " not " << position;
+	//Log::logger << Log::debug << "new food at " << _position << " not " << position;
 }
 
 Food::~Food() {
@@ -14,11 +15,19 @@ Food::~Food() {
 }
 
 void Food::onChangeWorld(const World *world) {
-	if(_map) _position -= _map->getTileSize() / 2.0f;
-	Log::logger << Log::debug << "food have new world " << _position;
+	if(_map) _position -= _map->getOne() / 2;
 	_map = reinterpret_cast<LevelMap*>(world->getMap());
-	if(_map) _position += _map->getTileSize() / 2.0f;
-	Log::logger << Log::debug << "=> " << _map->getTileSize() << " " << _map->getTileSize() / 2.0f << " " << _position;
+	if(_map) _position += _map->getOne() / 2.0f;
+}
+
+void Food::onResize(const World *world) {
+
+}
+
+void Food::onWorldScroll(const World *world) {
+	if(!_map) return;
+	_screenPosition = _position - (_map->getOne() / 2.0f);
+	_map->globalCoordinatesToScreen(_screenPosition, _screenPosition);
 }
 
 void Food::onOverlapBy(const Entity *overlap, const World *world) {
@@ -32,7 +41,7 @@ const Entity::Category Food::getCategory() const {
 }
 
 int Food::getPhysSize() const {
-	return _map->getTileSize();
+	return _map ? _map->getOne() : 1;
 }
 
 bool Food::isOverlap(const Point &center, int radius) const {
@@ -45,7 +54,5 @@ bool Food::isOverlap(const Point &start, const Point &end) const {
 
 void Food::draw() {
 	if(!_map || !_atlas) return;
-	Point pos = _position - (_map->getTileSize() / 2.0f);
-	_map->globalCoordinatesToScreen(pos, pos);
-	_atlas->drawTile(_tileId, pos.x, pos.y, 1, _map->getTileSize(), _map->getTileSize());
+	_atlas->drawTile(_tileId, _screenPosition.x, _screenPosition.y, 1, _map->getTileSize(), _map->getTileSize());
 }

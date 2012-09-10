@@ -46,10 +46,9 @@ protected:
 		unsigned int usage;
 	};
 
-	TextureManager(const char *texturesPath = "./");
+	TextureManager();
 	virtual Texture * loadTexture(const char *textureFilePath);
 
-	char *_texturesPath;
 	std::list<TextureInfo> _textures;
 	static TextureManager *_TextureManagerInstance;
 };

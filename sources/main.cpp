@@ -16,7 +16,11 @@ Main::~Main() {
 }
 
 bool Main::initialize() {
-	_context = new GlWindowsContext(_T("Hunger"), 800, 640, false);
+#ifdef ANDROID_NDK
+	FileManager::instance().changeDirectory("/sdcard/Android/data/com.wnezros.hunger/files/");
+#endif
+
+	_context = new AppContext(_T("Hunger"), 800, 640);
 	_render = _context->getRender();
 
 	StickHud *hud = new StickHud();
@@ -51,7 +55,12 @@ bool Main::initialize() {
 int Main::work() {
 	_context->mainLoop();
 	Log::logger << Log::info << "Exiting...";
+	cleanup();
 	return 0;
+}
+
+void Main::cleanup() {
+
 }
 
 Main game;

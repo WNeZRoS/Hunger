@@ -9,6 +9,8 @@ class Context
 {
 
 public:
+	Context() { };
+	Context(const XCHAR *title, int width, int height) { };
 	virtual ~Context() = 0;
 	virtual int mainLoop() = 0;
 
@@ -29,7 +31,7 @@ protected:
 	virtual void mouseMoveEvent(int x, int y) { }
 	virtual void mouseKeyDownEvent(int key) { }
 	virtual void mouseKeyUpEvent(int key) { }
-
+	virtual void resizeEvent(int width, int height) { }
 protected:
 	Render *_render;
 

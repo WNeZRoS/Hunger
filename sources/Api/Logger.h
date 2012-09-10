@@ -2,10 +2,19 @@
 #define LOGGER_H
 
 #include <iostream>
-#include <fstream>
 #include <sstream>
 #include <iomanip>
 #include "compatibility.h"
+#include "FileManager.h"
+
+#ifdef ANDROID_NDK
+#include <android/log.h>
+
+#define  LOG_TAG    "Hunger"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#endif
 
 namespace Log {
 
@@ -22,23 +31,52 @@ enum LOG_LEVEL
 
 #define FILE "(" << __FILE__ << ":" << __LINE__ << ")  "
 
+class LogFile
+{
+public:
+	LogFile(const char *filename);
+	~LogFile();
+
+	template <typename T>
+	LogFile& operator <<(const T& data) {
+		_str << data;
+
+		size_t ln = _str.str().find("\n");
+		if(ln != std::string::npos) {
+			std::string line = _str.str().substr(0, ln);
+			if(_log) if(_log->is_open()) *_log << line << std::endl;
+			std::cout << line << std::endl;
+#ifdef ANDROID_NDK
+			LOGD(line.c_str());
+#endif
+			line = _str.str().length() > ln ? _str.str().substr(ln + 1) : "";
+			 _str.str( std::string() );
+			 _str << line;
+		}
+
+		return *this;
+	}
+
+private:
+	std::ofstream *_log;
+	std::stringstream _str;
+};
+
 class BasicLogger
 {
 public:
-	BasicLogger(const std::ofstream *log);
+	BasicLogger(const LogFile *log);
 	~BasicLogger();
 
 	template <typename T>
 	BasicLogger& operator <<(const T& data) {
-		if(_log && _log->is_open()) *_log << data;
-		std::cout << data;
-		std::cout.flush();
+		*_log << data;
 		return *this;
 	}
 protected:
 	BasicLogger();
-private:
-	std::ofstream *_log;
+
+	LogFile *_log;
 };
 
 class Logger : public BasicLogger
@@ -48,7 +86,6 @@ public:
 
 	void openLog(const char *filename);
 	void closeLog();
-	void flush();
 
 	template <typename T>
 	BasicLogger& operator <<(const T& data) {
@@ -62,17 +99,13 @@ public:
 		}
 #endif
 
-		using namespace std;
-
 		Time time;
 		getTime(time);
-
-		stringstream str;
-		str << endl << stringLogLevel(type) << setfill('0') << setw(2) << time.hour << ":"
-						 << setw(2) << time.minute << ":" << setw(2) << time.second << "."
-						 << setw(3) << time.milliseconds << "   ";
-		if(!_log.is_open()) _log << str.str();
-		cout << str.str();
+		std::stringstream str;
+		str << std::endl << stringLogLevel(type) << std::setfill('0') << std::setw(2) << time.hour << ":"
+			<< std::setw(2) << time.minute << ":" << std::setw(2) << time.second << "."
+			<< std::setw(3) << time.milliseconds << "   ";
+		*_log << str.str();
 		return *_basicLogger;
 	}
 protected:
@@ -81,7 +114,6 @@ protected:
 
 private:
 	BasicLogger *_basicLogger;
-	std::ofstream _log;
 
 	const char * stringLogLevel(const LOG_LEVEL& level) const;
 };

@@ -27,7 +27,9 @@ SOURCES += \
     ../sources/Api/Point.cpp \
     ../sources/Api/Texture.cpp \
     ../sources/Api/Random.cpp \
-    ../sources/StickHud.cpp
+    ../sources/StickHud.cpp \
+    ../sources/Api/GlAndroidContext.cpp \
+    ../sources/Api/FileManager.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -55,7 +57,10 @@ HEADERS += \
     ../sources/Food.h \
     ../sources/Api/Point.h \
     ../sources/Api/Random.h \
-    ../sources/StickHud.h
+    ../sources/StickHud.h \
+    ../sources/GL/importgl.h \
+    ../sources/Api/GlAndroidContext.h \
+    ../sources/Api/FileManager.h
 
 INCLUDEPATH += ../sources
 Debug: QMAKE_CXXFLAGS += -DDEBUG

@@ -16,6 +16,11 @@ World::~World() {
 
 void World::setMap(const Map *map) {
 	_map = const_cast<Map*>(map);
+	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
+		(*it)->onChangeWorld(this);
+		(*it)->onResize(this);
+		(*it)->onWorldScroll(this);
+	}
 }
 
 Map * World::getMap() const {
@@ -26,6 +31,8 @@ int World::addEntity(const Entity *entity) {
 	if(!entity) return -1;
 	_entities.push_back(const_cast<Entity*>(entity));
 	const_cast<Entity*>(entity)->onChangeWorld(this);
+	const_cast<Entity*>(entity)->onResize(this);
+	const_cast<Entity*>(entity)->onWorldScroll(this);
 	return _entities.size() - 1;
 }
 
@@ -49,10 +56,29 @@ unsigned int World::getEntitiesCount() const {
 }
 
 void World::setScreenSize(int width, int height) {
+	if(_width == width && _height == height) return;
+
 	_width = width;
 	_height = height;
 
 	if(_map) _map->fillScreen(width, height);
+
+	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
+		(*it)->onResize(this);
+		(*it)->onWorldScroll(this);
+	}
+}
+
+void World::setCenter(float x, float y) {
+	if(!_map) return;
+
+	float xOffset = _map->_xOffset, yOffset = _map->_yOffset;
+	_map->setCenter(x, y);
+	if(xOffset == _map->_xOffset && yOffset == _map->_yOffset) return;
+
+	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
+		(*it)->onWorldScroll(this);
+	}
 }
 
 void World::updated(const Entity *upd) {
@@ -60,10 +86,10 @@ void World::updated(const Entity *upd) {
 	Point start = upd->getPosition() - size;
 	Point end = upd->getPosition() + size;
 
-	for(list<Entity*>::const_iterator it = _entities.begin(); it != _entities.end(); ) {
+	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); ) {
 		Entity* e = *it++;
 		if(e != upd && e->isOverlap(start, end))
-			const_cast<Entity*>(e)->onOverlapBy(upd, this);
+			e->onOverlapBy(upd, this);
 	}
 }
 

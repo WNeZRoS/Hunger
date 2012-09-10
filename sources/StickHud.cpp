@@ -4,7 +4,7 @@
 StickHud::StickHud() {
 	_startX = _startY = -1;
 	_currentX = _currentY = 50;
-	_sensivity = 5;
+	_sensivity = 15;
 	for(int i = 0; i < 4; i++) _pressed[i] = false;
 }
 
