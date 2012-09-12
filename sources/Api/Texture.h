@@ -7,6 +7,10 @@ class TextureManager;
 class Texture
 {
 public:
+	enum ImageType {
+		RGB, RGBA, RED, GREEN, BLUE, ALPHA, LUMINANCE, LUMINANCE_ALPHA
+	};
+
 	typedef const char * Name;
 
 	virtual void activate() const = 0;
@@ -15,8 +19,11 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 
+	virtual void setSegment(const unsigned char *bytes, int x, int y, int width, int height, ImageType type) = 0;
+
 	friend class TextureAtlas;
 	friend class TextureManager;
+	friend class FreeTypeFont;
 
 protected:
 	int _width;

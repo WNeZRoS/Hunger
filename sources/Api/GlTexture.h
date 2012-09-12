@@ -13,16 +13,19 @@ class GlTexture : public Texture
 {
 public:
 	typedef GlTexture * (*LoaderMethod)(const char *filename);
+	GlTexture(const unsigned char *imageData, unsigned int type, int width, int height, unsigned int dataType = 0);
 	~GlTexture();
+
+	void setSegment(const unsigned char *bytes, int x, int y, int width, int height, ImageType type);
 
 	void activate() const;
 	void deactivate() const;
+	static void unbind();
 
-	friend class TgaTexture;
+	friend class GlRender;
 protected:
 	unsigned int _id;
 
-	GlTexture(const char *imageData, unsigned int type, int width, int height);
 	unsigned int getId() const;
 };
 

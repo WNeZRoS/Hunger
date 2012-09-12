@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-win32:LIBS += -lopengl32 -lgdi32 -static
+win32:LIBS += -L../libs -lopengl32 -lgdi32 -lfreetype -static
 unix:LIBS += -lgl
 
 SOURCES += \
@@ -29,7 +29,9 @@ SOURCES += \
     ../sources/Api/Random.cpp \
     ../sources/StickHud.cpp \
     ../sources/Api/GlAndroidContext.cpp \
-    ../sources/Api/FileManager.cpp
+    ../sources/Api/FileManager.cpp \
+    ../sources/GL/importgl.cpp \
+    ../sources/Api/FreeTypeFont.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -60,7 +62,9 @@ HEADERS += \
     ../sources/StickHud.h \
     ../sources/GL/importgl.h \
     ../sources/Api/GlAndroidContext.h \
-    ../sources/Api/FileManager.h
+    ../sources/Api/FileManager.h \
+    ../sources/Api/Font.h \
+    ../sources/Api/FreeTypeFont.h
 
-INCLUDEPATH += ../sources
+INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG

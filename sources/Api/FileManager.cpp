@@ -1,4 +1,5 @@
 #include "FileManager.h"
+#include <cstring>
 
 FileManager::FileManager() {
 	_pwd = "./";
@@ -21,4 +22,9 @@ std::ifstream* FileManager::read(const char *filename, bool binary) {
 std::ofstream* FileManager::write(const char *filename, bool binary) {
 	std::string path = _pwd + filename;
 	return new std::ofstream(path.c_str(), binary ? std::ios::out | std::ios::binary : std::ios::out);
+}
+
+void FileManager::getPath(const char *filename, char *result) {
+	std::string path = _pwd + filename;
+	std::strcpy(result, path.c_str());
 }

@@ -53,8 +53,8 @@ Texture * TgaTexture::loadGl(const char *filename) {
 	unsigned char bytesPerPixel = bitsPerPixel / 8;
 	unsigned int imageSize = width * height * bytesPerPixel;
 
-	char *imageData = new char[imageSize];
-	file->read(imageData, imageSize);
+	unsigned char *imageData = new unsigned char[imageSize];
+	file->read(reinterpret_cast<char*>(imageData), imageSize);
 	if(imageData == NULL || (unsigned int) file->gcount() != imageSize) {
 		if(imageData) delete [] imageData;
 		delete file;

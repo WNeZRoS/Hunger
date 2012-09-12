@@ -2,6 +2,7 @@
 #include "Api/FileManager.h"
 #include <cmath>
 #include <vector>
+#include <stdexcept>
 
 using namespace std;
 
@@ -121,7 +122,7 @@ bool LevelMap::Tile::isRightCenter(const Point& pos, float halfSize) const {
 
 LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
 				   const Point_i& playerSpawn, const Point_i& mobSpawn, Array<Point_i>& foodSpawn) {
-	if(!map || !tiles || width <= 0 || height <= 0) throw;
+	if(!map || !tiles || width <= 0 || height <= 0) throw std::runtime_error("Incorrect arguments");
 
 	_map = map;
 	_width = width;
@@ -135,7 +136,7 @@ LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name 
 	_xOffset = 0;
 	_yOffset = 0;
 
-	if(!_tiles) throw;
+	if(!_tiles) throw std::runtime_error("Texture not loaded");
 }
 
 LevelMap::~LevelMap() {

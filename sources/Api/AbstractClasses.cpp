@@ -2,7 +2,7 @@
 #include "Render.h"
 #include "Map.h"
 #include "Entity.h"
-#include "Logger.h"
+#include "Font.h"
 
 Render::Painter *Render::_Painter = 0;
 
@@ -11,3 +11,4 @@ Render::~Render() { }
 Render::Painter::~Painter() { }
 Map::~Map() { }
 Entity::~Entity() { }
+Font::~Font() { }

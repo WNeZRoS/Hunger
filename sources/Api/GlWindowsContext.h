@@ -9,22 +9,6 @@
 class GlWindowsContext : public Context
 {
 public:
-
-	enum Exceptions
-	{
-		TITLE_IS_NULL,
-		WIDTH_UNDER_ZERO,
-		HEIGHT_UNDER_ZERO,
-		REGISTER_CLASS_FAIL,
-		CREATE_WINDOW_FAIL,
-		GET_DC_FAIL,
-		CHOOSE_PIXEL_FORMAT_FAIL,
-		CREATE_TEMP_RENDER_CONTEXT_FAIL,
-		GET_WGLCREATECONTEXTATTRIBSARB_FAIL,
-		CREATE_RENDER_CONTEXT_FAIL,
-		FULLSCREEN_MODE_FAIL
-	};
-
 	GlWindowsContext(const XCHAR *title, int width, int height);
 	GlWindowsContext(const XCHAR *title, int width, int height, bool fullscreen);
 	GlWindowsContext(const XCHAR *title, int width, int height, int x, int y);

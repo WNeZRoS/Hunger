@@ -1,18 +1,21 @@
 #include "GlTexture.h"
 #include "TextureAtlas.h"
 #include "Logger.h"
+#include <cstdlib>
 
 #include "GL/importgl.h"
 
-GlTexture::GlTexture(const char *imageData, GLuint type, int width, int height) {
+GlTexture::GlTexture(const unsigned char *imageData, GLuint type, int width, int height, GLuint dataType) {
 	glGenTextures(1, &_id);
-	glBindTexture(GL_TEXTURE_2D, _id);
+	this->activate();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, DEFAULT_LINEAR_FILTER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, DEFAULT_LINEAR_FILTER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, type, GL_UNSIGNED_BYTE, imageData);
+	if(dataType == 0) dataType = type;
+	glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, dataType, GL_UNSIGNED_BYTE, imageData);
+	this->deactivate();
 
 	_width = width;
 	_height = height;
@@ -26,6 +29,24 @@ GlTexture::~GlTexture() {
 	}
 }
 
+void GlTexture::setSegment(const unsigned char *bytes, int x, int y, int width, int height, ImageType type) {
+	int format = 0;
+	switch(type) {
+	case RGB: format = GL_RGB; break;
+	case RGBA: format = GL_RGBA; break;
+	case RED: format = GL_RED; break;
+	case BLUE: format = GL_BLUE; break;
+	case GREEN: format = GL_GREEN; break;
+	case ALPHA: format = GL_ALPHA; break;
+	case LUMINANCE: format = GL_LUMINANCE; break;
+	case LUMINANCE_ALPHA: format = GL_LUMINANCE_ALPHA; break;
+	}
+
+	this->activate();
+	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, format, GL_UNSIGNED_BYTE, bytes);
+	this->deactivate();
+}
+
 unsigned int GlTexture::getId() const {
 	return _id;
 }
@@ -35,5 +56,9 @@ void GlTexture::activate() const {
 }
 
 void GlTexture::deactivate() const {
+	GlTexture::unbind();
+}
+
+void GlTexture::unbind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

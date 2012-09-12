@@ -4,7 +4,11 @@
 #include "Food.h"
 #include "StickHud.h"
 
+int va = 0;
+int &a() { return va; }
+
 Main::Main() {
+	a() = 5;
 	Random::start(getCurrentTime());
 	//Log::logger.openLog("log.txt");
 }

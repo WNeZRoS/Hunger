@@ -10,8 +10,33 @@ public:
 	static FileManager& instance();
 	void changeDirectory(const char *dir);
 
+	/**
+	  Open file with name filename from current directory for read.
+	  @param filename
+	  filename to open
+	  @param binary
+	  open file with binary flag
+	  @return stl input stream pointer or NULL. You need to delete this pointer.
+	  */
 	std::ifstream* read(const char *filename, bool binary = false);
+
+	/**
+	  Open file with name filename from current directory for write.
+	  @param filename
+	  filename to open
+	  @param binary
+	  open file with binary flag
+	  @return stl output stream pointer or NULL. You need to delete this pointer.
+	  */
 	std::ofstream* write(const char *filename, bool binary = false);
+
+	/**
+	  Get file path for filename
+	  @param filename filename
+	  @param result
+	  result of "Current directory" + filename. Its safe to use (you can write getPath(a, a).
+	  */
+	void getPath(const char *filename, char *result);
 private:
 	FileManager();
 

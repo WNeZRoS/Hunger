@@ -26,6 +26,12 @@
 		#include "GlAndroidContext.h"
 		typedef GlAndroidContext AppContext;
 	#endif
+	#include "GlTexture.h"
+
+typedef GlTexture XTexture;
+#else
+	typedef Context AppContext;
+	typedef Texture XTexture;
 #endif
 
 #endif // API_H

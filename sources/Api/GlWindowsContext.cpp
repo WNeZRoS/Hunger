@@ -5,6 +5,7 @@
 
 #include "GL/importgl.h"
 
+#include <stdexcept>
 #include <windowsx.h>
 
 #define WINDOW_CLASS_NAME _T("SimpleGL")
@@ -15,9 +16,8 @@ using namespace std;
 GlWindowsContext **GlWindowsContext::s_windows = NULL;
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height) {
-	if(title == NULL) throw TITLE_IS_NULL;
-	if(width <= 0) throw WIDTH_UNDER_ZERO;
-	if(height <= 0) throw HEIGHT_UNDER_ZERO;
+	if(title == NULL) throw std::runtime_error("Title is null");
+	if(width <= 0 || height <= 0) throw std::runtime_error("Any of dimensions lower or equal zero");
 
 	createWindow(title, width, height);
 	createGraphicContext();
@@ -31,9 +31,8 @@ GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height) {
 }
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, bool fullscreen) {
-	if(title == NULL) throw TITLE_IS_NULL;
-	if(width <= 0) throw WIDTH_UNDER_ZERO;
-	if(height <= 0) throw HEIGHT_UNDER_ZERO;
+	if(title == NULL) throw std::runtime_error("Title is null");
+	if(width <= 0 || height <= 0) throw std::runtime_error("Any of dimensions lower or equal zero");
 
 	createWindow(title, width, height);
 	createGraphicContext();
@@ -48,9 +47,8 @@ GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, bo
 }
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, int x, int y) {
-	if(title == NULL) throw TITLE_IS_NULL;
-	if(width <= 0) throw WIDTH_UNDER_ZERO;
-	if(height <= 0) throw HEIGHT_UNDER_ZERO;
+	if(title == NULL) throw std::runtime_error("Title is null");
+	if(width <= 0 || height <= 0) throw std::runtime_error("Any of dimensions lower or equal zero");
 
 	createWindow(title, width, height, x, y);
 	createGraphicContext();
@@ -62,9 +60,8 @@ GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, in
 }
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, int glMajor, int glMinor, bool fullscreen) {
-	if(title == NULL) throw TITLE_IS_NULL;
-	if(width <= 0) throw WIDTH_UNDER_ZERO;
-	if(height <= 0) throw HEIGHT_UNDER_ZERO;
+	if(title == NULL) throw std::runtime_error("Title is null");
+	if(width <= 0 || height <= 0) throw std::runtime_error("Any of dimensions lower or equal zero");
 
 	createWindow(title, width, height);
 	createGraphicContext(glMajor, glMinor);
@@ -79,9 +76,8 @@ GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, in
 }
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, int glMajor, int glMinor, int x, int y) {
-	if(title == NULL) throw TITLE_IS_NULL;
-	if(width <= 0) throw WIDTH_UNDER_ZERO;
-	if(height <= 0) throw HEIGHT_UNDER_ZERO;
+	if(title == NULL) throw std::runtime_error("Title is null");
+	if(width <= 0 || height <= 0) throw std::runtime_error("Any of dimensions lower or equal zero");
 
 	createWindow(title, width, height);
 	createGraphicContext(glMajor, glMinor);
@@ -168,7 +164,7 @@ void GlWindowsContext::createWindow(const XCHAR *title, int width, int height, i
 	wcx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wcx.hCursor = LoadCursor(NULL, IDC_ARROW);
 
-	if(!RegisterClassEx(&wcx)) throw REGISTER_CLASS_FAIL;
+	if(!RegisterClassEx(&wcx)) throw std::runtime_error("Fail to register window class");
 
 	// window's styles
 	DWORD style = WINDOW_STYLE;
@@ -193,12 +189,12 @@ void GlWindowsContext::createWindow(const XCHAR *title, int width, int height, i
 	_params.height = height;
 	_params.fullscreen = false;
 
-	if(!_hWnd) throw CREATE_WINDOW_FAIL;
+	if(!_hWnd) throw std::runtime_error("Can't create window");
 }
 
 void GlWindowsContext::createGraphicContext(int major, int minor) {
 	_hDC = GetDC(_hWnd);
-	if(!_hDC) throw GET_DC_FAIL;
+	if(!_hDC) throw std::runtime_error("Can't get DC");
 
 	PIXELFORMATDESCRIPTOR pfd;
 	memset(&pfd, 0, sizeof(pfd));
@@ -210,10 +206,10 @@ void GlWindowsContext::createGraphicContext(int major, int minor) {
 	pfd.cDepthBits = 24;
 
 	int format = ChoosePixelFormat(_hDC, &pfd);
-	if (!format || !SetPixelFormat(_hDC, format, &pfd)) throw CHOOSE_PIXEL_FORMAT_FAIL;
+	if (!format || !SetPixelFormat(_hDC, format, &pfd)) throw std::runtime_error("Pixel format setup fail");
 
 	HGLRC hRCTemp = wglCreateContext(_hDC);
-	if(!hRCTemp || !wglMakeCurrent(_hDC, hRCTemp)) throw CREATE_TEMP_RENDER_CONTEXT_FAIL;
+	if(!hRCTemp || !wglMakeCurrent(_hDC, hRCTemp)) throw std::runtime_error("Create temp render context fail");
 	
 	if(major == 0 && minor == 0) _hRC = hRCTemp;
 	else {
@@ -223,7 +219,7 @@ void GlWindowsContext::createGraphicContext(int major, int minor) {
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(hRCTemp);
 
-		if(!wglCreateContextAttribsARB) throw GET_WGLCREATECONTEXTATTRIBSARB_FAIL;
+		if(!wglCreateContextAttribsARB) throw std::runtime_error("Get wglCreateContextAttribsARB fail");
 
 		int attribs[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, major,
@@ -234,7 +230,7 @@ void GlWindowsContext::createGraphicContext(int major, int minor) {
 		};
 
 		_hRC = wglCreateContextAttribsARB(_hDC, 0, attribs);
-		if(!_hRC || !wglMakeCurrent(_hDC, _hRC)) throw CREATE_RENDER_CONTEXT_FAIL; 
+		if(!_hRC || !wglMakeCurrent(_hDC, _hRC)) throw std::runtime_error("Create render context fail");
 	}
 }
 
@@ -254,8 +250,7 @@ void GlWindowsContext::printGraphicInformation() {
 }
 
 void GlWindowsContext::setResolution(int width, int height) {
-	if(width <= 0) throw WIDTH_UNDER_ZERO;
-	if(height <= 0) throw HEIGHT_UNDER_ZERO;
+	if(width <= 0 || height <= 0) throw std::runtime_error("Any of dimensions lower or equal zero");
 
 	if(_params.fullscreen) {
 		DEVMODE devMode;
@@ -269,7 +264,7 @@ void GlWindowsContext::setResolution(int width, int height) {
 		LONG result = ChangeDisplaySettings(&devMode, CDS_FULLSCREEN);
 		if(result != DISP_CHANGE_SUCCESSFUL) {
 			_params.fullscreen = false;
-			throw FULLSCREEN_MODE_FAIL;
+			throw std::runtime_error("Enter fullscreen mode fail");
 		}
 	}
 
@@ -334,7 +329,7 @@ void GlWindowsContext::setFullscreen(bool fullscreen) {
 		LONG result = ChangeDisplaySettings(&devMode, CDS_FULLSCREEN);
 		if(result != DISP_CHANGE_SUCCESSFUL) {
 			_params.fullscreen = false;
-			throw FULLSCREEN_MODE_FAIL;
+			throw std::runtime_error("Enter fullscreen mode fail");
 		}
 	}
 

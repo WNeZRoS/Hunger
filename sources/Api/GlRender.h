@@ -2,6 +2,7 @@
 #define GLRENDER_H
 
 #include "Render.h"
+#include "GlTexture.h"
 #include "World.h"
 
 class GlRender : public Render
@@ -10,10 +11,14 @@ public:
 	class GlPainter : public Painter
 	{
 	public:
-		GlPainter();
+		GlPainter(GlRender *owner);
 		~GlPainter();
+		Texture * getTexture();
 		void setColor(char r, char g, char b, char a);
+		void setCotor(char r, char g, char b, char a);
 		void setLineWidth(int width);
+		void setRenderTarget(Texture *texture);
+		void setRenderTarget(int width, int height);
 		void pixel(float x, float y, float z) const;
 		void line(float fromX, float fromY, float toX, float toY, float z) const;
 		void rect(float fromX, float fromY, float toX, float toY, float z, bool fill) const;
@@ -21,6 +26,9 @@ public:
 				  float fromTexX, float fromTexY, float toTexX, float toTexY) const;
 	private:
 		char _color[4][4];
+		GlRender *_owner;
+		GlTexture *_target;
+		unsigned int _frameBuffer;
 	};
 
 	GlRender(int width, int height);
@@ -40,6 +48,8 @@ private:
 	bool _renderStopped;
 
 	World *_world;
+
+	void setViewport(int width, int height);
 };
 
 #endif // GLRENDER_H
