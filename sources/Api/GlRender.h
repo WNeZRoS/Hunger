@@ -3,7 +3,9 @@
 
 #include "Render.h"
 #include "GlTexture.h"
-#include "World.h"
+
+class World;
+class Interface;
 
 class GlRender : public Render
 {
@@ -42,12 +44,16 @@ public:
 	const World * getWorld() const;
 	void setWorld(const World *world);
 
+	const Interface * getInterface() const;
+	void setInterface(const Interface *interf);
+
 private:
 	int _width;
 	int _height;
 	bool _renderStopped;
 
 	World *_world;
+	Interface *_interface;
 
 	void setViewport(int width, int height);
 };

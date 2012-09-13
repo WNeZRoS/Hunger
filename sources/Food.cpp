@@ -1,11 +1,12 @@
 #include "Food.h"
 
-Food::Food(const TextureAtlas::Loader atlas, int tileId, const Point& position) {
+Food::Food(const TextureAtlas::Loader atlas, int tileId, const Point& position, EatCallback eatCalback) {
 	_atlas = atlas.load();
 	_tileId = tileId;
 	_position = position;
 	_map = NULL;
 	_screenPosition = 0;
+	_eatCallback = eatCalback;
 
 	//Log::logger << Log::debug << "new food at " << _position << " not " << position;
 }
@@ -32,8 +33,10 @@ void Food::onWorldScroll(const World *world) {
 
 void Food::onOverlapBy(const Entity *overlap, const World *world) {
 	Log::logger << Log::debug << "overlap food by " << overlap->getCategory() << " world " << world;
-	if(overlap->getCategory() == PLAYER)
+	if(overlap->getCategory() == PLAYER) {
+		if(_eatCallback.pointer) (_eatCallback.pointer->*(_eatCallback.method))(_tileId);
 		const_cast<World*>(world)->removeEntity(this);
+	}
 }
 
 const Entity::Category Food::getCategory() const {

@@ -7,7 +7,15 @@
 class Food : public Entity
 {
 public:
-	Food(const TextureAtlas::Loader atlas, int tileId, const Point& position);
+	typedef void (Controller::*EatFunc)(int type);
+
+	struct EatCallback
+	{
+		Controller *pointer;
+		EatFunc method;
+	};
+
+	Food(const TextureAtlas::Loader atlas, int tileId, const Point& position, EatCallback eatCallback);
 	~Food();
 
 	void draw();
@@ -26,6 +34,7 @@ private:
 	TextureAtlas *_atlas;
 	int _tileId;
 	Point _screenPosition;
+	EatCallback _eatCallback;
 };
 
 #endif // FOOD_H

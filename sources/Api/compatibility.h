@@ -4,10 +4,14 @@
 #ifdef UNICODE
 	#define XCHAR wchar_t
 	#define XSTRING wstring
+	#define XSTRINGSTREAM wstringstream
+	#define xstrlen wcslen
 	#define _T(x) L##x
 #else
 	#define XCHAR char
 	#define XSTRING string
+	#define XSTRINGSTREAM stringstream
+	#define xstrlen strlen
 	#define _T(x) x
 #endif
 

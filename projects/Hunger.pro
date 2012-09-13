@@ -31,7 +31,11 @@ SOURCES += \
     ../sources/Api/GlAndroidContext.cpp \
     ../sources/Api/FileManager.cpp \
     ../sources/GL/importgl.cpp \
-    ../sources/Api/FreeTypeFont.cpp
+    ../sources/Api/FreeTypeFont.cpp \
+    ../sources/Api/Interface.cpp \
+    ../sources/Api/View.cpp \
+    ../sources/GameInterface.cpp \
+    ../sources/Api/TextView.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -64,7 +68,11 @@ HEADERS += \
     ../sources/Api/GlAndroidContext.h \
     ../sources/Api/FileManager.h \
     ../sources/Api/Font.h \
-    ../sources/Api/FreeTypeFont.h
+    ../sources/Api/FreeTypeFont.h \
+    ../sources/Api/Interface.h \
+    ../sources/Api/View.h \
+    ../sources/GameInterface.h \
+    ../sources/Api/TextView.h
 
 INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG

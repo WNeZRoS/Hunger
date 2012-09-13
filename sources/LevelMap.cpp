@@ -140,8 +140,8 @@ LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name 
 }
 
 LevelMap::~LevelMap() {
-	for(int i = 0; i < _height; i++) delete _map[i];
-	delete _map;
+	for(int i = 0; i < _height; i++) delete [] _map[i];
+	delete [] _map;
 	_tiles->unload();
 }
 
@@ -295,8 +295,8 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	Point roadPos;
 	this->getPositions(from, fromTilePos, roadPos);
 
-	Log::logger << Log::debug << "from tile " << getTileByCoords(fromTilePos).type() << " "
-				<< fromTilePos << " road pos " << roadPos;
+	//Log::logger << Log::debug << "from tile " << getTileByCoords(fromTilePos).type() << " "
+	//			<< fromTilePos << " road pos " << roadPos;
 
 	//if(!getTileByCoords(fromTilePos).haveRoadAt(roadPos, _tileSize)) return false;
 
@@ -310,8 +310,8 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	Point newRoadPos;
 	this->getPositions(newPos, newTilePos, newRoadPos);
 
-	Log::logger << Log::debug << "new tile " << getTileByCoords(newTilePos).type() << " "
-				<< newTilePos << " road pos " << newRoadPos;
+	//Log::logger << Log::debug << "new tile " << getTileByCoords(newTilePos).type() << " "
+	//			<< newTilePos << " road pos " << newRoadPos;
 
 	if(getTileByCoords(newTilePos).haveRoadAt(newRoadPos, getOne())) {
 		from = newPos;
@@ -320,7 +320,7 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 
 	roadPos = newRoadPos;
 	if(getTileByCoords(newTilePos).canSetToRoad(roadPos, getOne())) {
-		Log::logger << Log::debug << "delta road " << (roadPos.x - newRoadPos.x) << " " << (roadPos.y - newRoadPos.y);
+		//Log::logger << Log::debug << "delta road " << (roadPos.x - newRoadPos.x) << " " << (roadPos.y - newRoadPos.y);
 		Point newPos2 = newPos + roadPos - newRoadPos;
 		if(newPos != newPos2 && newPos2 != from) {
 			from = newPos2;

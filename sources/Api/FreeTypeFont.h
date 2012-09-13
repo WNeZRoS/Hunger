@@ -30,6 +30,14 @@ private:
 		unsigned short top;
 	};
 
+	struct DrawStruct {
+		XCHAR symbol;
+		CacheElement element;
+		float tx, ty;
+		float width;
+		bool visible;
+	};
+
 	std::vector<CacheElement> _cache;
 	Texture *_cacheTexture;
 	static const unsigned int _CacheSize = 512;

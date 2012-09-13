@@ -16,6 +16,7 @@ Main::Main() {
 Main::~Main() {
 	//delete _map;
 	//delete _player;
+	delete _gameInterface;
 	delete _context;
 }
 
@@ -42,17 +43,21 @@ bool Main::initialize() {
 
 	Array<Point> roads;
 	_map->getRoads(roads);
+	Food::EatCallback eatCallback = { reinterpret_cast<Controller*>(this), reinterpret_cast<Food::EatFunc>(&Main::onEat) };
 	for(unsigned int i = 0; i < roads.size; i++) {
-		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), 0, roads[i]));
+		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), 0, roads[i], eatCallback));
 	}
 
 	int values[3] = { 1, 2, 3 };
 	int chances[3] = { 40, 20, 40 };
 	Array<Point> foods = _map->getFoodSpawns();
 	for(unsigned int i = 0; i < foods.size; i++) {
-		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), Random::rand(values, chances, 3), foods[i]));
+		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), Random::rand(values, chances, 3),
+								  foods[i], eatCallback));
 	}
 
+	_gameInterface = new GameInterface();
+	_render->setInterface(_gameInterface);
 	return true;
 }
 
@@ -65,6 +70,10 @@ int Main::work() {
 
 void Main::cleanup() {
 
+}
+
+void Main::onEat(int type) {
+	_gameInterface->setScore(_gameInterface->getScore() + (type + 1) * 10);
 }
 
 Main game;

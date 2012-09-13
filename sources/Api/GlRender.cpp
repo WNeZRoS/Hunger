@@ -2,17 +2,15 @@
 #include "GlTextureManager.h"
 #include "Control.h"
 #include "Logger.h"
+#include "World.h"
+#include "Interface.h"
 
 #include "GL/importgl.h"
-
-#include "FreeTypeFont.h"
 
 GlRender::GlRender(int width, int height) {
 	_renderStopped = false;
 
 	ext::loadExts();
-
-	glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -35,6 +33,7 @@ GlRender::GlRender(int width, int height) {
 	GlTextureManager::instance();
 
 	_world = NULL;
+	_interface = NULL;
 	setResolution(width, height);
 }
 
@@ -48,6 +47,7 @@ GlRender::~GlRender() {
 void GlRender::render() const {
 	if(_renderStopped) return;
 
+	glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glLoadIdentity();
@@ -55,12 +55,7 @@ void GlRender::render() const {
 
 	getPainter()->setColor(0xFF, 0xFF, 0xFF);
 	if(_world) _world->draw();
-
-	static Font * f = new FreeTypeFont("font.ttf", 16);
-	f->render(_T("Hello"), 100, 100);
-	static Texture * t = f->renderToTexture(_T("Google"));
-	t->activate();
-	getPainter()->rectx(100, 130, 100 + t->getWidth(), 130 + t->getHeight());
+	if(_interface) _interface->draw();
 
 	Control::instance().drawHud();
 }
@@ -78,6 +73,7 @@ void GlRender::setResolution(int width, int height) {
 	if(height > 0) _height = height;
 	setViewport(_width, _height);
 	if(_world) _world->setScreenSize(_width, _height);
+	if(_interface) _interface->onScreenResized(_width, _height);
 }
 
 void GlRender::setViewport(int width, int height) {
@@ -99,6 +95,15 @@ const World * GlRender::getWorld() const {
 void GlRender::setWorld(const World *world) {
 	_world = const_cast<World*>(world);
 	if(_world) _world->setScreenSize(_width, _height);
+}
+
+const Interface * GlRender::getInterface() const {
+	return _interface;
+}
+
+void GlRender::setInterface(const Interface *interf) {
+	_interface = const_cast<Interface*>(interf);
+	if(_interface) _interface->onScreenResized(_width, _height);
 }
 
 GlRender::GlPainter::GlPainter(GlRender *owner) {
@@ -158,6 +163,8 @@ void GlRender::GlPainter::setRenderTarget(Texture *texture) {
 	ext::glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
 	ext::glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _target->getId(), 0);
 	_owner->setViewport(_target->getWidth(), _target->getHeight());
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void GlRender::GlPainter::setRenderTarget(int width, int height) {
@@ -166,6 +173,8 @@ void GlRender::GlPainter::setRenderTarget(int width, int height) {
 		ext::glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
 		ext::glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _target->getId(), 0);
 		_owner->setViewport(width, height);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 }
 

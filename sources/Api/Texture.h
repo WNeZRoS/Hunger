@@ -11,6 +11,8 @@ public:
 		RGB, RGBA, RED, GREEN, BLUE, ALPHA, LUMINANCE, LUMINANCE_ALPHA
 	};
 
+	virtual ~Texture();
+
 	typedef const char * Name;
 
 	virtual void activate() const = 0;
@@ -23,7 +25,6 @@ public:
 
 	friend class TextureAtlas;
 	friend class TextureManager;
-	friend class FreeTypeFont;
 
 protected:
 	int _width;
@@ -32,7 +33,6 @@ protected:
 	mutable int _atlasUsage;
 
 	Texture();
-	virtual ~Texture();
 
 	TextureAtlas * toAtlas(int rowSize, int columnSize) const;
 	void atlasUnload() const;

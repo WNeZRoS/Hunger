@@ -43,36 +43,68 @@ Texture * FreeTypeFont::renderToTexture(const XCHAR *text, int width, int height
 }
 
 void FreeTypeFont::render(const XCHAR *text, float x, float y, float width, float height, Align align) {
+	if(!text) return;
+
 	int ownWidth = width, ownHeight = height;
 	getTextSizes(text, ownWidth, ownHeight);
 
-	float rx = x, ry = y;
+	static const int segmentsCount = (_CacheSize / _CacheSegmentSize);
+	static const float segment = 1.0f / segmentsCount;
 
-	for(unsigned int i = 0; i < wcslen(text); i++) {
-		XCHAR c = text[i];
+	float rx = 0, ry = _CacheSegmentSize;
+	std::vector<float> xOffset;
+	std::vector<DrawStruct> draws;
+
+	for(unsigned int i = 0; i < xstrlen(text); i++) {
+		DrawStruct ds;
+		ds.symbol = text[i];
 		unsigned int index = 0;
-		if(c > ' ') index = cacheGlyph(c);
+		if(ds.symbol > ' ') index = cacheGlyph(ds.symbol);
 		if(index == NO_GLYPH) continue;
-		CacheElement letter = _cache.at(index);
 
-		static int segmentsCount = (_CacheSize / _CacheSegmentSize);
-		static float segment = 1.0f / segmentsCount;
+		ds.element = _cache.at(index);
 
-		float tx = (index % segmentsCount);
-		float ty = (index - tx) / segmentsCount;
-		tx *= segment;
-		ty *= segment;
+		ds.tx = (index % segmentsCount);
+		ds.ty = (index - ds.tx) / segmentsCount;
+		ds.tx *= segment;
+		ds.ty *= segment;
 
-		bool inv = c > _T(' ');
+		ds.visible = ds.symbol > _T(' ');
+		ds.width = _monoSpace ? _CacheSegmentSize : (ds.visible ? ds.element.width + 2 : _CacheSegmentSize / 4);
+		rx += ds.width;
+		if(rx > ownWidth || ds.symbol == _T('\n')) {
+			switch(align) {
+			case Font::CENTER: xOffset.push_back((ownWidth - rx) / 2.0f); break;
+			case Font::RIGHT: xOffset.push_back(ownWidth - rx); break;
+			default: xOffset.push_back(0); break;
+			}
+			rx = 0;
+			ry += _CacheSegmentSize;
+		}
+		draws.push_back(ds);
+	}
 
+	switch(align) {
+	case Font::CENTER: xOffset.push_back((ownWidth - rx) / 2.0f); break;
+	case Font::RIGHT: xOffset.push_back(ownWidth - rx); break;
+	default: xOffset.push_back(0); break;
+	}
+
+	unsigned int line = 0;
+	rx = x + xOffset.at(line); ry = y + (ownHeight - ry) / 2.0f;
+
+	for(std::vector<DrawStruct>::iterator it = draws.begin(); it != draws.end(); it++) {
+		DrawStruct& ds = (*it);
 		_cacheTexture->activate();
-		Render::getPainter()->rectx(rx, ry + letter.top, rx + _CacheSegmentSize,
-									ry + _CacheSegmentSize + letter.top, 99.0f,
-									tx, ty, tx + inv * segment, ty + inv * segment);
+		Render::getPainter()->rectx(rx, ry + ds.element.top,
+									rx + _CacheSegmentSize,
+									ry + _CacheSegmentSize + ds.element.top, 99.0f,
+									ds.tx, ds.ty, ds.tx + ds.visible * segment, ds.ty + ds.visible * segment);
 
-		rx += _monoSpace ? _CacheSegmentSize : (inv ? letter.width + 2 : _CacheSegmentSize / 4);
-		if(rx - x >= ownWidth || c == _T('\n')) {
-			rx = x;
+		rx += ds.width;
+		if(rx - x > ownWidth || ds.symbol == _T('\n')) {
+			line++;
+			rx = x + xOffset.at(line < xOffset.size() ? line : xOffset.size() - 1);
 			ry += _CacheSegmentSize;
 		}
 	}
@@ -81,7 +113,7 @@ void FreeTypeFont::render(const XCHAR *text, float x, float y, float width, floa
 
 inline int FreeTypeFont::toPowerOf2(int a) const {
 	int x;
-	for(x = 1; x <= a; x <<= 1);
+	for(x = 1; x < a; x <<= 1);
 	return x;
 }
 

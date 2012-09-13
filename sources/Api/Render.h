@@ -2,6 +2,7 @@
 #define RENDER_H
 
 class World;
+class Interface;
 class Texture;
 
 class Render
@@ -33,6 +34,9 @@ public:
 
 	virtual const World * getWorld() const = 0;
 	virtual void setWorld(const World *world) = 0;
+
+	virtual const Interface * getInterface() const = 0;
+	virtual void setInterface(const Interface *interf) = 0;
 
 	static Painter * getPainter() {
 		return _Painter;

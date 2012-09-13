@@ -106,7 +106,7 @@ void Player::move() {
 bool Player::move(float x, float y) {
 	Point dir( x, y );
 	Point position = _position;
-	Log::logger << Log::debug << "Pos: " << _position << " Dir: " << dir << " " << x << " " << y;
+	//Log::logger << Log::debug << "Pos: " << _position << " Dir: " << dir << " " << x << " " << y;
 	if(_map->moveInDirection(position, dir, _speed)) {
 		dir = position - _position;
 		if(dir.x > 100 || dir.x < -100) dir.x *= -1;
