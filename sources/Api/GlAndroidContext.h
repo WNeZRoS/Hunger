@@ -31,7 +31,7 @@ public:
 	void setResolution(int width, int height);
 	void setFullscreen(bool fullscreen);
 
-	friend void javaEvents(int event, int p1, int p2);
+	friend void javaEvents(int event, int p1, int p2, int p3);
 protected:
 	void keyDownEvent(int key);
 	void keyUpEvent(int key);
@@ -39,9 +39,9 @@ protected:
 	void gotFocusEvent();
 	void lostFocusEvent();
 	void activateEvent(bool activate);
-	void mouseMoveEvent(int x, int y);
-	void mouseKeyDownEvent(int key);
-	void mouseKeyUpEvent(int key);
+	void mouseMoveEvent(int x, int y, int pointer);
+	void mouseKeyDownEvent(int key, int x, int y);
+	void mouseKeyUpEvent(int key, int x, int y);
 	void drawEvent() const;
 	void resizeEvent(int width, int height);
 

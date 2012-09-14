@@ -2,8 +2,8 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-win32:LIBS += -L../libs -lopengl32 -lgdi32 -lfreetype -static
-unix:LIBS += -lgl
+win32:LIBS += -L../libs/lib-x86 -lopengl32 -lgdi32 -lfreetype -static
+unix:LIBS += -lgl -lfreetype
 
 SOURCES += \
     ../sources/Api/GlRender.cpp \
@@ -35,7 +35,8 @@ SOURCES += \
     ../sources/Api/Interface.cpp \
     ../sources/Api/View.cpp \
     ../sources/GameInterface.cpp \
-    ../sources/Api/TextView.cpp
+    ../sources/Api/TextView.cpp \
+    ../sources/Api/ButtonView.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -72,7 +73,8 @@ HEADERS += \
     ../sources/Api/Interface.h \
     ../sources/Api/View.h \
     ../sources/GameInterface.h \
-    ../sources/Api/TextView.h
+    ../sources/Api/TextView.h \
+    ../sources/Api/ButtonView.h
 
 INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG

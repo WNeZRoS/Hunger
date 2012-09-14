@@ -34,9 +34,6 @@ void GlTexture::setSegment(const unsigned char *bytes, int x, int y, int width, 
 	switch(type) {
 	case RGB: format = GL_RGB; break;
 	case RGBA: format = GL_RGBA; break;
-	case RED: format = GL_RED; break;
-	case BLUE: format = GL_BLUE; break;
-	case GREEN: format = GL_GREEN; break;
 	case ALPHA: format = GL_ALPHA; break;
 	case LUMINANCE: format = GL_LUMINANCE; break;
 	case LUMINANCE_ALPHA: format = GL_LUMINANCE_ALPHA; break;
@@ -49,6 +46,10 @@ void GlTexture::setSegment(const unsigned char *bytes, int x, int y, int width, 
 
 unsigned int GlTexture::getId() const {
 	return _id;
+}
+
+bool GlTexture::isValidTexture() const {
+	return glIsTexture(_id);
 }
 
 void GlTexture::activate() const {

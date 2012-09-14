@@ -8,7 +8,7 @@ class Texture
 {
 public:
 	enum ImageType {
-		RGB, RGBA, RED, GREEN, BLUE, ALPHA, LUMINANCE, LUMINANCE_ALPHA
+		RGB, RGBA, ALPHA, LUMINANCE, LUMINANCE_ALPHA
 	};
 
 	virtual ~Texture();
@@ -17,6 +17,7 @@ public:
 
 	virtual void activate() const = 0;
 	virtual void deactivate() const = 0;
+	virtual bool isValidTexture() const = 0;
 
 	int getWidth() const;
 	int getHeight() const;

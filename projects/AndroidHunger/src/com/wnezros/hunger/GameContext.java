@@ -1,5 +1,7 @@
 package com.wnezros.hunger;
 
+import android.util.Log;
+
 public class GameContext {
 	private static final int ACTIVATE = 0;
 	private static final int CLOSE = 1;
@@ -12,57 +14,91 @@ public class GameContext {
 	private static final int MOUSE_UP = 8;
 	private static final int DRAW = 9;
 	private static final int RESIZE = 10;
+	private static final int SAVE_GAME = 11;
+	
+	private static final int _MaxPointers = 5;
+	private static int _PointersId[];
 	
 	private static native void main();
-	private static native void event(int event, int p1, int p2);
+	private static native void event(int event, int p1, int p2, int p3);
 	
     public static void init() {
+    	_PointersId = new int[_MaxPointers];
+    	for(int i = 0; i < _MaxPointers; i++)
+    		_PointersId[i] = -1;
+    	
     	main();
     }
 	
 	public static void resize(int w, int h) {
-    	event(RESIZE, w, h);
+    	event(RESIZE, w, h, 0);
     }
     
     public static void render() {
-    	event(DRAW, 0, 0);
+    	event(DRAW, 0, 0, 0);
     }
     
     public static void close() {
-    	event(CLOSE, 0, 0);
+    	event(CLOSE, 0, 0, 0);
     }
     
     public static void resume() {
-    	event(GOT_FOCUS, 0, 0);
+    	event(GOT_FOCUS, 0, 0, 0);
     }
     
     public static void pause() {
-    	event(LOST_FOCUS, 0, 0);
+    	event(LOST_FOCUS, 0, 0, 0);
     }
     
     public static void keyDown(int key) {
-    	event(KEY_DOWN, key, 0);
+    	event(KEY_DOWN, key, 0, 0);
     }
     
     public static void keyUp(int key) {
-    	event(KEY_UP, key, 0);
+    	event(KEY_UP, key, 0, 0);
     }
     
-    public static void mouseMove(int x, int y) {
-    	event(MOUSE_MOVE, x, y);
-    }
-    
-    public static void mouseDown(int key) {
-    	event(MOUSE_DOWN, key, 0);
+    public static void mouseMove(int x, int y, int pointer) {
+    	for(int i = 0; i < _MaxPointers; i++)
+    		if(_PointersId[i] == pointer) {
+    			event(MOUSE_MOVE, x, y, i+1);
+    			return;
+    		}
     }
     
     public static void mouseDown(int key, int x, int y) {
-    	mouseMove(x, y);
-    	mouseDown(key);
+    	for(int i = 0; i < _MaxPointers; i++)
+    		if(_PointersId[i] == key) {
+    			event(MOUSE_DOWN, i+1, x, y);
+    			return;
+    		}
+    	
+    	for(int i = 0; i < _MaxPointers; i++)
+    		if(_PointersId[i] == -1) {
+    			_PointersId[i] = key;
+    			event(MOUSE_DOWN, i+1, x, y);
+    			return;
+    		}
     }
     
-    public static void mouseUp(int key) {
-    	event(MOUSE_UP, key, 0);
+    public static void mouseUp(int key, int x, int y) {
+    	for(int i = 0; i < _MaxPointers; i++)
+    		if(_PointersId[i] == key) {
+    			_PointersId[i] = -1;
+    			event(MOUSE_UP, i+1, x, y);
+    			return;
+    		}
+    }
+    
+    public static void mouseCancel() {
+    	for(int i = 0; i < _MaxPointers; i++) {
+    		if(_PointersId[i] != -1) event(MOUSE_UP, i+1, 0, 0);
+    		_PointersId[i] = -1;
+    	}
+    }
+    
+    public static void saveGameAndExit() {
+    	event(SAVE_GAME, 0, 0, 0);
     }
     
     static {

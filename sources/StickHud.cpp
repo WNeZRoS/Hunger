@@ -30,13 +30,15 @@ bool StickHud::isVisible() const {
 	return _startX >= 0 && _startY >= 0;
 }
 
-bool StickHud::start(int x, int y) {
+bool StickHud::start(int x, int y, int pointer) {
+	if(pointer != Control::MOUSE_LEFT) return false;
 	_startX = _currentX = x;
 	_startY = _currentY = y;
 	return true;
 }
 
-void StickHud::update(int x, int y) {
+void StickHud::update(int x, int y, int pointer) {
+	if(pointer != Control::MOUSE_LEFT) return;
 	_currentX = x;
 	_currentY = y;
 
@@ -65,7 +67,8 @@ void StickHud::update(int x, int y) {
 		}
 }
 
-void StickHud::end() {
+void StickHud::end(int pointer) {
+	if(pointer != Control::MOUSE_LEFT) return;
 	_startX = _startY = -1;
 
 	for(int i = 0; i < 4; i++)

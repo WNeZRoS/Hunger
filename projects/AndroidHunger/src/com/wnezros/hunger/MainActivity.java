@@ -25,6 +25,11 @@ public class MainActivity extends Activity {
     }
     
     @Override
+    public void onSaveInstanceState(Bundle outState){
+        GameContext.saveGameAndExit();
+    }
+    
+    @Override
     protected void onPause() {
         super.onPause();
         _gameSurface.onPause();
@@ -59,7 +64,8 @@ public class MainActivity extends Activity {
 				"food.tga",
 				"map.tga",
 				"player.tga",
-				"test.map"
+				"test.map",
+				"font.ttf"
 		};
 		
 		final File dataPath = new File(Environment.getExternalStorageDirectory(), 

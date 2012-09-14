@@ -24,7 +24,11 @@ Texture * TextureManager::load(const char *textureName) {
 	for(std::list<TextureInfo>::iterator it = _textures.begin(); it != _textures.end(); it++) {
 		TextureInfo& info = *it;
 		if(std::strcmp(info.texturename, textureName) == 0) {
-			info.usage++;
+			if(!info.texture->isValidTexture()) {
+				delete info.texture;
+				info.texture = loadTexture(textureName);
+				info.usage = 1;
+			} else info.usage++;
 			Log::logger << Log::debug << "find loaded texture " << info.usage;
 			return info.texture;
 		}

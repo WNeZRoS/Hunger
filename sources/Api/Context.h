@@ -28,9 +28,9 @@ protected:
 	virtual void keyDownEvent(int key) { }
 	virtual void keyUpEvent(int key) { }
 	virtual void lostFocusEvent() { }
-	virtual void mouseMoveEvent(int x, int y) { }
-	virtual void mouseKeyDownEvent(int key) { }
-	virtual void mouseKeyUpEvent(int key) { }
+	virtual void mouseMoveEvent(int x, int y, int pointer) { }
+	virtual void mouseKeyDownEvent(int key, int x, int y) { }
+	virtual void mouseKeyUpEvent(int key, int x, int y) { }
 	virtual void resizeEvent(int width, int height) { }
 protected:
 	Render *_render;

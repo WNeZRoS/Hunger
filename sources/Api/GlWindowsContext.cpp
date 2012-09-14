@@ -397,25 +397,25 @@ LRESULT CALLBACK GlWindowsContext::WindowProc(HWND hWnd, UINT msg, WPARAM wParam
 		current->_running = false;
 		break;
 	case WM_MOUSEMOVE:
-		current->mouseMoveEvent(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		current->mouseMoveEvent(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), Control::MOUSE_LEFT);
 		break;
 	case WM_LBUTTONDOWN:
-		current->mouseKeyDownEvent(Control::MOUSE_LEFT);
+		current->mouseKeyDownEvent(Control::MOUSE_LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_LBUTTONUP:
-		current->mouseKeyUpEvent(Control::MOUSE_LEFT);
+		current->mouseKeyUpEvent(Control::MOUSE_LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_RBUTTONDOWN:
-		current->mouseKeyDownEvent(Control::MOUSE_RIGHT);
+		current->mouseKeyDownEvent(Control::MOUSE_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_RBUTTONUP:
-		current->mouseKeyUpEvent(Control::MOUSE_RIGHT);
+		current->mouseKeyUpEvent(Control::MOUSE_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_MBUTTONDOWN:
-		current->mouseKeyDownEvent(Control::MOUSE_MIDDLE);
+		current->mouseKeyDownEvent(Control::MOUSE_MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_MBUTTONUP:
-		current->mouseKeyUpEvent(Control::MOUSE_MIDDLE);
+		current->mouseKeyUpEvent(Control::MOUSE_MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 	case WM_SIZE:
 		current->resizeEvent(LOWORD(lParam), HIWORD(lParam));
@@ -480,14 +480,14 @@ void GlWindowsContext::keyUpEvent(int key) {
 	}
 }
 
-void GlWindowsContext::mouseMoveEvent(int x, int y) {
-	Control::instance().mouseMoveEvent(x, y);
+void GlWindowsContext::mouseMoveEvent(int x, int y, int pointer) {
+	Control::instance().mouseMoveEvent(x, y, pointer);
 }
-void GlWindowsContext::mouseKeyDownEvent(int key) {
-	Control::instance().mouseEvent(Control::STATE_PRESSED, static_cast<Control::Keys>(key));
+void GlWindowsContext::mouseKeyDownEvent(int key, int x, int y) {
+	Control::instance().mouseEvent(Control::STATE_PRESSED, static_cast<Control::Keys>(key), x, y);
 }
-void GlWindowsContext::mouseKeyUpEvent(int key) {
-	Control::instance().mouseEvent(Control::STATE_NO_PRESSED, static_cast<Control::Keys>(key));
+void GlWindowsContext::mouseKeyUpEvent(int key, int x, int y) {
+	Control::instance().mouseEvent(Control::STATE_NO_PRESSED, static_cast<Control::Keys>(key), x, y);
 }
 
 void GlWindowsContext::drawEvent() const {

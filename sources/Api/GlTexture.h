@@ -21,6 +21,7 @@ public:
 	void activate() const;
 	void deactivate() const;
 	static void unbind();
+	bool isValidTexture() const;
 
 	friend class GlRender;
 protected:

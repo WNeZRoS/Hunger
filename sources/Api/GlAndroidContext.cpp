@@ -50,6 +50,7 @@ void GlAndroidContext::setTitle(const XCHAR *title) {
 
 int GlAndroidContext::mainLoop() {
 	_running = true;
+	Control::instance().setMultiPointerMode(true);
 	return 0;
 }
 
@@ -112,14 +113,14 @@ void GlAndroidContext::keyUpEvent(int key) {
 	}
 }
 
-void GlAndroidContext::mouseMoveEvent(int x, int y) {
-	Control::instance().mouseMoveEvent(x, y);
+void GlAndroidContext::mouseMoveEvent(int x, int y, int pointer) {
+	Control::instance().mouseMoveEvent(x, y, pointer);
 }
-void GlAndroidContext::mouseKeyDownEvent(int key) {
-	Control::instance().mouseEvent(Control::STATE_PRESSED, static_cast<Control::Keys>(key));
+void GlAndroidContext::mouseKeyDownEvent(int key, int x, int y) {
+	Control::instance().mouseEvent(Control::STATE_PRESSED, static_cast<Control::Keys>(key), x, y);
 }
-void GlAndroidContext::mouseKeyUpEvent(int key) {
-	Control::instance().mouseEvent(Control::STATE_NO_PRESSED, static_cast<Control::Keys>(key));
+void GlAndroidContext::mouseKeyUpEvent(int key, int x, int y) {
+	Control::instance().mouseEvent(Control::STATE_NO_PRESSED, static_cast<Control::Keys>(key), x, y);
 }
 
 void GlAndroidContext::drawEvent() const {
@@ -130,7 +131,7 @@ void GlAndroidContext::resizeEvent(int width, int height) {
 	if(_render) _render->setResolution(width, height);
 }
 
-void javaEvents(int event, int p1, int p2) {
+void javaEvents(int event, int p1, int p2, int p3) {
 	if(!GlAndroidContext::_Context) return;
 
 	switch(event) {
@@ -140,9 +141,9 @@ void javaEvents(int event, int p1, int p2) {
 	case LOST_FOCUS: GlAndroidContext::_Context->lostFocusEvent(); break;
 	case KEY_DOWN: GlAndroidContext::_Context->keyDownEvent(p1); break;
 	case KEY_UP: GlAndroidContext::_Context->keyUpEvent(p1); break;
-	case MOUSE_MOVE: GlAndroidContext::_Context->mouseMoveEvent(p1, p2); break;
-	case MOUSE_DOWN: GlAndroidContext::_Context->mouseKeyDownEvent(p1); break;
-	case MOUSE_UP: GlAndroidContext::_Context->mouseKeyUpEvent(p1); break;
+	case MOUSE_MOVE: GlAndroidContext::_Context->mouseMoveEvent(p1, p2, p3); break;
+	case MOUSE_DOWN: GlAndroidContext::_Context->mouseKeyDownEvent(p1, p2, p3); break;
+	case MOUSE_UP: GlAndroidContext::_Context->mouseKeyUpEvent(p1, p2, p3); break;
 	case DRAW: GlAndroidContext::_Context->drawEvent(); break;
 	case RESIZE: GlAndroidContext::_Context->resizeEvent(p1, p2); break;
 	}
@@ -151,9 +152,9 @@ void javaEvents(int event, int p1, int p2) {
 int main(int argc, char *argv[]);
 
 extern "C" {
-	void Java_com_wnezros_hunger_GameContext_event(JNIEnv *env, jobject thiz, jint event, jint p1, jint p2) {
-		//if(event != DRAW) LOGI("Event %d: %d x %d\n", event, p1, p2);
-		javaEvents(event, p1, p2);
+	void Java_com_wnezros_hunger_GameContext_event(JNIEnv *env, jobject thiz, jint event, jint p1, jint p2, jint p3) {
+		//if(event != DRAW) LOGI("Event %d: %d x %d - %d\n", event, p1, p2, p3);
+		javaEvents(event, p1, p2, p3);
 		//if(event != DRAW) LOGD("Event %d: end\n", event);
 	}
 

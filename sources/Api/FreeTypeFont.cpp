@@ -8,13 +8,19 @@ FT_Library FreeTypeFont::_FreeType;
 
 FreeTypeFont::FreeTypeFont(const char *font, int size, bool monoSpace) {
 	if(_FreeTypeUsages == 0) {
-		if(FT_Init_FreeType(&_FreeType)) throw std::runtime_error("FT_Init_FreeType failed");
+		if(FT_Init_FreeType(&_FreeType)) {
+			Log::logger << Log::error << "FT_Init_FreeType failed";
+			throw std::runtime_error("FT_Init_FreeType failed");
+		}
 	}
 
 	_FreeTypeUsages++;
 
-	if(FT_New_Face(_FreeType, font, 0, &_face)) throw std::runtime_error("Load font face failed");
-	FT_Set_Char_Size(_face, size * 64, size * 64, 72, 72); // 72 -> 96
+	if(FT_New_Face(_FreeType, font, 0, &_face)) {
+		Log::logger << Log::error << "Load font face failed";
+		throw std::runtime_error("Load font face failed");
+	}
+	FT_Set_Char_Size(_face, size * 64, size * 64, 72, 72);
 
 	Render::getPainter()->setRenderTarget(_CacheSize, _CacheSize);
 	_cacheTexture = Render::getPainter()->getTexture();
@@ -131,8 +137,9 @@ unsigned int FreeTypeFont::cacheGlyph(XCHAR symbol) {
 	FT_BitmapGlyph bitmapGlyph = (FT_BitmapGlyph)glyph;
 	FT_Bitmap& bitmap = bitmapGlyph->bitmap;
 
-	unsigned char *data = new unsigned char[2 * _CacheSegmentSize * _CacheSegmentSize];
-	for(unsigned int i = 0; i < 2 * _CacheSegmentSize * _CacheSegmentSize; i++) data[i] = 0;
+	static const int bytesForPixel = 4;
+	unsigned char *data = new unsigned char[bytesForPixel * _CacheSegmentSize * _CacheSegmentSize];
+	for(unsigned int i = 0; i < bytesForPixel * _CacheSegmentSize * _CacheSegmentSize; i++) data[i] = 0;
 
 	int xof = (_CacheSegmentSize - bitmap.width) / 2;
 	if(xof > 0 && !_monoSpace) xof = 0;
@@ -141,8 +148,10 @@ unsigned int FreeTypeFont::cacheGlyph(XCHAR symbol) {
 		for (int w = xof < 0 ? -xof : 0; w < bitmap.width; w++) {
 			if(w + xof >= _CacheSegmentSize) break;
 			int luminance = bitmap.buffer[(bitmap.rows - h - 1) * bitmap.width + w];
-			data[(h * _CacheSegmentSize + w + xof) * 2] = 255;
-			data[(h * _CacheSegmentSize + w + xof) * 2 + 1] = luminance;
+			data[(h * _CacheSegmentSize + w + xof) * bytesForPixel] = 255;
+			data[(h * _CacheSegmentSize + w + xof) * bytesForPixel + 1] = 255;
+			data[(h * _CacheSegmentSize + w + xof) * bytesForPixel + 2] = 255;
+			data[(h * _CacheSegmentSize + w + xof) * bytesForPixel + 3] = luminance;
 		}
 	}
 
@@ -151,7 +160,7 @@ unsigned int FreeTypeFont::cacheGlyph(XCHAR symbol) {
 
 	if(y * _CacheSegmentSize > _CacheSize) return NO_GLYPH;
 	_cacheTexture->setSegment(data, x * _CacheSegmentSize, (_CacheSize / _CacheSegmentSize - y - 1) * _CacheSegmentSize,
-							  _CacheSegmentSize, _CacheSegmentSize, Texture::LUMINANCE_ALPHA);
+							  _CacheSegmentSize, _CacheSegmentSize, Texture::RGBA);
 
 	delete [] data;
 	//Log::Debug << "Bitmap " << _face->glyph->bitmap_top << " " << bitmap.width << " " << bitmap.rows;

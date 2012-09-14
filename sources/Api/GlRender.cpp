@@ -10,7 +10,9 @@
 GlRender::GlRender(int width, int height) {
 	_renderStopped = false;
 
-	ext::loadExts();
+	int extResult = ext::loadExts();
+	Log::Debug << "Load ext with end code " << extResult;
+	Log::Debug << "";
 
 	glEnable(GL_TEXTURE_2D);
 

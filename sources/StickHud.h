@@ -12,9 +12,9 @@ public:
 	void draw() const;
 	bool isVisible() const;
 
-	bool start(int x, int y);
-	void update(int x, int y);
-	void end();
+	bool start(int x, int y, int pointer);
+	void update(int x, int y, int pointer);
+	void end(int pointer);
 
 private:
 	int _startX, _startY;

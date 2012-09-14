@@ -2,17 +2,35 @@
 #define IMPORTGL_FNPTRINIT = NULL
 
 #include "importgl.h"
+#include "../Api/Logger.h"
 
-#define GET_PROC_ADDR wglGetProcAddress
-#define IMPORT_FUNC(funcName) { \
-	void * procAddress = (void *)GET_PROC_ADDR(#funcName); \
-	if (procAddress == NULL) result = 0; \
-	*((void **)&funcName) = procAddress; }
+#ifdef ANDROID_NDK
+#include <dlfcn.h>
+#endif
 
 namespace ext
 {
 int loadExts() {
 	int result = 0;
+
+#ifdef WIN32
+#define IMPORT_FUNC(funcName) { \
+	void * procAddress = (void *)wglGetProcAddress(#funcName); \
+	if (procAddress == NULL) { Log::Debug << "Fail load " << #funcName; result++;} \
+	*((void **)&funcName) = procAddress; }
+#endif
+
+#ifdef ANDROID_NDK
+	void *sGLESSO = dlopen("libGLESv1_CM.so", RTLD_NOW);
+	if(sGLESSO == NULL) return -1; // Cannot find OpenGL ES Common or Common Lite SO.
+
+#define GLESFN(funcName) (#funcName "OES")
+
+#define IMPORT_FUNC(funcName) { \
+	void *procAddress = (void *)dlsym(sGLESSO, GLESFN(funcName)); \
+	if (procAddress == NULL) { Log::Debug << "Fail load " << GLESFN(funcName); result++;} \
+	*((void **)&funcName) = procAddress; }
+#endif // ANDROID_NDK
 
 	IMPORT_FUNC(glIsRenderbuffer);
 	IMPORT_FUNC(glBindRenderbuffer);
@@ -31,6 +49,11 @@ int loadExts() {
 	IMPORT_FUNC(glFramebufferRenderbuffer);
 	IMPORT_FUNC(glGetFramebufferAttachmentParameteriv);
 	IMPORT_FUNC(glGenerateMipmap);
+
+#ifdef ANDROID_NDK
+	dlclose(sGLESSO);
+#endif
+
 	return result;
 }
 }
