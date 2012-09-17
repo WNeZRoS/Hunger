@@ -4,6 +4,7 @@
 #include "Logger.h"
 #include "World.h"
 #include "Interface.h"
+#include "compatibility.h"
 
 #include "GL/importgl.h"
 

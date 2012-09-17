@@ -2,6 +2,7 @@
 #include "GlRender.h"
 #include "Control.h"
 #include "Logger.h"
+#include "compatibility.h"
 
 #include "GL/importgl.h"
 

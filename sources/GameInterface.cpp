@@ -17,6 +17,13 @@ GameInterface::GameInterface() : Interface(Full) {
 	_scoreView->setBackground(0x00, 0x00, 0x00, 0x00);
 	addView(_scoreView);
 
+	_livesView = new TextView(_T("Lives: 0"), _font, 0.40f, 0, 0.20f, 0.05f);
+	_livesView->setTextAlign(Font::CENTER);
+	_livesView->setBackground(0x00, 0x00, 0x00, 0x00);
+	addView(_livesView);
+
+
+
 	_pauseButton = new ButtonView(_T("Pause"), _font, 0.00f, 0, 0.15f, 0.05f);
 	ButtonView::ClickEvent pauseClickEvent = { this, reinterpret_cast<ButtonView::ClickEventMethod>(&GameInterface::onPauseClick) };
 	_pauseButton->setOnClickEvent(pauseClickEvent);
@@ -47,6 +54,9 @@ void GameInterface::setScore(int score) {
 
 void GameInterface::setLives(int lives) {
 	_lives = lives;
+	std::XSTRINGSTREAM text;
+	text << "Lives: " << lives;
+	_livesView->setText(text.str());
 }
 
 void GameInterface::onPauseClick(ButtonView *button) {

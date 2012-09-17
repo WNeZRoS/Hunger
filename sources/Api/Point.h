@@ -49,6 +49,9 @@ struct Point
 	const Point operator * (const float& v) const;
 	const Point operator / (const float& v) const;
 
+	Point abs() const;
+	float length() const;
+	bool nan() const;
 	Point_i toPoint_i() const;
 
 	friend std::istream& operator >> (std::istream& in, Point& p);
@@ -95,6 +98,8 @@ struct Point_i
 	const Point_i operator * (const int& v) const;
 	const Point_i operator / (const int& v) const;
 
+	Point_i abs() const;
+	float length() const;
 	Point toPoint() const;
 
 	friend std::istream& operator >> (std::istream& in, Point_i& p);

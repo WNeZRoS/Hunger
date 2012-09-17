@@ -2,6 +2,7 @@
 #include "TextureAtlas.h"
 #include "Logger.h"
 #include "TextureManager.h"
+#include "compatibility.h"
 
 Texture::Texture() {
 	_atlas = 0;

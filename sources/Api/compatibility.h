@@ -48,73 +48,77 @@ void msSleep(unsigned int millis);
 template <typename T>
 struct Array
 {
-	unsigned int size;
-	T* items;
+private:
+	unsigned int _size;
+	T* _items;
 
+public:
 	Array() {
-		size = 0;
-		items = NULL;
+		_size = 0;
+		_items = NULL;
 	}
 
 	Array(unsigned int size) {
 		if(size > 0) {
-			items = new T[size];
-			this->size = size;
+			_items = new T[size];
+			this->_size = size;
 		} else {
-			this->size = 0;
-			this->items = NULL;
+			this->_size = 0;
+			this->_items = NULL;
 		}
 	}
 
 	~Array() {
-		if(items) delete [] items;
+		if(_items) delete [] _items;
 	}
 
 	void rebuild(unsigned int size) {
-		if(items) delete [] items;
+		if(_items) delete [] _items;
 		if(size > 0) {
-			items = new T[size];
-			this->size = size;
+			_items = new T[size];
+			this->_size = size;
 		} else {
-			this->size = 0;
-			this->items = NULL;
+			this->_size = 0;
+			this->_items = NULL;
 		}
 	}
 
 	void copy(const T* array, unsigned int size) {
-		if(this->items) delete [] items;
+		if(this->_items) delete [] _items;
 
-		this->size = size;
-		this->items = new T[this->size];
-		for(unsigned int i = 0; i < this->size; i++)
-			this->items[i] = array[i];
+		this->_size = size;
+		this->_items = new T[this->_size];
+		for(unsigned int i = 0; i < this->_size; i++)
+			this->_items[i] = array[i];
 	}
 
 	bool contains(const T& p) const {
-		for(unsigned int i = 0; i < size; i++)
-			if(items[i] == p) return true;
+		for(unsigned int i = 0; i < _size; i++)
+			if(_items[i] == p) return true;
 		return false;
 	}
 
 	Array<T>& operator = (const Array<T>& array) {
 		if(this == &array) return *this;
 
-		if(this->items) delete [] items;
+		if(this->_items) delete [] _items;
 
-		this->size = array.size;
-		this->items = new T[this->size];
-		for(unsigned int i = 0; i < this->size; i++)
-			this->items[i] = array.items[i];
+		this->_size = array._size;
+		this->_items = new T[this->_size];
+		for(unsigned int i = 0; i < this->_size; i++)
+			this->_items[i] = array._items[i];
 		return *this;
 	}
 
 	const T& operator [] (unsigned int index) const {
-		return items[index];
+		return _items[index];
 	}
 
 	T& operator [] (unsigned int index) {
-		return items[index];
+		return _items[index];
 	}
+
+	unsigned int size() const { return _size; }
 };
 
 #endif // COMPATIBILITY_H

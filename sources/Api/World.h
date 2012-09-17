@@ -24,6 +24,7 @@ public:
 	void setCenter(float x, float y);
 	void setScreenSize(int width, int height);
 
+	void restart();
 	void updated(const Entity *upd);
 protected:
 	Map *_map;

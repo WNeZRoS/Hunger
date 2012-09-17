@@ -1,6 +1,7 @@
 #include "FreeTypeFont.h"
 #include "Render.h"
 #include "Logger.h"
+#include "compatibility.h"
 #include <stdexcept>
 
 int FreeTypeFont::_FreeTypeUsages = 0;

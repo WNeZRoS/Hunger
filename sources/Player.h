@@ -7,7 +7,15 @@
 class Player : public Entity
 {
 public:
-	Player(const Texture::Name texture);
+	typedef void (Controller::*KillFunc)();
+
+	struct KillCallback
+	{
+		Controller *pointer;
+		KillFunc method;
+	};
+
+	Player(const Texture::Name texture, KillCallback killCallback);
 	~Player();
 
 	bool moveInDirection(int x, int y);
@@ -25,6 +33,7 @@ public:
 	bool isOverlap(const Point& center, int radius) const;
 	bool isOverlap(const Point& start, const Point& end) const;
 
+	bool isAngry() const;
 private:
 
 	class PlayerController : public Controller
@@ -43,11 +52,11 @@ private:
 		void addControlEventForKey(Control::Keys key);
 	};
 
-	World *_world;
 	LevelMap *_map;
 	TileSprite *_sprite;
 	TileSprite::Animation _moveAnimationLeft, _moveAnimationRight, _moveAnimationUp, _moveAnimationDown;
 	PlayerController *_controller;
+	KillCallback _killCallback;
 
 	float _speed;
 	Point_i _moveDirection;

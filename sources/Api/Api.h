@@ -34,4 +34,6 @@ typedef GlTexture XTexture;
 	typedef Texture XTexture;
 #endif
 
+#include "compatibility.h"
+
 #endif // API_H

@@ -9,8 +9,8 @@ class Context
 {
 
 public:
-	Context() { };
-	Context(const XCHAR *title, int width, int height) { };
+	Context() { }
+	Context(const XCHAR *title, int width, int height) { }
 	virtual ~Context() = 0;
 	virtual int mainLoop() = 0;
 

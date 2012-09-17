@@ -36,7 +36,9 @@ SOURCES += \
     ../sources/Api/View.cpp \
     ../sources/GameInterface.cpp \
     ../sources/Api/TextView.cpp \
-    ../sources/Api/ButtonView.cpp
+    ../sources/Api/ButtonView.cpp \
+    ../sources/Monster.cpp \
+    ../sources/Intelligence.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -74,7 +76,9 @@ HEADERS += \
     ../sources/Api/View.h \
     ../sources/GameInterface.h \
     ../sources/Api/TextView.h \
-    ../sources/Api/ButtonView.h
+    ../sources/Api/ButtonView.h \
+    ../sources/Monster.h \
+    ../sources/Intelligence.h
 
 INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG

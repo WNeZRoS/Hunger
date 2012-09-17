@@ -27,6 +27,7 @@ private:
 	Font *_font;
 	View *_panelView;
 	TextView *_scoreView;
+	TextView *_livesView;
 	ButtonView *_pauseButton;
 	//ImageView *_livesView;
 };

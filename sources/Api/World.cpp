@@ -1,4 +1,5 @@
 #include "World.h"
+#include "compatibility.h"
 
 using namespace std;
 
@@ -90,6 +91,14 @@ void World::updated(const Entity *upd) {
 		Entity* e = *it++;
 		if(e != upd && e->isOverlap(start, end))
 			e->onOverlapBy(upd, this);
+	}
+}
+
+void World::restart() {
+	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
+		(*it)->onChangeWorld(this);
+		(*it)->onResize(this);
+		(*it)->onWorldScroll(this);
 	}
 }
 

@@ -1,5 +1,6 @@
 #include "TextureManager.h"
 #include "Logger.h"
+#include "compatibility.h"
 #include <string>
 #include <cstring>
 

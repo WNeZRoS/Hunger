@@ -1,6 +1,7 @@
 #include "GlTexture.h"
 #include "TextureAtlas.h"
 #include "Logger.h"
+#include "compatibility.h"
 #include <cstdlib>
 
 #include "GL/importgl.h"

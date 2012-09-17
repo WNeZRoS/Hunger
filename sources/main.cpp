@@ -3,21 +3,23 @@
 #include "LevelMap.h"
 #include "Food.h"
 #include "StickHud.h"
-
-int va = 0;
-int &a() { return va; }
+#include "Monster.h"
 
 Main::Main() {
-	a() = 5;
 	Random::start(getCurrentTime());
 	//Log::logger.openLog("log.txt");
+
+	_gameInterface = NULL;
+	_context = NULL;
+	_intelligence = NULL;
 }
 
 Main::~Main() {
 	//delete _map;
 	//delete _player;
-	delete _gameInterface;
-	delete _context;
+	if(_intelligence) delete _intelligence;
+	if(_gameInterface) delete _gameInterface;
+	if(_context) delete _context;
 }
 
 bool Main::initialize() {
@@ -34,29 +36,37 @@ bool Main::initialize() {
 	_map = LevelMap::load("test.map", "map");
 	if(!_map) return false;
 
-	World *world = new World();
-	world->setMap(_map);
-	_render->setWorld(world);
+	_world = new World();
+	_world->setMap(_map);
+	_render->setWorld(_world);
 
-	_player = new Player("player");
-	world->addEntity(_player);
+	Player::KillCallback killCallback = { reinterpret_cast<Controller*>(this), reinterpret_cast<Player::KillFunc>(&Main::onKilled) };
+	_player = new Player("player", killCallback);
+	_world->addEntity(_player);
+
+	_intelligence = new Intelligence();
+	_intelligence->setTarget(_player);
+
+	Monster *monster = new Monster("monster", _intelligence, 15);
+	_world->addEntity(monster);
 
 	Array<Point> roads;
 	_map->getRoads(roads);
 	Food::EatCallback eatCallback = { reinterpret_cast<Controller*>(this), reinterpret_cast<Food::EatFunc>(&Main::onEat) };
-	for(unsigned int i = 0; i < roads.size; i++) {
-		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), 0, roads[i], eatCallback));
+	for(unsigned int i = 0; i < roads.size(); i++) {
+		_world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), 0, roads[i], eatCallback));
 	}
 
 	int values[3] = { 1, 2, 3 };
 	int chances[3] = { 40, 20, 40 };
 	Array<Point> foods = _map->getFoodSpawns();
-	for(unsigned int i = 0; i < foods.size; i++) {
-		world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), Random::rand(values, chances, 3),
+	for(unsigned int i = 0; i < foods.size(); i++) {
+		_world->addEntity(new Food(TextureAtlas::Loader("food", 2, 2), Random::rand(values, chances, 3),
 								  foods[i], eatCallback));
 	}
 
 	_gameInterface = new GameInterface();
+	_gameInterface->setLives(3);
 	_render->setInterface(_gameInterface);
 	return true;
 }
@@ -74,6 +84,12 @@ void Main::cleanup() {
 
 void Main::onEat(int type) {
 	_gameInterface->setScore(_gameInterface->getScore() + (type + 1) * 10);
+}
+
+void Main::onKilled() {
+	_gameInterface->setLives(_gameInterface->getLives() - 1);
+	_world->restart();
+
 }
 
 Main game;

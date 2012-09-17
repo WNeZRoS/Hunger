@@ -1,4 +1,5 @@
 #include "FileManager.h"
+#include "compatibility.h"
 #include <cstring>
 
 FileManager::FileManager() {

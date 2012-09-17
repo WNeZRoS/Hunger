@@ -1,6 +1,8 @@
 #include "Point.h"
 #include "Logger.h"
+#include "compatibility.h"
 #include <iomanip>
+#include <cmath>
 
 Point::Point() { this->x = this->y = 0; }
 Point::Point(float x, float y) { this->x = x; this->y = y; }
@@ -38,6 +40,9 @@ const Point Point::operator - (const float& v) const { return Point(*this) -= v;
 const Point Point::operator * (const float& v) const { return Point(*this) *= v; }
 const Point Point::operator / (const float& v) const { return Point(*this) /= v; }
 
+Point Point::abs() const { return Point(std::abs(x), std::abs(y)); }
+float Point::length() const { return std::sqrt(x * x + y * y); }
+bool Point::nan() const { return std::isnan(x) || std::isnan(y); }
 Point_i Point::toPoint_i() const { return Point_i(x, y); }
 
 std::istream& operator >> (std::istream& in, Point& p) {
@@ -95,6 +100,8 @@ const Point_i Point_i::operator - (const int& v) const { return Point_i(*this) -
 const Point_i Point_i::operator * (const int& v) const { return Point_i(*this) *= v; }
 const Point_i Point_i::operator / (const int& v) const { return Point_i(*this) /= v; }
 
+Point_i Point_i::abs() const { return Point_i(std::fabs(x), std::fabs(y)); }
+float Point_i::length() const { return std::sqrt(x * x + y * y); }
 Point Point_i::toPoint() const { return Point(x, y); }
 
 std::istream& operator >> (std::istream& in, Point_i& p) {

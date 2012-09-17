@@ -77,9 +77,48 @@ bool LevelMap::Tile::haveRoadAt(const Point& pos, int tileSize) const {
 }
 
 bool LevelMap::Tile::isRoad() const {
-	return _type == ROAD_LEFT || _type == ROAD_UP || _type == TOP_LEFT || _type == TOP_RIGHT
-			|| _type == T_DOWN || _type == BOTTOM_LEFT || _type == BOTTOM_RIGHT || _type == T_UP
-			|| _type == T_LEFT || _type == T_RIGHT || _type == CROSSROAD;
+	return _type != WALL && _type != GATE_CROSSROAD_LEFT && _type != GATE_CROSSROAD_TOP
+			&& _type != GATE_CROSSROAD_BOTTOM && _type != GATE_CROSSROAD_RIGHT && _type != FREE_1
+			&& _type != FREE_2 && _type != FREE_3;
+}
+
+bool LevelMap::Tile::isClear() const {
+	return _type == CL_TOP_LEFT || _type == CL_T_DOWN || _type == CL_TOP_RIGHT || _type == CL_T_LEFT
+			|| _type == CL_CROSSROAD || _type == CL_T_RIGHT || _type == CL_BOTTOM_LEFT
+			|| _type == CL_T_UP || _type == CL_BOTTOM_RIGHT || _type == CL_CROSSROAD_LEFT
+			|| _type == CL_CROSSROAD_TOP || _type == CL_CROSSROAD_BOTTOM || _type == CL_CROSSROAD_RIGHT;
+}
+
+bool LevelMap::Tile::isRoadUp() const {
+	return _type == ROAD_UP || _type == T_UP || _type == BOTTOM_LEFT || _type == BOTTOM_RIGHT
+			|| _type == T_LEFT || _type == T_RIGHT || _type == CROSSROAD || _type == CL_T_UP
+			|| _type == CL_T_LEFT || _type == CL_CROSSROAD || _type == CL_T_RIGHT
+			|| _type == CL_BOTTOM_LEFT || _type == CL_BOTTOM_RIGHT || _type == CL_CROSSROAD_LEFT
+			|| _type == CL_CROSSROAD_TOP || _type == CL_CROSSROAD_BOTTOM || _type == CL_CROSSROAD_RIGHT;
+}
+
+bool LevelMap::Tile::isRoadDown() const {
+	return _type == ROAD_UP || _type == TOP_LEFT || _type == TOP_RIGHT || _type == T_DOWN
+			|| _type == T_LEFT || _type == T_RIGHT || _type == CROSSROAD || _type == CL_TOP_LEFT
+			|| _type == CL_TOP_RIGHT || _type == CL_T_DOWN || _type == CL_T_LEFT
+			|| _type == CL_T_RIGHT || _type == CL_CROSSROAD || _type == CL_CROSSROAD_LEFT
+			|| _type == CL_CROSSROAD_TOP || _type == CL_CROSSROAD_BOTTOM || _type == CL_CROSSROAD_RIGHT;
+}
+
+bool LevelMap::Tile::isRoadLeft() const {
+	return _type == ROAD_LEFT || _type == TOP_RIGHT || _type == T_DOWN || _type == BOTTOM_RIGHT
+			|| _type == T_UP || _type == T_RIGHT || _type == CROSSROAD || _type == CL_TOP_RIGHT
+			|| _type == CL_T_DOWN || _type == CL_BOTTOM_RIGHT || _type == CL_T_UP
+			|| _type == CL_T_RIGHT || _type == CL_CROSSROAD || _type == CL_CROSSROAD_LEFT
+			|| _type == CL_CROSSROAD_TOP || _type == CL_CROSSROAD_BOTTOM || _type == CL_CROSSROAD_RIGHT;
+}
+
+bool LevelMap::Tile::isRoadRight() const {
+	return _type == ROAD_LEFT  || _type == TOP_LEFT || _type == T_DOWN || _type == BOTTOM_LEFT
+			|| _type == T_UP || _type == T_LEFT ||  _type == CROSSROAD || _type == CL_TOP_LEFT
+			|| _type == CL_T_DOWN || _type == CL_BOTTOM_LEFT || _type == CL_T_UP
+			|| _type == CL_T_LEFT || _type == CL_CROSSROAD || _type == CL_CROSSROAD_LEFT
+			|| _type == CL_CROSSROAD_TOP || _type == CL_CROSSROAD_BOTTOM || _type == CL_CROSSROAD_RIGHT;
 }
 
 bool LevelMap::Tile::canSetToRoad(Point& pos, int tileSize) const {
@@ -171,10 +210,11 @@ LevelMap * LevelMap::load(const char *filename, const Texture::Name tiles) {
 	Point_i playerSpawn, mobSpawn;
 	*file >> playerSpawn >> mobSpawn;
 
+	unsigned int foodSpawnSize;
 	Array<Point_i> foodSpawn;
-	*file >> foodSpawn.size;
-	foodSpawn.rebuild(foodSpawn.size);
-	for(unsigned int i = 0; i < foodSpawn.size; i++)
+	*file >> foodSpawnSize;
+	foodSpawn.rebuild(foodSpawnSize);
+	for(unsigned int i = 0; i < foodSpawn.size(); i++)
 		*file >> foodSpawn[i];
 
 	delete file;
@@ -251,8 +291,8 @@ Point LevelMap::getMobSpawnPosition() const {
 }
 
 Array<Point> LevelMap::getFoodSpawns() const {
-	Array<Point> foodSpawn(_foodSpawn.size);
-	for(unsigned int i = 0; i < foodSpawn.size; i++) {
+	Array<Point> foodSpawn(_foodSpawn.size());
+	for(unsigned int i = 0; i < foodSpawn.size(); i++) {
 		mapCoordinatesToGlobal(_foodSpawn[i], foodSpawn[i]);
 	}
 	return foodSpawn;
@@ -262,7 +302,7 @@ void LevelMap::getRoads(Array<Point>& roads) const {
 	vector<Point> vRoads;
 	for(Point_i i(1,1); i.y < _height - 1; i.y++)
 		for(i.x = 1; i.x < _width - 1; i.x++)
-			if(_playerSpawn != i && _map[i.y][i.x].isRoad() && !_foodSpawn.contains(i)) {
+			if(_playerSpawn != i && _map[i.y][i.x].isRoad() && !_map[i.y][i.x].isClear() && !_foodSpawn.contains(i)) {
 				Point point;
 				mapCoordinatesToGlobal(i, point);
 				//Log::logger << Log::debug << i << " -> " << point;
@@ -301,10 +341,7 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	//if(!getTileByCoords(fromTilePos).haveRoadAt(roadPos, _tileSize)) return false;
 
 	Point newPos = from + dir * speed;
-	if(newPos.x <= - _width * getOne() / 2.0f) newPos.x += _width * getOne();
-	else if(newPos.x >= _width * getOne() / 2.0f) newPos.x -= _width * getOne();
-	if(newPos.y <= - _height * getOne() / 2.0f) newPos.y += _height * getOne();
-	else if(newPos.y >= _height * getOne() / 2.0f) newPos.y -= _height * getOne();
+	this->turnToBounds(newPos);
 
 	Point_i newTilePos;
 	Point newRoadPos;
@@ -332,6 +369,112 @@ bool LevelMap::moveInDirection(Point& from, const Point &dir, float speed) const
 	return false;
 }
 
-float LevelMap::distance(Point tile1, const Point &tile2) const {
-	return std::max(ABS(tile1.x - tile2.x), ABS(tile1.y - tile2.y));
+unsigned int LevelMap::findMapPath(const Point_i& pfrom, const Point_i& to, const Point_i& noCross,
+								   unsigned int **&wasHere, unsigned int step) const {
+	Point_i from = pfrom;
+	if(from.x < 0 || from.x >= _width) from.x = (from.x + _width) % _width;
+	if(from.y < 0 || from.y >= _height) from.y = (from.y + _height) % _height;
+	if(wasHere[from.y][from.x] <= step) return -1;
+	if(!this->getTileByCoords(from).isRoad()) return -1;
+	if(from == noCross) return -1;
+	if(from == to) {
+		wasHere[from.y][from.x] = step;
+		return step;
+	}
+
+	static const Point_i vertical(0, 1), horizont(1, 0);
+
+	unsigned int prevState = wasHere[from.y][from.x];
+	wasHere[from.y][from.x] = step;
+	unsigned int min = -1;
+	if(this->getTileByCoords(from).isRoadUp()) {
+		unsigned int size = findMapPath(from - vertical, to, noCross, wasHere, step + 1);
+		if(size < min) min = size;
+	}
+
+	if(this->getTileByCoords(from).isRoadDown()) {
+		unsigned int size = findMapPath(from + vertical, to, noCross, wasHere, step + 1);
+		if(size < min) min = size;
+	}
+
+	if(this->getTileByCoords(from).isRoadLeft()) {
+		unsigned int size = findMapPath(from - horizont, to, noCross, wasHere, step + 1);
+		if(size < min) min = size;
+	}
+
+	if(this->getTileByCoords(from).isRoadRight()) {
+		unsigned int size = findMapPath(from + horizont, to, noCross, wasHere, step + 1);
+		if(size < min) min = size;
+	}
+
+	if(min == static_cast<unsigned int>(-1)) {
+		wasHere[from.y][from.x] = prevState;
+	}
+
+	return min;
+}
+
+void LevelMap::findPath(const Point &from, const Point &to, Array<PathSegment> &path) const {
+	this->findPath(from, to, path, Point(NAN, NAN));
+}
+
+void LevelMap::backPath(const Point_i& pto, Array<PathSegment> &path, unsigned int **wasHere, unsigned int step) const {
+	Point_i to = pto;
+	if(to.x < 0 || to.x >= _width) to.x = (to.x + _width) % _width;
+	if(to.y < 0 || to.y >= _height) to.y = (to.y + _height) % _height;
+	if(wasHere[to.y][to.x] != step) return;
+
+	PathSegment ps;
+	this->mapCoordinatesToGlobal(to, ps.target);
+	path[step - 1] = ps;
+
+	if(step > 1) {
+		static const Point_i vertical(0, 1), horizont(1, 0);
+		backPath(to - vertical, path, wasHere, step - 1);
+		backPath(to + vertical, path, wasHere, step - 1);
+		backPath(to - horizont, path, wasHere, step - 1);
+		backPath(to + horizont, path, wasHere, step - 1);
+	}
+}
+
+void LevelMap::findPath(const Point& from, const Point& to, Array<PathSegment> &path, const Point& doNoCross) const {
+	Point_i tileFrom, tileTo, tileNoCross(-1, -1);
+	this->globalCoordinatesToMap(from, tileFrom);
+	this->globalCoordinatesToMap(to, tileTo);
+	if(!doNoCross.nan()) this->globalCoordinatesToMap(doNoCross, tileNoCross);
+
+	unsigned int **wasHere = new unsigned int*[_height];
+	for(int i = 0; i < _height; i++) {
+		wasHere[i] = new unsigned int[_width];
+		for(int j = 0; j < _width; j++) wasHere[i][j] = -1;
+	}
+
+	unsigned int size = findMapPath(tileFrom, tileTo, tileNoCross, wasHere, 0);
+	if(size > 0 && size != static_cast<unsigned int>(-1)) {
+		path.rebuild(size);
+		backPath(tileTo, path, wasHere, size);
+	}
+
+	for(int i = 0; i < _height; i++) delete [] wasHere;
+	delete wasHere;
+}
+
+bool LevelMap::isOneTile(const Point& globalPos1, const Point& globalPos2) const {
+	Point_i tilePos1, tilePos2;
+	this->globalCoordinatesToMap(globalPos1, tilePos1);
+	this->globalCoordinatesToMap(globalPos2, tilePos2);
+	return tilePos1 == tilePos2;
+}
+
+bool LevelMap::isRoad(const Point &globalPos) const {
+	Point_i tilePos;
+	this->globalCoordinatesToMap(globalPos, tilePos);
+	return getTileByCoords(tilePos).isRoad();
+}
+
+void LevelMap::turnToBounds(Point &globalPos) const {
+	if(globalPos.x <= - _width * getOne() / 2.0f) globalPos.x += _width * getOne();
+	else if(globalPos.x >= _width * getOne() / 2.0f) globalPos.x -= _width * getOne();
+	if(globalPos.y <= - _height * getOne() / 2.0f) globalPos.y += _height * getOne();
+	else if(globalPos.y >= _height * getOne() / 2.0f) globalPos.y -= _height * getOne();
 }

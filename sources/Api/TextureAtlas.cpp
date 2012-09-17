@@ -1,6 +1,7 @@
 #include "TextureAtlas.h"
 #include "Render.h"
 #include "TextureManager.h"
+#include "compatibility.h"
 #include <cmath>
 #include "Logger.h"
 

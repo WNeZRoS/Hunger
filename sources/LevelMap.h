@@ -35,7 +35,13 @@ public:
 		const TileType& type() const;
 		bool haveRoadAt(const Point& pos, int tileSize) const;
 		bool isRoad() const;
+		bool isClear() const;
 		bool canSetToRoad(Point& pos, int tileSize) const;
+
+		bool isRoadUp() const;
+		bool isRoadDown() const;
+		bool isRoadLeft() const;
+		bool isRoadRight() const;
 
 		friend std::istream& operator >> (std::istream& in, Tile& t);
 	private:
@@ -45,6 +51,11 @@ public:
 		bool isCenterBottom(const Point& pos, float halfSize) const;
 		bool isLeftCenter(const Point& pos, float halfSize) const;
 		bool isRightCenter(const Point& pos, float halfSize) const;
+	};
+
+	struct PathSegment
+	{
+		Point target;
 	};
 
 	LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
@@ -66,7 +77,12 @@ public:
 	void mapCoordinatesToGlobal(const Point_i& map, Point& coord) const;
 
 	bool moveInDirection(Point& from, const Point& dir, float speed = 1.0f) const;
-	float distance(Point tile1, const Point& tile2) const;
+
+	void findPath(const Point& from, const Point& to, Array<PathSegment> &path, const Point& doNoCross) const;
+	void findPath(const Point& from, const Point& to, Array<PathSegment> &path) const;
+	bool isOneTile(const Point& globalPos1, const Point& globalPos2) const;
+	bool isRoad(const Point& globalPos) const;
+	void turnToBounds(Point& globalPos) const;
 private:
 	const Tile **_map;
 	int _width, _height;
@@ -78,8 +94,12 @@ private:
 	void setCenter(float x, float y);
 	void setTileSize(int size);
 
-	const Tile& getTileByCoords(const Point_i& coord) const;
+	inline const Tile& getTileByCoords(const Point_i& tileCoord) const;
 	void getPositions(const Point& pos, Point_i& tilePos, Point& roadPos) const;
+
+	unsigned int findMapPath(const Point_i& from, const Point_i& to, const Point_i& noCross,
+							 unsigned int **&wasHere, unsigned int step) const;
+	void backPath(const Point_i& to, Array<PathSegment> &path, unsigned int **wasHere, unsigned int step) const;
 };
 
 #endif // LEVELMAP_H

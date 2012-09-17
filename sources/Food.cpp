@@ -16,6 +16,7 @@ Food::~Food() {
 }
 
 void Food::onChangeWorld(const World *world) {
+	Entity::onChangeWorld(world);
 	if(_map) _position -= _map->getOne() / 2;
 	_map = reinterpret_cast<LevelMap*>(world->getMap());
 	if(_map) _position += _map->getOne() / 2.0f;
@@ -32,9 +33,9 @@ void Food::onWorldScroll(const World *world) {
 }
 
 void Food::onOverlapBy(const Entity *overlap, const World *world) {
-	Log::logger << Log::debug << "overlap food by " << overlap->getCategory() << " world " << world;
+	//Log::logger << Log::debug << "overlap food by " << overlap->getCategory() << " world " << world;
 	if(overlap->getCategory() == PLAYER) {
-		if(_eatCallback.pointer) (_eatCallback.pointer->*(_eatCallback.method))(_tileId);
+		if(_eatCallback.method) (_eatCallback.pointer->*(_eatCallback.method))(_tileId);
 		const_cast<World*>(world)->removeEntity(this);
 	}
 }

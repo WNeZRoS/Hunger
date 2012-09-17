@@ -1,8 +1,9 @@
 #include "Player.h"
 #include <cmath>
 
-Player::Player(const Texture::Name texture) {
+Player::Player(const Texture::Name texture, KillCallback killCallback) {
 	_sprite = TileSprite::create(TextureAtlas::Loader(texture, 4, 4), 0, 0, 10);
+	_killCallback = killCallback;
 
 	_speed = 1;
 	_moveDirection = 0;
@@ -41,10 +42,11 @@ Player::~Player() {
 }
 
 void Player::onChangeWorld(const World *world) {
-	_world = const_cast<World*>(world);
+	Entity::onChangeWorld(world);
 	_map = reinterpret_cast<LevelMap*>(world->getMap());
 	if(!_map) return;
 	_position = _map->getPlayerSpawnPosition() + (_map->getOne() / 2.0f);
+	_lastPosition = _position;
 	_speed = _map->getOne() / 15.0f;
 }
 
@@ -60,7 +62,10 @@ void Player::onWorldScroll(const World *world) {
 }
 
 void Player::onOverlapBy(const Entity *overlap, const World *world) {
-	// TODO
+	Log::Debug << "Player overlap by " << overlap->getCategory();
+	if(overlap->getCategory() == NPC) {
+		if(_killCallback.method) (_killCallback.pointer->*(_killCallback.method))();
+	}
 }
 
 const Entity::Category Player::getCategory() const {
@@ -76,7 +81,7 @@ bool Player::isOverlap(const Point &center, int radius) const {
 }
 
 bool Player::isOverlap(const Point &start, const Point &end) const {
-	return false; // TODO
+	return start <= _position && _position <= end;
 }
 
 bool Player::moveInDirection(int x, int y) {
@@ -112,6 +117,7 @@ bool Player::move(float x, float y) {
 		if(dir.x > 100 || dir.x < -100) dir.x *= -1;
 		if(dir.y > 100 || dir.y < -100) dir.y *= -1;
 
+		_lastPosition = _position;
 		_position = position;
 
 		if(dir.x < 0 && std::abs(dir.x) > std::abs(dir.y)) _sprite->replaceAnimation(_moveAnimationLeft);
@@ -125,6 +131,10 @@ bool Player::move(float x, float y) {
 
 		return true;
 	}
+	return false;
+}
+
+bool Player::isAngry() const {
 	return false;
 }
 

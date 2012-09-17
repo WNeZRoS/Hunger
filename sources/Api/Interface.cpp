@@ -1,4 +1,5 @@
 #include "Interface.h"
+#include "compatibility.h"
 
 Interface::Interface(RenderMode renderMode) {
 	_renderMode = renderMode;
