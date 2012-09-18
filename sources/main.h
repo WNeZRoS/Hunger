@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "GameInterface.h"
 #include "Intelligence.h"
+#include "GameWorld.h"
 
 class Main
 {
@@ -23,7 +24,7 @@ private:
 
 	Context *_context;
 	Render *_render;
-	World *_world;
+	GameWorld *_world;
 	LevelMap *_map;
 	Player *_player;
 	Intelligence *_intelligence;

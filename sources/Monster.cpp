@@ -1,5 +1,6 @@
 #include "Monster.h"
 #include "Intelligence.h"
+#include "Player.h"
 #include <cmath>
 
 Monster::Monster(const Texture::Name texture, Intelligence *intelligence, float speed) {
@@ -63,6 +64,14 @@ void Monster::onWorldScroll(const World *world) {
 
 void Monster::onOverlapBy(const Entity *overlap, const World *world) {
 	Log::Debug << "Monster overlap by " << overlap->getCategory();
+	if(overlap->getCategory() == Entity::PLAYER) {
+		Player *player = reinterpret_cast<Player*>(const_cast<Entity*>(overlap)); // Double cast ???
+		if(player->isAngry()) {
+			// TODO: eat monster
+		} else {
+			player->onOverlapBy(this, world);
+		}
+	}
 }
 
 const Entity::Category Monster::getCategory() const {

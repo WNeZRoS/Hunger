@@ -9,23 +9,23 @@ class World
 {
 public:
 	World();
-	~World();
+	virtual ~World();
 
-	void draw();
+	virtual void draw();
 
-	void setMap(const Map *map);
-	Map * getMap() const;
+	virtual void setMap(const Map *map);
+	virtual Map * getMap() const;
 
-	int addEntity(const Entity *entity);
-	void removeEntity(Entity *entity);
-	Entity * getEntity(int id) const;
-	unsigned int getEntitiesCount() const;
+	virtual int addEntity(const Entity *entity);
+	virtual void removeEntity(Entity *entity);
+	virtual Entity * getEntity(int id) const;
+	virtual unsigned int getEntitiesCount() const;
 
-	void setCenter(float x, float y);
-	void setScreenSize(int width, int height);
+	virtual void setCenter(float x, float y);
+	virtual void setScreenSize(int width, int height);
 
-	void restart();
-	void updated(const Entity *upd);
+	virtual void restart();
+	virtual void updated(const Entity *upd);
 protected:
 	Map *_map;
 	std::list<Entity*> _entities;

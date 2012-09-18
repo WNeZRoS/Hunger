@@ -157,13 +157,39 @@ bool LevelMap::Tile::isRightCenter(const Point& pos, float halfSize) const {
 	return pos.x >= halfSize && equal(pos.y, halfSize);
 }
 
+bool LevelMap::Tile::isGate() const {
+	return _type == GATE_CROSSROAD_LEFT || _type == GATE_CROSSROAD_TOP
+			|| _type == GATE_CROSSROAD_RIGHT || _type == GATE_CROSSROAD_BOTTOM || _type == CL_CROSSROAD_LEFT
+			|| _type == CL_CROSSROAD_TOP || _type == CL_CROSSROAD_BOTTOM || _type == CL_CROSSROAD_RIGHT;
+}
+
+void LevelMap::Tile::openGate() {
+	switch(_type) {
+	case GATE_CROSSROAD_LEFT: _type = CL_CROSSROAD_LEFT; break;
+	case GATE_CROSSROAD_TOP: _type = CL_CROSSROAD_TOP; break;
+	case GATE_CROSSROAD_RIGHT: _type = CL_CROSSROAD_RIGHT; break;
+	case GATE_CROSSROAD_BOTTOM: _type = CL_CROSSROAD_BOTTOM; break;
+	default: break;
+	}
+}
+
+void LevelMap::Tile::closeGate() {
+	switch(_type) {
+	case CL_CROSSROAD_LEFT: _type = GATE_CROSSROAD_LEFT; break;
+	case CL_CROSSROAD_TOP: _type = GATE_CROSSROAD_TOP; break;
+	case CL_CROSSROAD_RIGHT: _type = GATE_CROSSROAD_RIGHT; break;
+	case CL_CROSSROAD_BOTTOM: _type = GATE_CROSSROAD_BOTTOM; break;
+	default: break;
+	}
+}
+
 // LevelMap class
 
 LevelMap::LevelMap(const Tile **map, int width, int height, const Texture::Name tiles,
 				   const Point_i& playerSpawn, const Point_i& mobSpawn, Array<Point_i>& foodSpawn) {
 	if(!map || !tiles || width <= 0 || height <= 0) throw std::runtime_error("Incorrect arguments");
 
-	_map = map;
+	_map = const_cast<Tile**>(map);
 	_width = width;
 	_height = height;
 	_tiles = TextureAtlas::Loader(tiles, 8, 4).load();
@@ -320,6 +346,22 @@ void LevelMap::draw() const {
 			_tiles->drawTile(_map[y >= _height ? _height - 1 : (y < 0 ? 0 : y)]
 												 [x >= _width ? _width - 1 : (x < 0 ? 0 : x)].type(),
 							 _xOffset + x * _tileSize, _yOffset + y * _tileSize, 0, _tileSize, _tileSize);
+		}
+	}
+}
+
+void LevelMap::openGates() {
+	for(int y = 0; y < _height; y++) {
+		for(int x = 0; x < _width; x++) {
+			if(_map[y][x].isGate()) _map[y][x].openGate();
+		}
+	}
+}
+
+void LevelMap::closeGates() {
+	for(int y = 0; y < _height; y++) {
+		for(int x = 0; x < _width; x++) {
+			if(_map[y][x].isGate()) _map[y][x].closeGate();
 		}
 	}
 }

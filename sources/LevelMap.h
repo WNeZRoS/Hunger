@@ -33,15 +33,21 @@ public:
 		~Tile();
 
 		const TileType& type() const;
+
+		bool canSetToRoad(Point& pos, int tileSize) const;
 		bool haveRoadAt(const Point& pos, int tileSize) const;
+
 		bool isRoad() const;
 		bool isClear() const;
-		bool canSetToRoad(Point& pos, int tileSize) const;
 
 		bool isRoadUp() const;
 		bool isRoadDown() const;
 		bool isRoadLeft() const;
 		bool isRoadRight() const;
+
+		bool isGate() const;
+		void openGate();
+		void closeGate();
 
 		friend std::istream& operator >> (std::istream& in, Tile& t);
 	private:
@@ -77,6 +83,8 @@ public:
 	void mapCoordinatesToGlobal(const Point_i& map, Point& coord) const;
 
 	bool moveInDirection(Point& from, const Point& dir, float speed = 1.0f) const;
+	void openGates();
+	void closeGates();
 
 	void findPath(const Point& from, const Point& to, Array<PathSegment> &path, const Point& doNoCross) const;
 	void findPath(const Point& from, const Point& to, Array<PathSegment> &path) const;
@@ -84,7 +92,7 @@ public:
 	bool isRoad(const Point& globalPos) const;
 	void turnToBounds(Point& globalPos) const;
 private:
-	const Tile **_map;
+	Tile **_map;
 	int _width, _height;
 	Point_i _playerSpawn, _mobSpawn;
 	Array<Point_i> _foodSpawn;

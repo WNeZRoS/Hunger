@@ -2,8 +2,8 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-win32:LIBS += -L../libs/lib-x86 -lopengl32 -lgdi32 -lfreetype -static
-unix:LIBS += -lgl -lfreetype
+win32:LIBS += -L../libs/lib-x86 -lopengl32 -lgdi32 -lfreetype -lpthread -static
+unix:LIBS += -lgl -lfreetype  -lpthread
 
 SOURCES += \
     ../sources/Api/GlRender.cpp \
@@ -38,7 +38,9 @@ SOURCES += \
     ../sources/Api/TextView.cpp \
     ../sources/Api/ButtonView.cpp \
     ../sources/Monster.cpp \
-    ../sources/Intelligence.cpp
+    ../sources/Intelligence.cpp \
+    ../sources/GameWorld.cpp \
+    ../sources/Api/Thread.cpp
 
 HEADERS += \
     ../sources/Api/Render.h \
@@ -78,7 +80,9 @@ HEADERS += \
     ../sources/Api/TextView.h \
     ../sources/Api/ButtonView.h \
     ../sources/Monster.h \
-    ../sources/Intelligence.h
+    ../sources/Intelligence.h \
+    ../sources/GameWorld.h \
+    ../sources/Api/Thread.h
 
 INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG

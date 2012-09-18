@@ -36,7 +36,7 @@ bool Main::initialize() {
 	_map = LevelMap::load("test.map", "map");
 	if(!_map) return false;
 
-	_world = new World();
+	_world = new GameWorld();
 	_world->setMap(_map);
 	_render->setWorld(_world);
 
