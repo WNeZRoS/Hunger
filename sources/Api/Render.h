@@ -12,12 +12,12 @@ public:
 	{
 	public:
 		virtual ~Painter() = 0;
-		virtual Texture * getTexture() = 0;
-		virtual void setColor(char r, char g, char b, char a = 0xFF) = 0;
-		virtual void setCotor(char r, char g, char b, char a = 0xFF) = 0;
-		virtual void setLineWidth(int width) = 0;
-		virtual void setRenderTarget(Texture *texture) = 0;
-		virtual void setRenderTarget(int width, int height) = 0;
+		virtual Texture * getTexture() { return 0; }
+		virtual void setColor(char r, char g, char b, char a = 0xFF) { }
+		virtual void setCotor(char r, char g, char b, char a = 0xFF) { }
+		virtual void setLineWidth(int width) { }
+		virtual void setRenderTarget(Texture *texture) { }
+		virtual void setRenderTarget(int width, int height) { }
 		virtual void pixel(float x, float y, float z = 99.0f) const = 0;
 		virtual void line(float fromX, float fromY, float toX, float toY, float z = 99.0f) const = 0;
 		virtual void rect(float fromX, float fromY, float toX, float toY, float z = 99.0f, bool fill = true) const = 0;

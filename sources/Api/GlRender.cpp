@@ -13,7 +13,6 @@ GlRender::GlRender(int width, int height) {
 
 	int extResult = ext::loadExts();
 	Log::Debug << "Load ext with end code " << extResult;
-	Log::Debug << "";
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -39,7 +38,6 @@ GlRender::GlRender(int width, int height) {
 	_interface = NULL;
 	setResolution(width, height);
 }
-
 
 GlRender::~GlRender() {
 	delete _Painter;

@@ -25,7 +25,8 @@ std::ofstream* FileManager::write(const char *filename, bool binary) {
 	return new std::ofstream(path.c_str(), binary ? std::ios::out | std::ios::binary : std::ios::out);
 }
 
-void FileManager::getPath(const char *filename, char *result) {
+void FileManager::getPath(const char *filename, char*& result) {
 	std::string path = _pwd + filename;
+	result = new char[path.size() + 1];
 	std::strcpy(result, path.c_str());
 }

@@ -7,10 +7,11 @@ GameInterface::GameInterface() : Interface(Full) {
 	_panelView->setBackground(0x0, 0x0, 0x0, 0x66);
 	_panelView->setBorderColor(0xFF, 0xFF, 0xFF, 0x55);
 	addView(_panelView);
-
-	char fontPath[256];
+	
+	char *fontPath = 0;
 	FileManager::instance().getPath("font.ttf", fontPath);
-	_font = new FreeTypeFont(fontPath, 16);
+	_font = FreeTypeFont::create(fontPath, 16);
+	delete fontPath;
 
 	_scoreView = new TextView(_T("Score: 0"), _font, 0.75f, 0, 0.24f, 0.05f);
 	_scoreView->setTextAlign(Font::RIGHT);
@@ -21,8 +22,6 @@ GameInterface::GameInterface() : Interface(Full) {
 	_livesView->setTextAlign(Font::CENTER);
 	_livesView->setBackground(0x00, 0x00, 0x00, 0x00);
 	addView(_livesView);
-
-
 
 	_pauseButton = new ButtonView(_T("Pause"), _font, 0.00f, 0, 0.15f, 0.05f);
 	ButtonView::ClickEvent pauseClickEvent = { this, reinterpret_cast<ButtonView::ClickEventMethod>(&GameInterface::onPauseClick) };
@@ -61,4 +60,9 @@ void GameInterface::setLives(int lives) {
 
 void GameInterface::onPauseClick(ButtonView *button) {
 
+}
+
+void GameInterface::draw() const {
+	Interface::draw();
+	//_font->render(_T("Draw cache"), 10.0f, 50.0f);
 }

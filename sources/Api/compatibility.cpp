@@ -11,11 +11,32 @@
 #include <cmath>
 #include <limits>
 
+#include "Thread.h"
+FakeMutex timeMutex;
+
+#define ABS(x) mabs(x)
+
+short mabs(short x) { if(x < 0) return -x; return x; }
+int mabs(int x) { if(x < 0) return -x; return x; }
+long mabs(long x) { if(x < 0) return -x; return x; }
+float mabs(float x) { if(x < 0) return -x; return x; }
+double mabs(double x) { if(x < 0) return -x; return x; }
+bool isNaN(float x) {
+#ifdef _MSC_VER
+	return _isnan(x);
+#else
+	return std::isnan(x);
+#endif
+}
+
 Timestamp getCurrentTime() {
 #ifdef WIN32
+	timeMutex.lock();
 	SYSTEMTIME st;
 	GetSystemTime(&st);
-	return (time(NULL) * 1000 + st.wMilliseconds);
+	Timestamp t = (time(NULL) * 1000 + st.wMilliseconds);
+	timeMutex.unlock();
+	return t;
 #else
 	timeval tv;
 	gettimeofday(&tv, 0);
@@ -25,6 +46,7 @@ Timestamp getCurrentTime() {
 
 void getTime(Time& currentTime) {
 #ifdef WIN32
+	timeMutex.lock();
 	SYSTEMTIME sm;
 	GetLocalTime(&sm);
 	currentTime.year = sm.wYear;
@@ -35,6 +57,7 @@ void getTime(Time& currentTime) {
 	currentTime.minute = sm.wMinute;
 	currentTime.second = sm.wSecond;
 	currentTime.milliseconds = sm.wMilliseconds;
+	timeMutex.unlock();
 #else
 	time_t timet = time(NULL);
 	tm *local = localtime(&timet);

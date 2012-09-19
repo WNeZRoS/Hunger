@@ -3,14 +3,15 @@
 
 #include "TextView.h"
 
+class Interface;
+
 class ButtonView : public TextView
 {
 public:
-	class Events { };
-	typedef void (Events::*ClickEventMethod)(ButtonView *button);
+	typedef void (Interface::*ClickEventMethod)(ButtonView *button);
 	struct ClickEvent
 	{
-		Events *instance;
+		Interface *instance;
 		ClickEventMethod method;
 	};
 

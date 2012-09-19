@@ -6,9 +6,9 @@
 
 Point::Point() { this->x = this->y = 0; }
 Point::Point(float x, float y) { this->x = x; this->y = y; }
-bool Point::operator == (const Point& p) const { return x == p.x && y == p.y; }
+bool Point::operator == (const Point& p) const { return equal(x, p.x) && equal(y, p.y); }
 bool Point::operator != (const Point& p) const { return !(*this == p); }
-bool Point::operator == (const float& v) const { return x == v && y == v; }
+bool Point::operator == (const float& v) const { return equal(x, v) && equal(y, v); }
 bool Point::operator != (const float& v) const { return !(*this == v); }
 
 bool Point::operator > (const Point& p) const { return x > p.x && y > p.y; }
@@ -40,9 +40,9 @@ const Point Point::operator - (const float& v) const { return Point(*this) -= v;
 const Point Point::operator * (const float& v) const { return Point(*this) *= v; }
 const Point Point::operator / (const float& v) const { return Point(*this) /= v; }
 
-Point Point::abs() const { return Point(std::abs(x), std::abs(y)); }
+Point Point::abs() const { return Point(mabs(x), mabs(y)); }
 float Point::length() const { return std::sqrt(x * x + y * y); }
-bool Point::nan() const { return std::isnan(x) || std::isnan(y); }
+bool Point::nan() const { return isNaN(x) || isNaN(y); }
 Point_i Point::toPoint_i() const { return Point_i(x, y); }
 
 std::istream& operator >> (std::istream& in, Point& p) {
@@ -100,8 +100,8 @@ const Point_i Point_i::operator - (const int& v) const { return Point_i(*this) -
 const Point_i Point_i::operator * (const int& v) const { return Point_i(*this) *= v; }
 const Point_i Point_i::operator / (const int& v) const { return Point_i(*this) /= v; }
 
-Point_i Point_i::abs() const { return Point_i(std::fabs(x), std::fabs(y)); }
-float Point_i::length() const { return std::sqrt(x * x + y * y); }
+Point_i Point_i::abs() const { return Point_i(mabs(x), mabs(y)); }
+float Point_i::length() const { return std::sqrt(static_cast<float>(x * x + y * y)); }
 Point Point_i::toPoint() const { return Point(x, y); }
 
 std::istream& operator >> (std::istream& in, Point_i& p) {

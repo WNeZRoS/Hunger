@@ -12,8 +12,10 @@ public:
 	Monster(const Texture::Name texture, Intelligence *intelligence, float speed);
 	~Monster();
 
+	void move();
 	bool moveTo(const Point& stop);
 	void stop();
+	Timestamp lastMotion();
 
 	void draw();
 
@@ -37,8 +39,9 @@ private:
 	Point_i _moveDirection;
 	Point _stop;
 	Timestamp _lastMoveTime;
+	Timestamp _moveTime;
+	Mutex _moveMutex;
 
-	void move();
 	bool move(float x, float y);
 };
 

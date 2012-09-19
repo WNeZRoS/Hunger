@@ -34,9 +34,9 @@ public:
 	  Get file path for filename
 	  @param filename filename
 	  @param result
-	  result of "Current directory" + filename. Its safe to use (you can write getPath(a, a).
+	  result of "Current directory" + filename. You must use not defined char* (char *a = 0) or get memory leaks.
 	  */
-	void getPath(const char *filename, char *result);
+	void getPath(const char *filename, char*& result);
 private:
 	FileManager();
 

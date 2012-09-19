@@ -86,3 +86,5 @@ HEADERS += \
 
 INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG
+QMAKE_CXXFLAGS += -Wall -O2 -Wold-style-cast #-Weffc++
+QMAKE_CXXFLAGS += -Winit-self #-Wunreachable-code -Wconversion -Wsign-conversion

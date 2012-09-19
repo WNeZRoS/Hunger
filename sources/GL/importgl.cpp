@@ -15,9 +15,9 @@ int loadExts() {
 
 #ifdef WIN32
 #define IMPORT_FUNC(funcName) { \
-	void * procAddress = (void *)wglGetProcAddress(#funcName); \
+	void *procAddress = reinterpret_cast<void*>(wglGetProcAddress(#funcName)); \
 	if (procAddress == NULL) { Log::Debug << "Fail load " << #funcName; result++;} \
-	*((void **)&funcName) = procAddress; }
+	*(reinterpret_cast<void**>(&funcName)) = procAddress; }
 #endif
 
 #ifdef ANDROID_NDK
@@ -27,9 +27,9 @@ int loadExts() {
 #define GLESFN(funcName) (#funcName "OES")
 
 #define IMPORT_FUNC(funcName) { \
-	void *procAddress = (void *)dlsym(sGLESSO, GLESFN(funcName)); \
+	void *procAddress = reinterpret_cast<void*>(dlsym(sGLESSO, GLESFN(funcName)); \
 	if (procAddress == NULL) { Log::Debug << "Fail load " << GLESFN(funcName); result++;} \
-	*((void **)&funcName) = procAddress; }
+	*(reinterpret_cast<void**>(&funcName)) = procAddress; }
 #endif // ANDROID_NDK
 
 	IMPORT_FUNC(glIsRenderbuffer);

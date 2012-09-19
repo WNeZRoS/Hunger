@@ -4,6 +4,7 @@
 #include "Food.h"
 #include "StickHud.h"
 #include "Monster.h"
+#include <stdexcept>
 
 Main::Main() {
 	Random::start(getCurrentTime());
@@ -17,9 +18,9 @@ Main::Main() {
 Main::~Main() {
 	//delete _map;
 	//delete _player;
-	if(_intelligence) delete _intelligence;
 	if(_gameInterface) delete _gameInterface;
 	if(_context) delete _context;
+	if(_intelligence) delete _intelligence;
 }
 
 bool Main::initialize() {
@@ -44,11 +45,14 @@ bool Main::initialize() {
 	_player = new Player("player", killCallback);
 	_world->addEntity(_player);
 
-	_intelligence = new Intelligence();
-	_intelligence->setTarget(_player);
+	_intelligence = NULL;//new Intelligence();
+	//_intelligence->setTarget(_player);
 
 	Monster *monster = new Monster("monster", _intelligence, 15);
 	_world->addEntity(monster);
+
+	Monster *monster2 = new Monster("monster2", _intelligence, 16);
+	_world->addEntity(monster2);
 
 	Array<Point> roads;
 	_map->getRoads(roads);
@@ -83,19 +87,25 @@ void Main::cleanup() {
 }
 
 void Main::onEat(int type) {
+	Log::Debug << "On eat " << type;
 	_gameInterface->setScore(_gameInterface->getScore() + (type + 1) * 10);
 }
 
 void Main::onKilled() {
+	Log::Debug << "Player killed";
 	_gameInterface->setLives(_gameInterface->getLives() - 1);
 	_world->restart();
-
 }
 
 Main game;
 
 int main(int argc, char *argv[]) {
-	if(game.initialize())
-		return game.work();
+	try {
+		if(game.initialize())
+			return game.work();
+	} catch(std::runtime_error e) {
+		std::cerr << "Exception: " << e.what();
+	}
+
 	return -1;
 }

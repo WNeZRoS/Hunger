@@ -23,7 +23,7 @@ public:
 	  */
 	static TextureManager * instance();
 
-	~TextureManager();
+	virtual ~TextureManager();
 
 	friend class TextureManagerWrapper;
 protected:

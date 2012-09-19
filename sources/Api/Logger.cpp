@@ -4,6 +4,7 @@ using namespace std;
 using namespace Log;
 
 LogFile::LogFile(const char *filename) {
+	_dataMutex = new Mutex;
 	if(filename) _log = FileManager::instance().write(filename);
 	else _log = NULL;
 	_str.str( string() );
@@ -13,9 +14,11 @@ LogFile::LogFile(const char *filename) {
 
 LogFile::~LogFile() {
 	delete _log;
+	delete _dataMutex;
 }
 
 Logger::Logger() {
+	_logMutex = new Mutex;
 	_log = NULL;
 	_basicLogger = NULL;
 	openLog(NULL);
@@ -29,6 +32,7 @@ Logger& Logger::instance() {
 Logger::~Logger() {
 	*this << Log::info << "Log is closed";
 	closeLog();
+	delete _logMutex;
 }
 
 void Logger::openLog(const char *filename) {

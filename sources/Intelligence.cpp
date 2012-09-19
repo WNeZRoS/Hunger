@@ -1,10 +1,15 @@
 #include "Intelligence.h"
+#include "Api/compatibility.h"
 
 Intelligence::Intelligence() {
+	this->_map = NULL;
+	this->_rolesMutex = new Mutex;
+	this->_target = NULL;
+	Log::Debug << "Intelligence created";
 }
 
 Intelligence::~Intelligence() {
-
+	delete _rolesMutex;
 }
 
 void Intelligence::clear() {
@@ -15,14 +20,22 @@ void Intelligence::setTarget(Player *target) {
 	_target = target;
 }
 
-void Intelligence::whatMeDo(Monster *npc) {
-	if(_target->getWorld() != npc->getWorld()) return;
-	if(_map != npc->getWorld()->getMap()) _map = static_cast<LevelMap*>(npc->getWorld()->getMap());
-	if(!_map) return;
+Intelligence::RoleType Intelligence::addMonster(Monster *npc) {
+	Log::Debug << "Add monster intelligence " << npc;
+	return this->addMonster(npc, true);
+}
 
-	Log::Debug << "What me do???";
+Intelligence::RoleType Intelligence::addMonster(Monster *npc, bool lockMutex) {
+	if(lockMutex) _rolesMutex->lock();
+
+	if(_map != npc->getWorld()->getMap()) _map = static_cast<LevelMap*>(npc->getWorld()->getMap());
+	if(!_map) {
+		if(lockMutex) _rolesMutex->unlock();
+		return NONE;
+	}
 
 	RoleType role = NONE;
+
 	for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
 		if((*it).npc == npc) role = (*it).role;
 	}
@@ -32,6 +45,29 @@ void Intelligence::whatMeDo(Monster *npc) {
 		NpcRole npcRole = { npc, role };
 		_roles.push_back(npcRole);
 	}
+	if(lockMutex) _rolesMutex->unlock();
+
+	return role;
+}
+
+void Intelligence::removeMonster(Monster *npc) {
+	_rolesMutex->lock();
+	for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
+		if((*it).npc == npc) {
+			_roles.erase(it);
+			break;
+		}
+	}
+	_rolesMutex->unlock();
+}
+
+void Intelligence::whatMeDo(Monster *npc) {
+	if(!_target) return;
+	if(_target->getWorld() != npc->getWorld()) return;
+	RoleType role = addMonster(npc, false);
+	if(role == NONE) return;
+
+	Log::Debug << "What me do???";
 
 	Point tPos = _target->getPosition();
 	Point mPos = npc->getPosition();
@@ -83,12 +119,20 @@ void Intelligence::whatMeDo(Monster *npc) {
 				else role = SIDE_ATTACK;
 				break;
 			case SIDE_ATTACK:
-				// TODO side attack
-				role = GUARD;
+				do {
+					targetPos.x -= vector.y;
+					targetPos.y -= vector.x;
+					_map->turnToBounds(targetPos);
+				} while(_map->isOneTile(tPos, targetPos));
+
+				if(_map->isRoad(targetPos)) targetFounded = -1;
+				else role = GUARD;
 				break;
 			case GUARD:
-				// TODO guard
-				role = FRONT_ATTACK;
+				targetPos = tPos;
+
+				if(_map->isRoad(targetPos)) targetFounded = -1;
+				else role = FRONT_ATTACK;
 				break;
 			default: break;
 			}
@@ -134,4 +178,18 @@ void Intelligence::whatMeDo(Monster *npc) {
 
 	// say: move in direction with stop at (turn position)
 	npc->moveTo(path[0].target);
+}
+
+void Intelligence::run() {
+	while(isRunning()) {
+		_rolesMutex->lock();
+		for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
+			if((*it).npc->lastMotion() > 1000)
+				this->whatMeDo((*it).npc);
+			(*it).npc->move();
+		}
+		_rolesMutex->unlock();
+
+		msSleep(2);
+	}
 }

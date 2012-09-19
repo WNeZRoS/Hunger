@@ -17,7 +17,7 @@ public:
 		END = 4
 	};
 
-	Entity() { _world = NULL; _lastPosition = 0; }
+	Entity() { _world = NULL; _lastPosition = 0; _position = 0; }
 	virtual ~Entity() = 0;
 
 	virtual void draw() = 0;

@@ -2,6 +2,7 @@
 #define GLWINDOWSCONTEXT_H
 
 #include <windows.h>
+#include <vector>
 
 #include "Context.h"
 #include "Render.h"
@@ -57,7 +58,7 @@ private:
 	void printGraphicInformation();
 	void addMeToWindowsList();
 
-	static GlWindowsContext **s_windows;
+	static std::vector<GlWindowsContext*> _Windows;
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };
 

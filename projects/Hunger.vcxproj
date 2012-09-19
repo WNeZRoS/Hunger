@@ -12,12 +12,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sources\Api\AbstractClasses.cpp" />
+    <ClCompile Include="..\sources\Api\ButtonView.cpp" />
     <ClCompile Include="..\sources\Api\compatibility.cpp" />
     <ClCompile Include="..\sources\Api\Control.cpp" />
+    <ClCompile Include="..\sources\Api\FileManager.cpp" />
+    <ClCompile Include="..\sources\Api\FreeTypeFont.cpp" />
     <ClCompile Include="..\sources\Api\GlRender.cpp" />
     <ClCompile Include="..\sources\Api\GlTexture.cpp" />
     <ClCompile Include="..\sources\Api\GlTextureManager.cpp" />
     <ClCompile Include="..\sources\Api\GlWindowsContext.cpp" />
+    <ClCompile Include="..\sources\Api\Interface.cpp" />
     <ClCompile Include="..\sources\Api\Logger.cpp" />
     <ClCompile Include="..\sources\Api\Point.cpp" />
     <ClCompile Include="..\sources\Api\Random.cpp" />
@@ -25,25 +29,38 @@
     <ClCompile Include="..\sources\Api\Texture.cpp" />
     <ClCompile Include="..\sources\Api\TextureAtlas.cpp" />
     <ClCompile Include="..\sources\Api\TextureManager.cpp" />
+    <ClCompile Include="..\sources\Api\TextView.cpp" />
     <ClCompile Include="..\sources\Api\TgaTexture.cpp" />
+    <ClCompile Include="..\sources\Api\Thread.cpp" />
     <ClCompile Include="..\sources\Api\TileSprite.cpp" />
+    <ClCompile Include="..\sources\Api\View.cpp" />
     <ClCompile Include="..\sources\Api\World.cpp" />
     <ClCompile Include="..\sources\Food.cpp" />
+    <ClCompile Include="..\sources\GameInterface.cpp" />
+    <ClCompile Include="..\sources\GameWorld.cpp" />
+    <ClCompile Include="..\sources\GL\importgl.cpp" />
+    <ClCompile Include="..\sources\Intelligence.cpp" />
     <ClCompile Include="..\sources\LevelMap.cpp" />
     <ClCompile Include="..\sources\main.cpp" />
+    <ClCompile Include="..\sources\Monster.cpp" />
     <ClCompile Include="..\sources\Player.cpp" />
     <ClCompile Include="..\sources\StickHud.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sources\Api\Api.h" />
+    <ClInclude Include="..\sources\Api\ButtonView.h" />
     <ClInclude Include="..\sources\Api\compatibility.h" />
     <ClInclude Include="..\sources\Api\Context.h" />
     <ClInclude Include="..\sources\Api\Control.h" />
     <ClInclude Include="..\sources\Api\Entity.h" />
+    <ClInclude Include="..\sources\Api\FileManager.h" />
+    <ClInclude Include="..\sources\Api\Font.h" />
+    <ClInclude Include="..\sources\Api\FreeTypeFont.h" />
     <ClInclude Include="..\sources\Api\GlRender.h" />
     <ClInclude Include="..\sources\Api\GlTexture.h" />
     <ClInclude Include="..\sources\Api\GlTextureManager.h" />
     <ClInclude Include="..\sources\Api\GlWindowsContext.h" />
+    <ClInclude Include="..\sources\Api\Interface.h" />
     <ClInclude Include="..\sources\Api\Logger.h" />
     <ClInclude Include="..\sources\Api\Map.h" />
     <ClInclude Include="..\sources\Api\Point.h" />
@@ -53,12 +70,21 @@
     <ClInclude Include="..\sources\Api\Texture.h" />
     <ClInclude Include="..\sources\Api\TextureAtlas.h" />
     <ClInclude Include="..\sources\Api\TextureManager.h" />
+    <ClInclude Include="..\sources\Api\TextView.h" />
     <ClInclude Include="..\sources\Api\TgaTexture.h" />
+    <ClInclude Include="..\sources\Api\Thread.h" />
     <ClInclude Include="..\sources\Api\TileSprite.h" />
+    <ClInclude Include="..\sources\Api\View.h" />
     <ClInclude Include="..\sources\Api\World.h" />
     <ClInclude Include="..\sources\Food.h" />
+    <ClInclude Include="..\sources\GameInterface.h" />
+    <ClInclude Include="..\sources\GameWorld.h" />
+    <ClInclude Include="..\sources\GL\importgl.h" />
+    <ClInclude Include="..\sources\GL\wglext.h" />
+    <ClInclude Include="..\sources\Intelligence.h" />
     <ClInclude Include="..\sources\LevelMap.h" />
     <ClInclude Include="..\sources\main.h" />
+    <ClInclude Include="..\sources\Monster.h" />
     <ClInclude Include="..\sources\Player.h" />
     <ClInclude Include="..\sources\StickHud.h" />
   </ItemGroup>
@@ -91,8 +117,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>../vs-$(ProjectName)-$(Configuration)/</OutDir>
-    <IntDir>../vs-$(ProjectName)-$(Configuration)/</IntDir>
+    <OutDir>..\resources\</OutDir>
+    <IntDir>..\vs-$(ProjectName)-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -105,12 +131,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../sources/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../sources/;../libs/include/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;freetype.lib;pthreadvc2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../libs/lib-x86/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

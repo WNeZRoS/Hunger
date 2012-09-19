@@ -4,6 +4,9 @@
     <Filter Include="Api">
       <UniqueIdentifier>{6dbed603-e47f-4c13-b399-f7202d6e7a73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GL">
+      <UniqueIdentifier>{cf5b3a2f-be26-4e8e-b917-de73868b2e0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\sources\Api\AbstractClasses.cpp">
@@ -62,6 +65,34 @@
     <ClCompile Include="..\sources\Api\Texture.cpp">
       <Filter>Api</Filter>
     </ClCompile>
+    <ClCompile Include="..\sources\Api\ButtonView.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\FileManager.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\FreeTypeFont.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\Interface.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\TextView.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\Thread.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\Api\View.cpp">
+      <Filter>Api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\GL\importgl.cpp">
+      <Filter>GL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sources\GameInterface.cpp" />
+    <ClCompile Include="..\sources\GameWorld.cpp" />
+    <ClCompile Include="..\sources\Intelligence.cpp" />
+    <ClCompile Include="..\sources\Monster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sources\Api\World.h">
@@ -132,5 +163,39 @@
     <ClInclude Include="..\sources\Api\Random.h">
       <Filter>Api</Filter>
     </ClInclude>
+    <ClInclude Include="..\sources\Api\ButtonView.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\FileManager.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Font.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\FreeTypeFont.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Interface.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\TextView.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\Thread.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Api\View.h">
+      <Filter>Api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\GL\importgl.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\GL\wglext.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\GameInterface.h" />
+    <ClInclude Include="..\sources\GameWorld.h" />
+    <ClInclude Include="..\sources\Intelligence.h" />
+    <ClInclude Include="..\sources\Monster.h" />
   </ItemGroup>
 </Project>

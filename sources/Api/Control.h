@@ -1,6 +1,7 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include "compatibility.h"
 #include <vector>
 
 class Controller
@@ -77,7 +78,7 @@ public:
 	~Control();
 
 	void idle();
-	virtual void drawHud() const;
+	void drawHud() const;
 
 	int getMouseX(int pointer = MOUSE_LEFT);
 	int getMouseY(int pointer = MOUSE_LEFT);
@@ -112,7 +113,7 @@ protected:
 
 	int _mouseX[MAX_POINTERS], _mouseY[MAX_POINTERS];
 	KeyState _keys[256];
-	unsigned long long _lastIdleTime;
+	Timestamp _lastIdleTime;
 	bool _multiPointer;
 
 	//static Control _Control;

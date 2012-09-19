@@ -3,6 +3,7 @@
 
 #include "Map.h"
 #include "Entity.h"
+#include "Thread.h"
 #include <list>
 
 class World
@@ -30,6 +31,12 @@ protected:
 	Map *_map;
 	std::list<Entity*> _entities;
 	int _width, _height;
+	std::list<const Entity*> _updatesBy;
+
+	Mutex *_entitiesMutex;
+	Mutex _updateMutex;
+
+	virtual void updated();
 };
 
 #endif // WORLD_H

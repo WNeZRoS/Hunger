@@ -7,14 +7,16 @@
 #include "GL/importgl.h"
 
 #include <stdexcept>
-#include <windowsx.h>
+
+#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
+#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 
 #define WINDOW_CLASS_NAME _T("SimpleGL")
 #define WINDOW_STYLE WS_CAPTION | WS_SYSMENU | WS_SIZEBOX
 
 using namespace std;
 
-GlWindowsContext **GlWindowsContext::s_windows = NULL;
+std::vector<GlWindowsContext*> GlWindowsContext::_Windows;
 
 GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height) {
 	if(title == NULL) throw std::runtime_error("Title is null");
@@ -91,24 +93,7 @@ GlWindowsContext::GlWindowsContext(const XCHAR *title, int width, int height, in
 
 
 void GlWindowsContext::addMeToWindowsList() {
-	if(s_windows == NULL) {
-		s_windows = new GlWindowsContext*[2];
-		s_windows[0] = (GlWindowsContext*) 1;
-		s_windows[1] = this;
-	} else {
-		GlWindowsContext **old = s_windows;
-		int count = (int) old[0] + 1;
-
-		s_windows = new GlWindowsContext*[count + 1];
-		s_windows[0] = (GlWindowsContext*) count;
-		s_windows[count] = this;
-
-		for(int i = 1; i < count; i++) {
-			s_windows[i] = old[i];
-		}
-
-		delete old;
-	}
+	_Windows.push_back(this);
 }
 
 GlWindowsContext::~GlWindowsContext() {
@@ -131,35 +116,23 @@ GlWindowsContext::~GlWindowsContext() {
 	if(_hInstance) UnregisterClass(WINDOW_CLASS_NAME, _hInstance);
 
 	// Remove window for windows list
-	if(s_windows != NULL) {
-		GlWindowsContext **old = s_windows;
-		int count = (int) old[0] - 1;
-
-		if(count >= 1) {
-			s_windows = new GlWindowsContext*[count + 1];
-			s_windows[0] = (GlWindowsContext*) count;
-			
-			for(int i = 1, j = 1; i <= count + 1; i++) {
-				if(old[i] != this) {
-					s_windows[j] = old[i];
-					j++;
-				}
-			}
-		} else s_windows = NULL;
-
-		delete old;
+	for(std::vector<GlWindowsContext*>::iterator it = _Windows.begin(); it != _Windows.end(); it++) {
+		if(*it == this) {
+			_Windows.erase(it);
+			break;
+		}
 	}
 }
 
 void GlWindowsContext::createWindow(const XCHAR *title, int width, int height, int x, int y) {
-	_hInstance = (HINSTANCE) GetModuleHandle(NULL);
+	_hInstance = reinterpret_cast<HINSTANCE>(GetModuleHandle(NULL));
 
 	// register window class
 	WNDCLASSEX wcx;
 	memset(&wcx, 0, sizeof(wcx));
 	wcx.cbSize= sizeof(wcx);
 	wcx.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wcx.lpfnWndProc = (WNDPROC) WindowProc;
+	wcx.lpfnWndProc = reinterpret_cast<WNDPROC>(WindowProc);
 	wcx.hInstance = _hInstance;
 	wcx.lpszClassName = WINDOW_CLASS_NAME;
 	wcx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
@@ -185,6 +158,9 @@ void GlWindowsContext::createWindow(const XCHAR *title, int width, int height, i
 	// create window
 	_hWnd = CreateWindowEx(exStyle, WINDOW_CLASS_NAME, title, style, rect.left, rect.top,
 	rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, _hInstance, NULL);
+
+	ShowWindow(_hWnd, SW_SHOW);
+	UpdateWindow(_hWnd);
 
 	_params.width = width;
 	_params.height = height;
@@ -215,7 +191,7 @@ void GlWindowsContext::createGraphicContext(int major, int minor) {
 	if(major == 0 && minor == 0) _hRC = hRCTemp;
 	else {
 		PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = 
-			(PFNWGLCREATECONTEXTATTRIBSARBPROC) wglGetProcAddress("wglCreateContextAttribsARB");
+			reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglGetProcAddress("wglCreateContextAttribsARB"));
 
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(hRCTemp);
@@ -363,13 +339,11 @@ int GlWindowsContext::mainLoop() {
 }
 
 LRESULT CALLBACK GlWindowsContext::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-	if(s_windows == NULL) return DefWindowProc(hWnd, msg, wParam, lParam);
-
 	GlWindowsContext * current = NULL;
 
-	for(int i = 1; i <= (int) s_windows[0]; i++) {
-		if(s_windows[i]->_hWnd == hWnd) { 
-			current = s_windows[i];
+	for(std::vector<GlWindowsContext*>::iterator it = _Windows.begin(); it != _Windows.end(); it++) {
+		if((*it)->_hWnd == hWnd) {
+			current = *it;
 			break;
 		}
 	}

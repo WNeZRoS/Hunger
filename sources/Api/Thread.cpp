@@ -1,4 +1,5 @@
 #include "Thread.h"
+#include <iostream>
 
 Thread::Thread() {
 	_running = false;
@@ -47,14 +48,37 @@ Mutex::Mutex() {
 
 Mutex::~Mutex() {
 	pthread_mutex_destroy(&_mutex);
+	_locker = NULL;
+#ifdef DEBUG
+	_locked = false;
+	_thread = pthread_self();
+#endif
 }
 
 void Mutex::lock() {
+#ifdef DEBUG
+	if(_locked && pthread_equal(_thread, pthread_self()) != 0) {
+		std::cout << "Thread " << &_thread << " already lock mutex." << std::endl;
+	}
+	_locked = true;
+	_thread = pthread_self();
+#endif
 	pthread_mutex_lock(&_mutex);
+}
+
+bool Mutex::lock(void *locker) {
+	if(_locker == locker) return false;
+	_locker = locker;
+	this->lock();
+	return true;
 }
 
 void Mutex::unlock() {
 	pthread_mutex_unlock(&_mutex);
+	_locker = NULL;
+#ifdef DEBUG
+	_locked = false;
+#endif
 }
 
 // Cond

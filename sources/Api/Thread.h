@@ -28,12 +28,28 @@ public:
 	~Mutex();
 
 	void lock();
+	bool lock(void * locker);
 	void unlock();
 
 	friend class Cond;
 
 private:
 	pthread_mutex_t _mutex;
+	void *_locker;
+#ifdef DEBUG
+	pthread_t _thread;
+	bool _locked;
+#endif
+};
+
+class FakeMutex
+{
+public:
+	FakeMutex() {}
+	~FakeMutex() {}
+
+	void lock() {}
+	void unlock() {}
 };
 
 class Cond

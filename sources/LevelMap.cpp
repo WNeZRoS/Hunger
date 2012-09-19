@@ -24,7 +24,7 @@ const LevelMap::Tile::TileType& LevelMap::Tile::type() const {
 }
 
 istream& operator >> (istream& in, LevelMap::Tile& t) {
-	in >> (int&)t._type;
+	in >> reinterpret_cast<int&>(t._type);
 	return in;
 }
 
@@ -124,7 +124,7 @@ bool LevelMap::Tile::isRoadRight() const {
 bool LevelMap::Tile::canSetToRoad(Point& pos, int tileSize) const {
 	if(this->haveRoadAt(pos, tileSize)) return true;
 	float halfSize = 0.5f * tileSize;
-	float dx = ABS(pos.x - halfSize), dy = ABS(pos.y - halfSize);
+	float dx = mabs(pos.x - halfSize), dy = mabs(pos.y - halfSize);
 	//float maxd = tileSize / 16.0f;
 
 

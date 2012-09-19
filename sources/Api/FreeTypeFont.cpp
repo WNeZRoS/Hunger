@@ -7,27 +7,41 @@
 int FreeTypeFont::_FreeTypeUsages = 0;
 FT_Library FreeTypeFont::_FreeType;
 
-FreeTypeFont::FreeTypeFont(const char *font, int size, bool monoSpace) {
+FreeTypeFont * FreeTypeFont::create(const char *font, int size, bool monoSpace) {
 	if(_FreeTypeUsages == 0) {
 		if(FT_Init_FreeType(&_FreeType)) {
 			Log::logger << Log::error << "FT_Init_FreeType failed";
-			throw std::runtime_error("FT_Init_FreeType failed");
+			return NULL;
 		}
 	}
 
 	_FreeTypeUsages++;
 
-	if(FT_New_Face(_FreeType, font, 0, &_face)) {
+	FT_Face face;
+	if(FT_New_Face(_FreeType, font, 0, &face)) {
 		Log::logger << Log::error << "Load font face failed";
-		throw std::runtime_error("Load font face failed");
+		return NULL;
 	}
-	FT_Set_Char_Size(_face, size * 64, size * 64, 72, 72);
+
+	FT_Set_Char_Size(face, size * 64, size * 64, 72, 72);
 
 	Render::getPainter()->setRenderTarget(_CacheSize, _CacheSize);
-	_cacheTexture = Render::getPainter()->getTexture();
-	if(!_cacheTexture) throw std::runtime_error("Cache texture not created");
+	Texture *cacheTexture = Render::getPainter()->getTexture();
 
-	_monoSpace = monoSpace;
+	if(!cacheTexture) {
+		return NULL;
+	}
+
+	Log::Debug << "Font::create has monospace is " << (monoSpace ? "true" : "false");
+	FreeTypeFont *result = new FreeTypeFont(face, cacheTexture);
+	result->setMonoSpace(monoSpace);
+	return result;
+}
+
+FreeTypeFont::FreeTypeFont(FT_Face &face, Texture *cache) {
+	_face = face;
+	_monoSpace = false;
+	_cacheTexture = cache;
 }
 
 FreeTypeFont::~FreeTypeFont() {
@@ -40,12 +54,18 @@ FreeTypeFont::~FreeTypeFont() {
 	if(_FreeTypeUsages == 0) FT_Done_FreeType(_FreeType);
 }
 
+void FreeTypeFont::setMonoSpace(bool monoSpace) {
+	if(_monoSpace != monoSpace) _cache.clear();
+	_monoSpace = monoSpace;
+}
+
 Texture * FreeTypeFont::renderToTexture(const XCHAR *text, int width, int height, Align align) {
 	int ownWidth = width, ownHeight = height;
 	getTextSizes(text, ownWidth, ownHeight);
 
 	Render::getPainter()->setRenderTarget(ownWidth, ownHeight);
 	render(text, 0, 0, ownWidth, ownHeight, align);
+	Log::Debug << "Render '" << text << "' in rect " << ownWidth << "x" << ownHeight;
 	return Render::getPainter()->getTexture();
 }
 
@@ -78,6 +98,7 @@ void FreeTypeFont::render(const XCHAR *text, float x, float y, float width, floa
 
 		ds.visible = ds.symbol > _T(' ');
 		ds.width = _monoSpace ? _CacheSegmentSize : (ds.visible ? ds.element.width + 2 : _CacheSegmentSize / 4);
+		Log::Debug << "ds.width: " << ds.width << " " << (_monoSpace ? "true" : "false");
 		rx += ds.width;
 		if(rx > ownWidth || ds.symbol == _T('\n')) {
 			switch(align) {
@@ -116,6 +137,15 @@ void FreeTypeFont::render(const XCHAR *text, float x, float y, float width, floa
 		}
 	}
 	_cacheTexture->deactivate();
+
+	if(x != 0) {
+		Render::getPainter()->setColor(0x55, 0x55, 0x55);
+		Render::getPainter()->rect(100, 100, 612, 612, 99);
+		_cacheTexture->activate();
+		Render::getPainter()->setCotor(0xFF, 0xFF, 0xFF);
+		Render::getPainter()->rectx(100, 100, 612, 612);
+		_cacheTexture->deactivate();
+	}
 }
 
 inline int FreeTypeFont::toPowerOf2(int a) const {
@@ -135,20 +165,24 @@ unsigned int FreeTypeFont::cacheGlyph(XCHAR symbol) {
 	FT_Glyph glyph;
 	if(FT_Get_Glyph(_face->glyph, &glyph)) return NO_GLYPH;
 
-	FT_BitmapGlyph bitmapGlyph = (FT_BitmapGlyph)glyph;
+	FT_BitmapGlyph bitmapGlyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
 	FT_Bitmap& bitmap = bitmapGlyph->bitmap;
 
 	static const int bytesForPixel = 4;
 	unsigned char *data = new unsigned char[bytesForPixel * _CacheSegmentSize * _CacheSegmentSize];
 	for(unsigned int i = 0; i < bytesForPixel * _CacheSegmentSize * _CacheSegmentSize; i++) data[i] = 0;
 
-	int xof = (_CacheSegmentSize - bitmap.width) / 2;
+	int height = bitmap.rows;
+	int width = bitmap.width;
+
+	int xof = (_CacheSegmentSize - width) / 2;
 	if(xof > 0 && !_monoSpace) xof = 0;
 
-	for(int h = 0; h < bitmap.rows && h < _CacheSegmentSize; h++) {
-		for (int w = xof < 0 ? -xof : 0; w < bitmap.width; w++) {
+	Log::Debug << "Load symbol '" << symbol << "' " << width << "x" << height << " - " << xof;
+	for(int h = 0; h < height && h < _CacheSegmentSize; h++) {
+		for (int w = xof < 0 ? -xof : 0; w < width; w++) {
 			if(w + xof >= _CacheSegmentSize) break;
-			int luminance = bitmap.buffer[(bitmap.rows - h - 1) * bitmap.width + w];
+			int luminance = bitmap.buffer[(height - h - 1) * width + w];
 			data[(h * _CacheSegmentSize + w + xof) * bytesForPixel] = 255;
 			data[(h * _CacheSegmentSize + w + xof) * bytesForPixel + 1] = 255;
 			data[(h * _CacheSegmentSize + w + xof) * bytesForPixel + 2] = 255;
@@ -165,7 +199,7 @@ unsigned int FreeTypeFont::cacheGlyph(XCHAR symbol) {
 
 	delete [] data;
 	//Log::Debug << "Bitmap " << _face->glyph->bitmap_top << " " << bitmap.width << " " << bitmap.rows;
-	CacheElement ce = { symbol, bitmap.width < _CacheSegmentSize ? bitmap.width : _CacheSegmentSize,
+	CacheElement ce = { symbol, width < _CacheSegmentSize ? width : _CacheSegmentSize,
 					  bitmap.rows - _face->glyph->bitmap_top};
 	_cache.push_back(ce);
 	return index;
@@ -173,10 +207,15 @@ unsigned int FreeTypeFont::cacheGlyph(XCHAR symbol) {
 
 void FreeTypeFont::getTextSizes(const XCHAR *text, int& width, int &height) const {
 	if(width == DEFAULT) {
-		for(int i = 0; text[i] != 0; i++) {
-			if((text[i] == _T('\n') || text[i+1] == 0) && i - width > width)
-				width = i - width;
+		width = 1;
+		int lw = 0;
+		for(int i = 1; text[i - 1] != 0; i++) {
+			if((text[i] == _T('\n') || text[i] == 0)) {
+				if(i - lw > width) width = i - lw;
+				lw = i;
+			}
 		}
+		//Log::Debug << "get size... w:" << width << " lw:" << lw;
 		width *= _CacheSegmentSize;
 	}
 

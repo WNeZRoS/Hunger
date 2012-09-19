@@ -6,7 +6,7 @@
 namespace Log
 {
 	class BasicLogger;
-};
+}
 
 struct Point_i;
 

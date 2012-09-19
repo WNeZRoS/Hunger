@@ -15,13 +15,23 @@
 	#define _T(x) x
 #endif
 
-#define ABS(a) (a < 0 ? -(a) : a)
-
 #ifndef NULL
 #define NULL 0
 #endif
 
-typedef unsigned long long Timestamp;
+#ifdef _MSC_VER
+#define INFINITY (DBL_MAX+DBL_MAX)
+#define NAN (INFINITY-INFINITY)
+#endif
+
+short mabs(short x);
+int mabs(int x);
+long mabs(long x);
+float mabs(float x);
+double mabs(double x);
+bool isNaN(float x);
+
+typedef unsigned long Timestamp;
 
 #ifdef __cplusplus
 #define EXTERN_C extern "C"

@@ -6,7 +6,7 @@
 #include "Api/ButtonView.h"
 #include "Api/FreeTypeFont.h"
 
-class GameInterface : public Interface, public ButtonView::Events
+class GameInterface : public Interface
 {
 public:
 	GameInterface();
@@ -19,6 +19,7 @@ public:
 	void setLives(int lives);
 
 	void onPauseClick(ButtonView *button);
+	void draw() const;
 
 private:
 	int _score;

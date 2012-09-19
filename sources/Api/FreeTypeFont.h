@@ -15,9 +15,10 @@
 class FreeTypeFont : public Font
 {
 public:
-	FreeTypeFont(const char *font, int size, bool monoSpace = false);
+	static FreeTypeFont * create(const char *font, int size, bool monoSpace = false);
 	~FreeTypeFont();
 
+	void setMonoSpace(bool monoSpace);
 	Texture * renderToTexture(const XCHAR *text, int width, int height, Align align);
 	void render(const XCHAR *text, float x, float y, float width, float height, Align align);
 
@@ -40,14 +41,17 @@ private:
 
 	std::vector<CacheElement> _cache;
 	Texture *_cacheTexture;
-	static const unsigned int _CacheSize = 512;
-	static const unsigned int _CacheSegmentSize = 16;
+	static const int _CacheSize = 512;
+	static const int _CacheSegmentSize = 16;
 	static const unsigned int NO_GLYPH = -1;
 
 	static int _FreeTypeUsages;
 	static FT_Library _FreeType;
+
 	FT_Face _face;
 	bool _monoSpace;
+
+	FreeTypeFont(FT_Face &face, Texture *cache);
 
 	inline int toPowerOf2(int a) const;
 	unsigned int cacheGlyph(XCHAR symbol);

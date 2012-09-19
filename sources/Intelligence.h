@@ -7,22 +7,25 @@
 #include <vector>
 
 // Artificial Intelligence
-class Intelligence
+class Intelligence : public Thread
 {
 public:
-	Intelligence();
-	~Intelligence();
-
-	virtual void clear();
-	virtual void setTarget(Player *target);
-	virtual void whatMeDo(Monster *npc);
-
-protected:
 	enum RoleType
 	{
 		NONE, FRONT_ATTACK, BACK_ATTACK, SIDE_ATTACK, GUARD
 	};
 
+	Intelligence();
+	~Intelligence();
+
+	virtual void clear();
+	virtual void setTarget(Player *target);
+	virtual RoleType addMonster(Monster *npc);
+	virtual void removeMonster(Monster *npc);
+	virtual void whatMeDo(Monster *npc);
+	virtual void run();
+
+protected:
 	struct NpcRole {
 		Monster *npc;
 		RoleType role;
@@ -31,7 +34,9 @@ protected:
 	LevelMap *_map;
 	Player *_target;
 	std::vector<NpcRole> _roles;
+	Mutex *_rolesMutex;
 
+	virtual RoleType addMonster(Monster *npc, bool lockMutex);
 };
 
 #endif // INTELLIGENCE_H

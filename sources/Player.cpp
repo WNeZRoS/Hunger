@@ -103,8 +103,10 @@ void Player::move() {
 	Timestamp current = getCurrentTime();
 	if(_moveDirection == 0 || _lastMoveTime + 50 > current) return;
 
-	move((current - _lastMoveTime) / 50.0f * _moveDirection.x,
-		 (current - _lastMoveTime) / 50.0f * _moveDirection.y);
+	if(current - _lastMoveTime < 400) {
+		move((current - _lastMoveTime) / 50.0f * _moveDirection.x,
+			 (current - _lastMoveTime) / 50.0f * _moveDirection.y);
+	}
 	_lastMoveTime = current;
 }
 
