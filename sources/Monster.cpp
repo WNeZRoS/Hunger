@@ -49,9 +49,12 @@ void Monster::onChangeWorld(const World *world) {
 
 	_map = reinterpret_cast<LevelMap*>(world->getMap());
 	if(!_map) return;
-	_position = _map->getMobSpawnPosition() + (_map->getOne() / 2.0f);
-	setPosition(_position);
+	Point position = _map->getMobSpawnPosition() + (_map->getOne() / 2.0f);
+	setPosition(position);
+	setPosition(position);
+
 	_speed = _map->getOne() / (30 - _speedMultip);
+	_moveDirection = 0;
 
 	if(_intelligence) _intelligence->addMonster(this);
 }
@@ -61,7 +64,9 @@ void Monster::onResize(const World *world) {
 }
 
 void Monster::onWorldScroll(const World *world) {
+	_positionMutex.lock();
 	Point position = _position - (_map->getOne() / 2.0f);
+	_positionMutex.unlock();
 	_map->globalCoordinatesToScreen(position, position);
 	_sprite->setPosition(position.x, position.y);
 }
@@ -78,7 +83,7 @@ void Monster::onOverlapBy(const Entity *overlap, const World *world) {
 	}
 }
 
-const Entity::Category Monster::getCategory() const {
+Entity::Category Monster::getCategory() const {
 	return NPC;
 }
 
@@ -91,12 +96,15 @@ bool Monster::isOverlap(const Point &center, int radius) const {
 }
 
 bool Monster::isOverlap(const Point &start, const Point &end) const {
+	LocalMutex(lm, _positionMutex);
 	return start <= _position && _position <= end;
 }
 
 void Monster::setPosition(const Point &pos) {
+	_positionMutex.lock();
 	_lastPosition = _position;
 	_position = pos;
+	_positionMutex.unlock();
 
 	if(!_map) return;
 	Point screen = pos - (_map->getOne() / 2.0f);
@@ -125,11 +133,14 @@ void Monster::move() {
 
 bool Monster::move(float x, float y) {
 	Point dir( x, y );
+	_positionMutex.lock();
 	Point position = _position;
+	_positionMutex.unlock();
 
 	if(_map->moveInDirection(position, dir, _speed)) {
 		//Log::Debug << "i can move to " << position;
 
+		_positionMutex.lock();
 		if((_moveDirection.y == (_stop.y - _position.y) / std::fabs(_stop.y - _position.y)
 			&& _moveDirection.y != 0 && ((_position.y < _stop.y && _stop.y < position.y)
 				|| (_position.y > _stop.y && _stop.y > position.y)))) {
@@ -143,6 +154,7 @@ bool Monster::move(float x, float y) {
 		}
 
 		dir = position - _position;
+		_positionMutex.unlock();
 
 		if(dir.x > 100 || dir.x < -100) dir.x *= -1;
 		if(dir.y > 100 || dir.y < -100) dir.y *= -1;

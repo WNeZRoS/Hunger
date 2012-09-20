@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include "TextureAtlas.h"
-#include "Logger.h"
 #include "TextureManager.h"
+#include "Logger.h"
 #include "compatibility.h"
 
 Texture::Texture() {

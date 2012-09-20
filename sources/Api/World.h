@@ -1,10 +1,10 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <list>
 #include "Map.h"
 #include "Entity.h"
 #include "Thread.h"
-#include <list>
 
 class World
 {

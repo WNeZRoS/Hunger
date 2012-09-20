@@ -41,7 +41,6 @@ GlRender::GlRender(int width, int height) {
 
 GlRender::~GlRender() {
 	delete _Painter;
-	if(_world) delete _world;
 	delete GlTextureManager::instance();
 }
 

@@ -3,7 +3,7 @@
 #include <cstring>
 
 FileManager::FileManager() {
-	_pwd = "./";
+	_pwd = "";
 }
 
 FileManager& FileManager::instance() {

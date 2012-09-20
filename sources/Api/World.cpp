@@ -51,7 +51,7 @@ int World::addEntity(const Entity *entity) {
 }
 
 void World::removeEntity(Entity *entity) {
-	bool locked = _entitiesMutex->lock(this);
+	bool locked = _entitiesMutex->onelock(this);
 	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
 		if(*it == entity) {
 			delete entity;
@@ -118,16 +118,16 @@ void World::updated(const Entity *upd) {
 
 void World::updated() {
 	_updateMutex.lock();
-	for(std::list<const Entity*>::iterator it = _updatesBy.begin(); it != _updatesBy.end(); it++) {
-		const Entity *upd = *it;
+	for(std::list<const Entity*>::iterator updit = _updatesBy.begin(); updit != _updatesBy.end(); updit++) {
+		const Entity *upd = *updit;
 
 		int size = upd->getPhysSize() / 4.0f;
 		Point start = upd->getPosition() - size;
 		Point end = upd->getPosition() + size;
 
-		bool lock = _entitiesMutex->lock(this);
+		bool lock = _entitiesMutex->onelock(this);
 		for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); ) {
-			Entity* e = *it++;
+			Entity *e = *it++;
 			if(e != upd && e->isOverlap(start, end))
 				e->onOverlapBy(upd, this);
 		}
@@ -138,7 +138,7 @@ void World::updated() {
 }
 
 void World::restart() {
-	bool lock = _entitiesMutex->lock(this);
+	bool lock = _entitiesMutex->onelock(this);
 	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
 		(*it)->onChangeWorld(this);
 		(*it)->onResize(this);
@@ -153,8 +153,11 @@ void World::draw() {
 
 	_entitiesMutex->lock();
 	for(int c = Entity::START; c != Entity::END; c++) {
-		for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
-			if((*it)->getCategory() == c) (*it)->draw();
+		for(list<Entity*>::iterator it = _entities.begin(), end = _entities.end(); it != end; it++) {
+			Entity *e = 0;
+			e = *it;
+			if(e->getCategory() == c) 
+				e->draw();
 		}
 	}
 	_entitiesMutex->unlock();

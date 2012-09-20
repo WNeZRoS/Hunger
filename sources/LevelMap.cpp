@@ -497,8 +497,8 @@ void LevelMap::findPath(const Point& from, const Point& to, Array<PathSegment> &
 		backPath(tileTo, path, wasHere, size);
 	}
 
-	for(int i = 0; i < _height; i++) delete [] wasHere;
-	delete wasHere;
+	for(int i = 0; i < _height; i++) delete [] wasHere[i];
+	delete [] wasHere;
 }
 
 bool LevelMap::isOneTile(const Point& globalPos1, const Point& globalPos2) const {

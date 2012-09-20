@@ -19,13 +19,13 @@ StickHud::~StickHud() {
 
 void StickHud::draw() const {
 	Render::getPainter()->setColor(0xFF, 0x00, 0x00, 0x60);
-	Render::getPainter()->rect(_startX - 5, _startY - 5, _startX + 5, _startY + 5, 99.0f, true);
+	Render::getPainter()->rect(_startX - 5.0f, _startY - 5.0f, _startX + 5.0f, _startY + 5.0f, 99.0f, true);
 	Render::getPainter()->setColor(0xFF, 0xFF, 0xFF, 0xFF);
 	Render::getPainter()->line(_startX, _startY, _currentX, _currentY);
 	Render::getPainter()->setColor(0x00, 0xFF, 0x00, 0x80);
-	Render::getPainter()->rect(_currentX - 15, _currentY - 15, _currentX + 15, _currentY + 15, 99.0f, true);
+	Render::getPainter()->rect(_currentX - 15.0f, _currentY - 15.0f, _currentX + 15.0f, _currentY + 15.0f, 99.0f, true);
 	Render::getPainter()->setColor(0xFF, 0xFF, 0xFF, 0xFF);
-	Render::getPainter()->rect(_currentX - 15, _currentY - 15, _currentX + 15, _currentY + 15, 99.0f, false);
+	Render::getPainter()->rect(_currentX - 15.0f, _currentY - 15.0f, _currentX + 15.0f, _currentY + 15.0f, 99.0f, false);
 }
 
 bool StickHud::isVisible() const {
@@ -48,7 +48,7 @@ void StickHud::update(int x, int y, int pointer) {
 	float dy = _startY - _currentY;
 	float dg = std::sqrt(dx * dx + dy * dy);
 
-	static const float pi8 = M_PI / 8;
+	static const float pi8 = M_PI / 8.0f;
 
 	bool pressed[4] = { false, false, false, false };
 	if(dg >= _sensivity) {

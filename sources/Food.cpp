@@ -40,7 +40,7 @@ void Food::onOverlapBy(const Entity *overlap, const World *world) {
 	}
 }
 
-const Entity::Category Food::getCategory() const {
+Entity::Category Food::getCategory() const {
 	return ITEM;
 }
 

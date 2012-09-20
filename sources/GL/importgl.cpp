@@ -14,10 +14,17 @@ int loadExts() {
 	int result = 0;
 
 #ifdef WIN32
-#define IMPORT_FUNC(funcName) { \
-	void *procAddress = reinterpret_cast<void*>(wglGetProcAddress(#funcName)); \
-	if (procAddress == NULL) { Log::Debug << "Fail load " << #funcName; result++;} \
-	*(reinterpret_cast<void**>(&funcName)) = procAddress; }
+	#ifdef _MSC_VER
+		#define IMPORT_FUNC(funcName) { \
+			void *procAddress = reinterpret_cast<void*>(wglGetProcAddress(#funcName)); \
+			if (procAddress == NULL) { Log::Debug << "Fail load " << #funcName; result++;} \
+			funcName = reinterpret_cast<FNTYPE(funcName)>(procAddress); }
+	#else
+		#define IMPORT_FUNC(funcName) { \
+			void *procAddress = reinterpret_cast<void*>(wglGetProcAddress(#funcName)); \
+			if (procAddress == NULL) { Log::Debug << "Fail load " << #funcName; result++;} \
+			funcName = reinterpret_cast<typeof(funcName)>(procAddress); }
+	#endif
 #endif
 
 #ifdef ANDROID_NDK

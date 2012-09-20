@@ -3,17 +3,19 @@
 
 Intelligence::Intelligence() {
 	this->_map = NULL;
-	this->_rolesMutex = new Mutex;
 	this->_target = NULL;
+	this->_rolesMutex = new Mutex;
 	Log::Debug << "Intelligence created";
 }
 
 Intelligence::~Intelligence() {
-	delete _rolesMutex;
+
 }
 
 void Intelligence::clear() {
+	_rolesMutex->lock();
 	_roles.clear();
+	_rolesMutex->unlock();
 }
 
 void Intelligence::setTarget(Player *target) {
@@ -26,6 +28,7 @@ Intelligence::RoleType Intelligence::addMonster(Monster *npc) {
 }
 
 Intelligence::RoleType Intelligence::addMonster(Monster *npc, bool lockMutex) {
+	if(!this->_rolesMutex) return NONE;
 	if(lockMutex) _rolesMutex->lock();
 
 	if(_map != npc->getWorld()->getMap()) _map = static_cast<LevelMap*>(npc->getWorld()->getMap());
@@ -51,6 +54,8 @@ Intelligence::RoleType Intelligence::addMonster(Monster *npc, bool lockMutex) {
 }
 
 void Intelligence::removeMonster(Monster *npc) {
+	if(!this->_rolesMutex) return;
+
 	_rolesMutex->lock();
 	for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
 		if((*it).npc == npc) {
@@ -67,7 +72,7 @@ void Intelligence::whatMeDo(Monster *npc) {
 	RoleType role = addMonster(npc, false);
 	if(role == NONE) return;
 
-	Log::Debug << "What me do???";
+	//Log::Debug << "What me do???";
 
 	Point tPos = _target->getPosition();
 	Point mPos = npc->getPosition();
@@ -83,7 +88,7 @@ void Intelligence::whatMeDo(Monster *npc) {
 		// say: move in direction in stop at turn position.
 	} else if((delta.x == 0 && delta.y <= _map->getOne()) || (delta.x <= _map->getOne() && delta.y == 0)) { // Attack
 		targetPos = tPos - (_map->getOne() / 2.0f);
-		Log::Debug << "You must go to player, to " << targetPos;
+		//Log::Debug << "You must go to player, to " << targetPos;
 
 		if(delta.y == 0) {
 			npc->stop();
@@ -184,12 +189,15 @@ void Intelligence::run() {
 	while(isRunning()) {
 		_rolesMutex->lock();
 		for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
-			if((*it).npc->lastMotion() > 1000)
+			if((*it).npc->lastMotion() > 1000) {
 				this->whatMeDo((*it).npc);
+			}
 			(*it).npc->move();
 		}
 		_rolesMutex->unlock();
 
 		msSleep(2);
 	}
+	delete _rolesMutex;
+	this->_rolesMutex = NULL;
 }

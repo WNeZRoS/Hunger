@@ -1,8 +1,8 @@
 #ifndef TEXTUREMANAGER_H
 #define TEXTUREMANAGER_H
 
-#include "Texture.h"
 #include <list>
+#include "Texture.h"
 
 #define LOAD_TEXTURE(name) TextureManagerWrapper::load(name, __FILE__, __LINE__)
 #define UNLOAD_TEXTURE(texture) TextureManagerWrapper::unload(texture, __FILE__, __LINE__)

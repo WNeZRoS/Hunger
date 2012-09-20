@@ -24,7 +24,7 @@ public:
 	void onResize(const World *world);
 	void onWorldScroll(const World *world);
 	void onOverlapBy(const Entity *overlap, const World *world);
-	const Category getCategory() const;
+	Category getCategory() const;
 	int getPhysSize() const;
 
 	bool isOverlap(const Point& center, int radius) const;

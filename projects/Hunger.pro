@@ -3,7 +3,7 @@ CONFIG += console
 CONFIG -= qt
 
 win32:LIBS += -L../libs/lib-x86 -lopengl32 -lgdi32 -lfreetype -lpthread -static
-unix:LIBS += -lgl -lfreetype  -lpthread
+unix:LIBS += -lgl -lfreetype -lpthread
 
 SOURCES += \
     ../sources/Api/GlRender.cpp \
@@ -86,5 +86,4 @@ HEADERS += \
 
 INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG
-QMAKE_CXXFLAGS += -Wall -O2 -Wold-style-cast #-Weffc++
-QMAKE_CXXFLAGS += -Winit-self #-Wunreachable-code -Wconversion -Wsign-conversion
+QMAKE_CXXFLAGS += -Wall -O2 #-Wold-style-cast #-Weffc++

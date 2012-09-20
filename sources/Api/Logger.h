@@ -55,6 +55,7 @@ private:
 
 	void run() {
 		while(isRunning()) {
+			msSleep(1000);
 			_dataMutex->lock();
 			size_t ln = _str.str().find("\n");
 			while(ln != std::string::npos) {
@@ -77,7 +78,6 @@ private:
 			}
 			_lastStr = _str.str();
 			_dataMutex->unlock();
-			msSleep(1000);
 		}
 	}
 };

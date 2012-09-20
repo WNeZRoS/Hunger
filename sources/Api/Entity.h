@@ -30,7 +30,7 @@ public:
 	virtual bool isOverlap(const Point& start, const Point& end) const { return false; }
 
 	virtual World * getWorld() const { return _world; }
-	virtual const Category getCategory() const = 0;
+	virtual Category getCategory() const = 0;
 	virtual void getPosition(float& x, float& y) const { x = _position.x; y = _position.y; }
 	virtual const Point& getPosition() const { return _position; }
 	virtual int getPhysSize() const { return 0; }

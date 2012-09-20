@@ -23,7 +23,7 @@ public:
 	void onResize(const World *world);
 	void onWorldScroll(const World *world);
 	void onOverlapBy(const Entity *overlap, const World *world);
-	const Category getCategory() const;
+	Category getCategory() const;
 	int getPhysSize() const;
 	void setPosition(const Point &pos);
 
@@ -41,6 +41,7 @@ private:
 	Timestamp _lastMoveTime;
 	Timestamp _moveTime;
 	Mutex _moveMutex;
+	mutable Mutex _positionMutex;
 
 	bool move(float x, float y);
 };

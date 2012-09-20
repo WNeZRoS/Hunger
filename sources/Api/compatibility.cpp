@@ -12,7 +12,6 @@
 #include <limits>
 
 #include "Thread.h"
-FakeMutex timeMutex;
 
 #define ABS(x) mabs(x)
 
@@ -31,11 +30,9 @@ bool isNaN(float x) {
 
 Timestamp getCurrentTime() {
 #ifdef WIN32
-	timeMutex.lock();
 	SYSTEMTIME st;
 	GetSystemTime(&st);
 	Timestamp t = (time(NULL) * 1000 + st.wMilliseconds);
-	timeMutex.unlock();
 	return t;
 #else
 	timeval tv;
@@ -46,7 +43,6 @@ Timestamp getCurrentTime() {
 
 void getTime(Time& currentTime) {
 #ifdef WIN32
-	timeMutex.lock();
 	SYSTEMTIME sm;
 	GetLocalTime(&sm);
 	currentTime.year = sm.wYear;
@@ -57,7 +53,6 @@ void getTime(Time& currentTime) {
 	currentTime.minute = sm.wMinute;
 	currentTime.second = sm.wSecond;
 	currentTime.milliseconds = sm.wMilliseconds;
-	timeMutex.unlock();
 #else
 	time_t timet = time(NULL);
 	tm *local = localtime(&timet);

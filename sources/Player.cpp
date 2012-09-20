@@ -68,7 +68,7 @@ void Player::onOverlapBy(const Entity *overlap, const World *world) {
 	}
 }
 
-const Entity::Category Player::getCategory() const {
+Entity::Category Player::getCategory() const {
 	return PLAYER;
 }
 

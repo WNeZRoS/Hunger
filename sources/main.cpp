@@ -20,6 +20,7 @@ Main::~Main() {
 	//delete _player;
 	if(_gameInterface) delete _gameInterface;
 	if(_context) delete _context;
+	if(_world) delete _world;
 	if(_intelligence) delete _intelligence;
 }
 
@@ -45,7 +46,7 @@ bool Main::initialize() {
 	_player = new Player("player", killCallback);
 	_world->addEntity(_player);
 
-	_intelligence = NULL;//new Intelligence();
+	_intelligence = NULL; //new Intelligence();
 	//_intelligence->setTarget(_player);
 
 	Monster *monster = new Monster("monster", _intelligence, 15);
@@ -71,6 +72,7 @@ bool Main::initialize() {
 
 	_gameInterface = new GameInterface();
 	_gameInterface->setLives(3);
+	_gameInterface->setScore(0);
 	_render->setInterface(_gameInterface);
 	return true;
 }
@@ -106,6 +108,9 @@ int main(int argc, char *argv[]) {
 	} catch(std::runtime_error e) {
 		std::cerr << "Exception: " << e.what();
 	}
+
+	char ch;
+	std::cin >> ch;
 
 	return -1;
 }

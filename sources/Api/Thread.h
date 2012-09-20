@@ -27,8 +27,15 @@ public:
 	Mutex();
 	~Mutex();
 
+#if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
+	void _lock(const char *file, int line);
+	bool _onelock(void * locker, const char *file, int line);
+	bool _trylock(const char *file, int line);
+#else
 	void lock();
-	bool lock(void * locker);
+	bool onelock(void * locker);
+	bool trylock();
+#endif
 	void unlock();
 
 	friend class Cond;
@@ -36,20 +43,24 @@ public:
 private:
 	pthread_mutex_t _mutex;
 	void *_locker;
-#ifdef DEBUG
 	pthread_t _thread;
 	bool _locked;
+#if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
+	const char *_file;
+	int _line;
 #endif
 };
 
-class FakeMutex
-{
+class FuncMutex {
 public:
-	FakeMutex() {}
-	~FakeMutex() {}
-
-	void lock() {}
-	void unlock() {}
+#if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
+	FuncMutex(Mutex& mutex, const char *file, int line);
+#else
+	FuncMutex(Mutex& mutex);
+#endif
+	~FuncMutex();
+private:
+	Mutex *_mutex;
 };
 
 class Cond
@@ -64,5 +75,14 @@ public:
 private:
 	pthread_cond_t _cond;
 };
+
+#if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
+#define lock() _lock(__FILE__, __LINE__)
+#define onelock(x) _onelock(x, __FILE__, __LINE__)
+#define trylock() _trylock(__FILE__, __LINE__)
+#define LocalMutex(var, mutex) FuncMutex var(mutex, __FILE__, __LINE__)
+#else
+#define LocalMutex(var, mutex) FuncMutex var(mutex)
+#endif
 
 #endif // THREAD_H

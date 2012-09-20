@@ -24,7 +24,14 @@
 #define IMPORTGL_FNPTRINIT
 #endif
 
+#ifndef _MSC_VER
 #define FNDEF(retType, funcName, args) IMPORTGL_API retType (*funcName) args IMPORTGL_FNPTRINIT
+#else
+#define FNTYPE(funcName) funcName ## _type
+#define FNDEF(retType, funcName, args) \
+	typedef retType (__stdcall *FNTYPE(funcName)) args; \
+	IMPORTGL_API FNTYPE(funcName) funcName IMPORTGL_FNPTRINIT
+#endif
 
 namespace ext
 {
