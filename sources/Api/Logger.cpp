@@ -25,8 +25,12 @@ Logger::Logger() {
 }
 
 Logger& Logger::instance() {
+	return *instance_pointer();
+}
+
+Logger * Logger::instance_pointer() {
 	static Logger * logger_instance = new Logger();
-	return *logger_instance;
+	return logger_instance;
 }
 
 Logger::~Logger() {
@@ -42,7 +46,11 @@ void Logger::openLog(const char *filename) {
 }
 
 void Logger::closeLog() {
-	if(_log) delete _log;
+	if(_log) {
+		_log->stop();
+		_log->wait();
+		delete _log;
+	}
 	delete _basicLogger;
 }
 

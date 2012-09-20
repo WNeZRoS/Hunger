@@ -12,6 +12,7 @@ Texture::Texture() {
 Texture::~Texture() {
 	Log::logger << Log::debug << "Texture delete";
 	if(_atlas) delete _atlas;
+	_atlas = 0;
 }
 
 int Texture::getWidth() const {
@@ -36,6 +37,6 @@ void Texture::atlasUnload() const {
 	if(_atlasUsage == 0) {
 		delete _atlas;
 		_atlas = 0;
-	}
-	if(_atlasUsage < 0) Log::logger << Log::warning << "Atlas usage is lower that zero";
+	} else if(_atlasUsage < 0)
+		Log::logger << Log::warning << "Atlas usage is lower that zero";
 }

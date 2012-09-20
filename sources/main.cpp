@@ -18,10 +18,14 @@ Main::Main() {
 Main::~Main() {
 	//delete _map;
 	//delete _player;
+	if(_world) delete _world;
+	if(_intelligence) {
+		_intelligence->stop();
+		_intelligence->wait();
+		delete _intelligence;
+	}
 	if(_gameInterface) delete _gameInterface;
 	if(_context) delete _context;
-	if(_world) delete _world;
-	if(_intelligence) delete _intelligence;
 }
 
 bool Main::initialize() {
@@ -46,8 +50,8 @@ bool Main::initialize() {
 	_player = new Player("player", killCallback);
 	_world->addEntity(_player);
 
-	_intelligence = NULL; //new Intelligence();
-	//_intelligence->setTarget(_player);
+	_intelligence = new Intelligence();
+	_intelligence->setTarget(_player);
 
 	Monster *monster = new Monster("monster", _intelligence, 15);
 	_world->addEntity(monster);
@@ -108,6 +112,8 @@ int main(int argc, char *argv[]) {
 	} catch(std::runtime_error e) {
 		std::cerr << "Exception: " << e.what();
 	}
+
+	delete Log::Logger::instance_pointer();
 
 	char ch;
 	std::cin >> ch;

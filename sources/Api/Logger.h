@@ -102,7 +102,10 @@ protected:
 class Logger : public BasicLogger
 {
 public:
+	~Logger();
+
 	static Logger& instance();
+	static Logger* instance_pointer();
 
 	void openLog(const char *filename);
 	void closeLog();
@@ -130,7 +133,6 @@ public:
 	}
 protected:
 	Logger();
-	~Logger(); // Never called
 
 private:
 	BasicLogger *_basicLogger;
