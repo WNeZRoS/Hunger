@@ -65,7 +65,9 @@ public class MainActivity extends Activity {
 				"map.tga",
 				"player.tga",
 				"test.map",
-				"font.ttf"
+				"font.ttf",
+				"monster.tga",
+				"monster2.tga"
 		};
 		
 		final File dataPath = new File(Environment.getExternalStorageDirectory(), 

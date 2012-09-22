@@ -18,14 +18,16 @@ Main::Main() {
 Main::~Main() {
 	//delete _map;
 	//delete _player;
-	if(_world) delete _world;
 	if(_intelligence) {
 		_intelligence->stop();
 		_intelligence->wait();
+		if(_world) delete _world;
 		delete _intelligence;
-	}
+	} else if(_world) delete _world;
 	if(_gameInterface) delete _gameInterface;
 	if(_context) delete _context;
+
+	delete Log::Logger::instance_pointer();
 }
 
 bool Main::initialize() {
@@ -112,11 +114,6 @@ int main(int argc, char *argv[]) {
 	} catch(std::runtime_error e) {
 		std::cerr << "Exception: " << e.what();
 	}
-
-	delete Log::Logger::instance_pointer();
-
-	char ch;
-	std::cin >> ch;
 
 	return -1;
 }

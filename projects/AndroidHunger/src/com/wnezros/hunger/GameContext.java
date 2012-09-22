@@ -1,7 +1,5 @@
 package com.wnezros.hunger;
 
-import android.util.Log;
-
 public class GameContext {
 	private static final int ACTIVATE = 0;
 	private static final int CLOSE = 1;

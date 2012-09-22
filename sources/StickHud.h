@@ -1,7 +1,7 @@
 #ifndef STICKHUD_H
 #define STICKHUD_H
 
-#include <Api/Control.h>
+#include "Api/Core.h"
 
 class StickHud : public Hud
 {

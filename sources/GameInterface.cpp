@@ -1,5 +1,5 @@
 #include "GameInterface.h"
-#include "Api/FileManager.h"
+#include "Api/Core.h"
 #include <sstream>
 
 GameInterface::GameInterface() : Interface(Full) {

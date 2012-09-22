@@ -11,8 +11,6 @@
 #include <cmath>
 #include <limits>
 
-#include "Thread.h"
-
 #define ABS(x) mabs(x)
 
 short mabs(short x) { if(x < 0) return -x; return x; }
@@ -24,7 +22,11 @@ bool isNaN(float x) {
 #ifdef _MSC_VER
 	return _isnan(x);
 #else
+#if ANDROID_NDK
+	return isnan(x);
+#else
 	return std::isnan(x);
+#endif
 #endif
 }
 

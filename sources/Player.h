@@ -30,6 +30,9 @@ public:
 	Category getCategory() const;
 	int getPhysSize() const;
 
+	const Point& getPosition() const;
+	const Point& getLastPosition() const;
+
 	bool isOverlap(const Point& center, int radius) const;
 	bool isOverlap(const Point& start, const Point& end) const;
 
@@ -61,6 +64,7 @@ private:
 	float _speed;
 	Point_i _moveDirection;
 	Timestamp _lastMoveTime;
+	mutable Mutex _positionMutex;
 
 	void move();
 	bool move(float x, float y);

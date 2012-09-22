@@ -1,8 +1,4 @@
-#include "Context.h"
-#include "Render.h"
-#include "Map.h"
-#include "Entity.h"
-#include "Font.h"
+#include "Api.h"
 
 Render::Painter *Render::_Painter = 0;
 

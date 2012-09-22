@@ -18,27 +18,31 @@ LOCAL_SRC_FILES := \
 	../../../sources/Api/compatibility.cpp \
 	../../../sources/Api/Control.cpp \
 	../../../sources/Api/World.cpp \
-	../../../sources/LevelMap.cpp \
-	../../../sources/main.cpp \
-	../../../sources/Player.cpp \
 	../../../sources/Api/TextureManager.cpp \
 	../../../sources/Api/GlTextureManager.cpp \
 	../../../sources/Api/TgaTexture.cpp \
 	../../../sources/Api/Logger.cpp \
-	../../../sources/Food.cpp \
 	../../../sources/Api/Point.cpp \
 	../../../sources/Api/Texture.cpp \
 	../../../sources/Api/Random.cpp \
-	../../../sources/StickHud.cpp \
 	../../../sources/Api/GlAndroidContext.cpp \
 	../../../sources/Api/FileManager.cpp \
-	../../../sources/GL/importgl.cpp \
 	../../../sources/Api/FreeTypeFont.cpp \
 	../../../sources/Api/Interface.cpp \
 	../../../sources/Api/View.cpp \
-	../../../sources/GameInterface.cpp \
 	../../../sources/Api/TextView.cpp \
-	../../../sources/Api/ButtonView.cpp
+	../../../sources/Api/ButtonView.cpp \
+	../../../sources/Api/Thread.cpp \
+	../../../sources/GL/importgl.cpp \
+	../../../sources/GameInterface.cpp \
+	../../../sources/StickHud.cpp \
+	../../../sources/Food.cpp \
+	../../../sources/LevelMap.cpp \
+	../../../sources/main.cpp \
+	../../../sources/Player.cpp \
+	../../../sources/Monster.cpp \
+	../../../sources/Intelligence.cpp \
+	../../../sources/GameWorld.cpp
 
 LOCAL_LDLIBS := -ldl -lGLESv1_CM -llog
 LOCAL_STATIC_LIBRARIES := freetype

@@ -2,9 +2,6 @@
 #define GAMEINTERFACE_H
 
 #include "Api/Interface.h"
-#include "Api/TextView.h"
-#include "Api/ButtonView.h"
-#include "Api/FreeTypeFont.h"
 
 class GameInterface : public Interface
 {

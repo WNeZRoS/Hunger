@@ -2,7 +2,7 @@
 #define IMPORTGL_FNPTRINIT = NULL
 
 #include "importgl.h"
-#include "../Api/Logger.h"
+#include "../Api/Core/Logger.h"
 
 #ifdef ANDROID_NDK
 #include <dlfcn.h>
@@ -34,9 +34,9 @@ int loadExts() {
 #define GLESFN(funcName) (#funcName "OES")
 
 #define IMPORT_FUNC(funcName) { \
-	void *procAddress = reinterpret_cast<void*>(dlsym(sGLESSO, GLESFN(funcName)); \
-	if (procAddress == NULL) { Log::Debug << "Fail load " << GLESFN(funcName); result++;} \
-	*(reinterpret_cast<void**>(&funcName)) = procAddress; }
+	void *procAddress = reinterpret_cast<void*>(dlsym(sGLESSO, GLESFN(funcName))); \
+	if (procAddress == NULL) { Log::Debug << "Fail load " << GLESFN(funcName); result++; } \
+	funcName = reinterpret_cast<typeof(funcName)>(procAddress); }
 #endif // ANDROID_NDK
 
 	IMPORT_FUNC(glIsRenderbuffer);

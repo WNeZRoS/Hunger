@@ -20,6 +20,9 @@ void Intelligence::clear() {
 
 void Intelligence::setTarget(Player *target) {
 	_target = target;
+	_lastTargetPosition = _target->getPosition();
+	_map = static_cast<LevelMap*>(target->getWorld()->getMap());
+	_motionSense = _map->getOne() / 15.0f;
 }
 
 Intelligence::RoleType Intelligence::addMonster(Monster *npc) {
@@ -28,14 +31,8 @@ Intelligence::RoleType Intelligence::addMonster(Monster *npc) {
 }
 
 Intelligence::RoleType Intelligence::addMonster(Monster *npc, bool lockMutex) {
-	if(!this->_rolesMutex) return NONE;
+	if(!this->_rolesMutex || !_map) return NONE;
 	if(lockMutex) _rolesMutex->lock();
-
-	if(_map != npc->getWorld()->getMap()) _map = static_cast<LevelMap*>(npc->getWorld()->getMap());
-	if(!_map) {
-		if(lockMutex) _rolesMutex->unlock();
-		return NONE;
-	}
 
 	RoleType role = NONE;
 
@@ -75,7 +72,7 @@ void Intelligence::whatMeDo(Monster *npc) {
 	//Log::Debug << "What me do???";
 
 	Point tPos = _target->getPosition();
-	Point mPos = npc->getPosition();
+	Point mPos = npc->getPosition() - (_map->getOne() / 2.0f);
 	Point delta = (mPos - tPos).abs(); // TODO change to path length
 	Point targetPos(0, 0);
 
@@ -97,6 +94,7 @@ void Intelligence::whatMeDo(Monster *npc) {
 	} else { // Move
 		Point vector = tPos - _target->getLastPosition();
 		if(vector == 0) vector = Point(0, -1);
+		else if(vector.abs() < Point(0.1f, 0.1f)) vector *= 10;
 
 		unsigned short targetFounded = 0;
 		do {
@@ -165,14 +163,15 @@ void Intelligence::whatMeDo(Monster *npc) {
 
 	// if no path: go random tile around mPos.
 	if(path.size() == 0) {
-		std::vector<Point> targets;
+		std::vector<Point> targets;		
+
 		for(int y = -1; y <= 1; y += 2) {
-			Point t = mPos; t.y += y;
+			Point t = mPos; t.y += y * _map->getOne();
 			if(_map->isRoad(t)) targets.push_back(t);
 		}
 
 		for(int x = -1; x <= 1; x += 2) {
-			Point t = mPos; t.x += x;
+			Point t = mPos; t.x += x * _map->getOne();
 			if(_map->isRoad(t)) targets.push_back(t);
 		}
 
@@ -187,15 +186,18 @@ void Intelligence::whatMeDo(Monster *npc) {
 
 void Intelligence::run() {
 	while(isRunning()) {
-		_rolesMutex->lock();
-		for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
-			if((*it).npc->lastMotion() > 1000) {
-				this->whatMeDo((*it).npc);
+		if(_target) {
+			bool needNewPath = (_lastTargetPosition - _target->getPosition()).abs().length() > _motionSense;
+			_rolesMutex->lock();
+			for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
+				if(needNewPath || (*it).npc->lastMotion() >= 1000) {
+					this->whatMeDo((*it).npc);
+				}
+				(*it).npc->move();
 			}
-			(*it).npc->move();
+			_rolesMutex->unlock();
+			_lastTargetPosition = _target->getPosition();
 		}
-		_rolesMutex->unlock();
-
 		msSleep(2);
 	}
 	delete _rolesMutex;

@@ -1,5 +1,4 @@
 #include "StickHud.h"
-#include "Api/Render.h"
 #include <cmath>
 
 #ifndef M_PI

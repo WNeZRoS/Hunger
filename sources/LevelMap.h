@@ -52,6 +52,9 @@ public:
 		friend std::istream& operator >> (std::istream& in, Tile& t);
 	private:
 		TileType _type;
+		bool _isRoad, _isClear, _isGate, _isRoadUp, _isRoadDown, _isRoadLeft, _isRoadRight;
+
+		void setType(TileType type);
 
 		bool isCenterUp(const Point& pos, float halfSize) const;
 		bool isCenterBottom(const Point& pos, float halfSize) const;
@@ -105,9 +108,14 @@ private:
 	inline const Tile& getTileByCoords(const Point_i& tileCoord) const;
 	void getPositions(const Point& pos, Point_i& tilePos, Point& roadPos) const;
 
-	unsigned int findMapPath(const Point_i& from, const Point_i& to, const Point_i& noCross,
-							 unsigned int **&wasHere, unsigned int step) const;
-	void backPath(const Point_i& to, Array<PathSegment> &path, unsigned int **wasHere, unsigned int step) const;
+	struct PathS {
+		Point_i parent;
+		unsigned int step;
+	};
+
+	unsigned int findMapPath(const Point_i& parent, const Point_i& from, const Point_i& to, const Point_i& noCross,
+							 PathS **&wasHere, unsigned int step) const;
+	void backPath(const Point_i& to, Array<PathSegment> &path, PathS **wasHere, unsigned int step) const;
 };
 
 #endif // LEVELMAP_H

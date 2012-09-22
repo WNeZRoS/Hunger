@@ -113,13 +113,25 @@ void Monster::setPosition(const Point &pos) {
 }
 
 void Monster::draw() {
+	Render::getPainter()->setColor(0xFF, 0xFF, 0xFF);
 	_sprite->draw();
+	if(_moveDirection != 0) {
+		Point stop, position;
+		_map->globalCoordinatesToScreen(_position, position);
+		_map->globalCoordinatesToScreen(_stop, stop);
+		Render::getPainter()->setColor(0x0, 0xFF, 0x0);
+		Render::getPainter()->line(position.x, position.y, stop.x, stop.y);
+		Render::getPainter()->setColor(0xFF, 0xFF, 0x0);
+		stop = position + (_moveDirection * 30);
+		Render::getPainter()->line(position.x, position.y, stop.x, stop.y);
+	}
 }
 
 void Monster::move() {
+	if(_moveDirection == 0) return;
+
 	Timestamp current = getCurrentTime();
 	if(_lastMoveTime + 50 > current) return;
-	if(_moveDirection == 0) return;
 	if(current - _lastMoveTime < 400) {
 		//_moveMutex.lock();
 		//_moveMutex.unlock();
@@ -135,12 +147,9 @@ bool Monster::move(float x, float y) {
 	Point dir( x, y );
 	_positionMutex.lock();
 	Point position = _position;
-	_positionMutex.unlock();
 
 	if(_map->moveInDirection(position, dir, _speed)) {
 		//Log::Debug << "i can move to " << position;
-
-		_positionMutex.lock();
 		if((_moveDirection.y == (_stop.y - _position.y) / std::fabs(_stop.y - _position.y)
 			&& _moveDirection.y != 0 && ((_position.y < _stop.y && _stop.y < position.y)
 				|| (_position.y > _stop.y && _stop.y > position.y)))) {
@@ -175,12 +184,10 @@ bool Monster::move(float x, float y) {
 
 		return true;
 	} else {
+		_positionMutex.unlock();
 		//Log::Debug << "I can't move";
 		this->stop();
-
-		if(_moveDirection == 0) {
-			if(_intelligence) _intelligence->whatMeDo(this);
-		}
+		if(_intelligence) _intelligence->whatMeDo(this);
 	}
 	return false;
 }
@@ -196,8 +203,8 @@ bool Monster::moveTo(const Point& stop) {
 	_stop = stop + (_map->getOne() / 2.0f);
 
 	_moveDirection = (_stop - _position).toPoint_i();
-	if(mabs(_moveDirection.x) < mabs(_moveDirection.y)) _moveDirection.x = 0;
-	else _moveDirection.y = 0;
+	//if(10*mabs(_moveDirection.x) < mabs(_moveDirection.y)) _moveDirection.x = 0;
+	//else if(mabs(_moveDirection.x) > 10*mabs(_moveDirection.y)) _moveDirection.y = 0;
 
 	if(mabs(_moveDirection.x) > _map->getOne() * 5) _moveDirection.x *= -1;
 	if(mabs(_moveDirection.y) > _map->getOne() * 5) _moveDirection.y *= -1;

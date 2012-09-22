@@ -45,8 +45,10 @@ void Player::onChangeWorld(const World *world) {
 	Entity::onChangeWorld(world);
 	_map = reinterpret_cast<LevelMap*>(world->getMap());
 	if(!_map) return;
+	_positionMutex.lock();
 	_position = _map->getPlayerSpawnPosition() + (_map->getOne() / 2.0f);
 	_lastPosition = _position;
+	_positionMutex.unlock();
 	_speed = _map->getOne() / 15.0f;
 }
 
@@ -56,7 +58,9 @@ void Player::onResize(const World *world) {
 }
 
 void Player::onWorldScroll(const World *world) {
+	_positionMutex.lock();
 	Point position = _position - (_map->getOne() / 2.0f);
+	_positionMutex.unlock();
 	_map->globalCoordinatesToScreen(position, position);
 	_sprite->setPosition(position.x, position.y);
 }
@@ -81,9 +85,19 @@ bool Player::isOverlap(const Point &center, int radius) const {
 }
 
 bool Player::isOverlap(const Point &start, const Point &end) const {
+	LocalMutex(lm, _positionMutex);
 	return start <= _position && _position <= end;
 }
 
+const Point& Player::getPosition() const {
+	LocalMutex(lm, _positionMutex);
+	return Entity::getPosition();
+}
+
+const Point& Player::getLastPosition() const {
+	LocalMutex(lm, _positionMutex);
+	return Entity::getLastPosition();
+}
 bool Player::moveInDirection(int x, int y) {
 	if(_moveDirection == 0) _lastMoveTime = getCurrentTime();
 	_moveDirection = Point_i(x % 2, y % 2);
@@ -100,8 +114,9 @@ void Player::draw() {
 }
 
 void Player::move() {
+	if(_moveDirection == 0) return;
 	Timestamp current = getCurrentTime();
-	if(_moveDirection == 0 || _lastMoveTime + 50 > current) return;
+	if(_lastMoveTime + 50 > current) return;
 
 	if(current - _lastMoveTime < 400) {
 		move((current - _lastMoveTime) / 50.0f * _moveDirection.x,
@@ -112,6 +127,7 @@ void Player::move() {
 
 bool Player::move(float x, float y) {
 	Point dir( x, y );
+	_positionMutex.lock();
 	Point position = _position;
 	//Log::logger << Log::debug << "Pos: " << _position << " Dir: " << dir << " " << x << " " << y;
 	if(_map->moveInDirection(position, dir, _speed)) {
@@ -121,6 +137,7 @@ bool Player::move(float x, float y) {
 
 		_lastPosition = _position;
 		_position = position;
+		_positionMutex.unlock();
 
 		if(dir.x < 0 && std::abs(dir.x) > std::abs(dir.y)) _sprite->replaceAnimation(_moveAnimationLeft);
 		else if(dir.x > 0  && std::abs(dir.x) > std::abs(dir.y)) _sprite->replaceAnimation(_moveAnimationRight);
@@ -132,6 +149,8 @@ bool Player::move(float x, float y) {
 		_world->updated(this);
 
 		return true;
+	} else {
+		_positionMutex.unlock();
 	}
 	return false;
 }

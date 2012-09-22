@@ -35,6 +35,8 @@ protected:
 	Player *_target;
 	std::vector<NpcRole> _roles;
 	Mutex *_rolesMutex;
+	Point _lastTargetPosition;
+	float _motionSense;
 
 	virtual RoleType addMonster(Monster *npc, bool lockMutex);
 };
