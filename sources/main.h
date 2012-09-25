@@ -18,7 +18,7 @@ public:
 	void cleanup();
 
 	void onEat(int type);
-	void onKilled();
+	void onKilled(Npc *corpse);
 
 private:
 

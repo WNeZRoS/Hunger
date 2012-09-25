@@ -29,7 +29,7 @@ void Food::onResize(const World *world) {
 void Food::onWorldScroll(const World *world) {
 	if(!_map) return;
 	_screenPosition = _position - (_map->getOne() / 2.0f);
-	_map->globalCoordinatesToScreen(_screenPosition, _screenPosition);
+	_map->globalToScreen(_screenPosition, _screenPosition);
 }
 
 void Food::onOverlapBy(const Entity *overlap, const World *world) {
@@ -49,7 +49,7 @@ int Food::getPhysSize() const {
 }
 
 bool Food::isOverlap(const Point &center, int radius) const {
-	return false; // TODO
+	return this->isOverlap(center - radius, center + radius);
 }
 
 bool Food::isOverlap(const Point &start, const Point &end) const {
@@ -58,5 +58,5 @@ bool Food::isOverlap(const Point &start, const Point &end) const {
 
 void Food::draw() {
 	if(!_map || !_atlas) return;
-	_atlas->drawTile(_tileId, _screenPosition.x, _screenPosition.y, 1, _map->getTileSize(), _map->getTileSize());
+	_atlas->drawTile(_tileId, _screenPosition.x.f(), _screenPosition.y.f(), 1, _map->getTileSize(), _map->getTileSize());
 }

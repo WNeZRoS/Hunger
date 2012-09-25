@@ -48,17 +48,17 @@ bool Main::initialize() {
 	_world->setMap(_map);
 	_render->setWorld(_world);
 
-	Player::KillCallback killCallback = { reinterpret_cast<Controller*>(this), reinterpret_cast<Player::KillFunc>(&Main::onKilled) };
-	_player = new Player("player", killCallback);
+	Npc::KillCallback killCallback = { reinterpret_cast<Controller*>(this), reinterpret_cast<Player::KillFunc>(&Main::onKilled) };
+	_player = new Player("player", killCallback, 15);
 	_world->addEntity(_player);
 
 	_intelligence = new Intelligence();
 	_intelligence->setTarget(_player);
 
-	Monster *monster = new Monster("monster", _intelligence, 15);
+	Monster *monster = new Monster("monster", killCallback, 15, _intelligence);
 	_world->addEntity(monster);
 
-	Monster *monster2 = new Monster("monster2", _intelligence, 16);
+	Monster *monster2 = new Monster("monster2", killCallback, 16, _intelligence);
 	_world->addEntity(monster2);
 
 	Array<Point> roads;
@@ -99,10 +99,15 @@ void Main::onEat(int type) {
 	_gameInterface->setScore(_gameInterface->getScore() + (type + 1) * 10);
 }
 
-void Main::onKilled() {
-	Log::Debug << "Player killed";
-	_gameInterface->setLives(_gameInterface->getLives() - 1);
-	_world->restart();
+void Main::onKilled(Npc *corpse) {
+	if(corpse->getCategory() == Entity::PLAYER) {
+		Log::Debug << "Player killed";
+		_gameInterface->setLives(_gameInterface->getLives() - 1);
+		_world->restart();
+	} else {
+		Log::Debug << "Monster killed";
+		#warning TODO
+	}
 }
 
 Main game;

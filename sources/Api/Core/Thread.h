@@ -29,11 +29,11 @@ public:
 
 #if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
 	void _lock(const char *file, int line);
-	bool _onelock(void * locker, const char *file, int line);
+	bool _onelock(const char *file, int line);
 	bool _trylock(const char *file, int line);
 #else
 	void lock();
-	bool onelock(void * locker);
+	bool onelock();
 	bool trylock();
 #endif
 	void unlock();
@@ -42,7 +42,6 @@ public:
 
 private:
 	pthread_mutex_t _mutex;
-	void *_locker;
 	pthread_t _thread;
 	bool _locked;
 #if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
@@ -78,7 +77,7 @@ private:
 
 #if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
 #define lock() _lock(__FILE__, __LINE__)
-#define onelock(x) _onelock(x, __FILE__, __LINE__)
+#define onelock() _onelock(__FILE__, __LINE__)
 #define trylock() _trylock(__FILE__, __LINE__)
 #define LocalMutex(var, mutex) FuncMutex var(mutex, __FILE__, __LINE__)
 #else

@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <limits>
 
 #define ABS(x) mabs(x)
 
@@ -18,6 +17,7 @@ int mabs(int x) { if(x < 0) return -x; return x; }
 long mabs(long x) { if(x < 0) return -x; return x; }
 float mabs(float x) { if(x < 0) return -x; return x; }
 double mabs(double x) { if(x < 0) return -x; return x; }
+
 bool isNaN(float x) {
 #ifdef _MSC_VER
 	return _isnan(x);
@@ -67,10 +67,6 @@ void getTime(Time& currentTime) {
 	currentTime.second = local->tm_sec;
 	currentTime.milliseconds = getCurrentTime() % 1000;
 #endif
-}
-
-bool equal(float a, float b) {
-	return std::fabs(a - b) < 2*std::numeric_limits<float>::epsilon();
 }
 
 void msSleep(unsigned int millis) {

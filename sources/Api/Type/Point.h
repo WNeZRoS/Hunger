@@ -1,6 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include "Float.h"
 #include <fstream>
 
 namespace Log
@@ -12,11 +13,12 @@ struct Point_i;
 
 struct Point
 {
-	float x, y;
+	Float x, y;
 
 	Point();
 	Point(const Point_i& point);
 	Point(float x, float y);
+	Point(Float x, Float y);
 	bool operator == (const Point& p) const;
 	bool operator != (const Point& p) const;
 	bool operator == (const float& v) const;
@@ -63,6 +65,7 @@ struct Point
 	static const Point iONE;
 	static const Point dONE;
 	static const Point ZERO;
+	static const Point NaN;
 };
 
 struct Point_i
@@ -108,6 +111,7 @@ struct Point_i
 	Point_i abs() const;
 	float length() const;
 	unsigned int qlength() const;
+	int sign() const;
 	Point toPoint() const;
 
 	friend std::istream& operator >> (std::istream& in, Point_i& p);

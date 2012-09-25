@@ -54,7 +54,6 @@ Mutex::Mutex() {
 	pthread_mutex_init(&_mutex, NULL);
 	_locked = false;
 	_thread = pthread_self();
-	_locker = NULL;
 }
 
 Mutex::~Mutex() {
@@ -64,8 +63,8 @@ Mutex::~Mutex() {
 #if !defined(NO_MACRO_LOCK) && (defined(DEBUG) || defined(_DEBUG))
 void Mutex::_lock(const char *file, int line) {
 	if(_locked && pthread_equal(_thread, pthread_self()) != 0) {
-		//std::cout << "Thread already lock mutex at " << _file << ":" << _line << "." << std::endl;
-		//std::cout.flush();
+		std::cout << "Thread already lock mutex at " << _file << ":" << _line << "." << std::endl;
+		std::cout.flush();
 	}
 
 	pthread_mutex_lock(&_mutex);
@@ -76,10 +75,9 @@ void Mutex::_lock(const char *file, int line) {
 	_line = line;
 }
 
-bool Mutex::_onelock(void *locker, const char *file, int line) {
-	if(_locker == locker) return false;
+bool Mutex::_onelock(const char *file, int line) {
+	if(_locked && pthread_equal(_thread, pthread_self()) != 0) return false;
 	this->_lock(file, line);
-	_locker = locker;
 	return true;
 }
 
@@ -108,10 +106,9 @@ void Mutex::lock() {
 	_thread = pthread_self();
 }
 
-bool Mutex::onelock(void *locker) {
-	if(_locker == locker) return false;
+bool Mutex::onelock() {
+	if(_locked && pthread_equal(_thread, pthread_self()) != 0) return false;
 	this->lock();
-	_locker = locker;
 	return true;
 }
 
@@ -122,10 +119,7 @@ bool Mutex::trylock() {
 #endif
 
 void Mutex::unlock() {
-#ifdef DEBUG
 	_locked = false;
-#endif
-	_locker = NULL;
 	pthread_mutex_unlock(&_mutex);
 }
 

@@ -51,7 +51,7 @@ int World::addEntity(const Entity *entity) {
 }
 
 void World::removeEntity(Entity *entity) {
-	bool locked = _entitiesMutex->onelock(this);
+	bool locked = _entitiesMutex->onelock();
 	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
 		if(*it == entity) {
 			delete entity;
@@ -125,7 +125,7 @@ void World::updated() {
 		Point start = upd->getPosition() - size;
 		Point end = upd->getPosition() + size;
 
-		bool lock = _entitiesMutex->onelock(this);
+		bool lock = _entitiesMutex->onelock();
 		for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); ) {
 			Entity *e = *it++;
 			if(e != upd && e->isOverlap(start, end))
@@ -138,7 +138,7 @@ void World::updated() {
 }
 
 void World::restart() {
-	bool lock = _entitiesMutex->onelock(this);
+	bool lock = _entitiesMutex->onelock();
 	for(list<Entity*>::iterator it = _entities.begin(); it != _entities.end(); it++) {
 		(*it)->onChangeWorld(this);
 		(*it)->onResize(this);

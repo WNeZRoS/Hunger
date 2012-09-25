@@ -8,13 +8,15 @@ const Point Point::ONE(1.0f, 0.0f);
 const Point Point::iONE(0.0f, 1.0f);
 const Point Point::dONE(1.0f, 1.0f);
 const Point Point::ZERO(0.0f, 0.0f);
+const Point Point::NaN(NAN, NAN);
 
 Point::Point() { this->x = this->y = 0; }
 Point::Point(const Point_i &point) { this->x = point.x; this->y = point.y; }
 Point::Point(float x, float y) { this->x = x; this->y = y; }
-bool Point::operator == (const Point& p) const { return equal(x, p.x) && equal(y, p.y); }
+Point::Point(Float x, Float y) { this->x = x; this->y = y; }
+bool Point::operator == (const Point& p) const { return x == p.x && y == p.y; }
 bool Point::operator != (const Point& p) const { return !(*this == p); }
-bool Point::operator == (const float& v) const { return equal(x, v) && equal(y, v); }
+bool Point::operator == (const float& v) const { return x == v && y == v; }
 bool Point::operator != (const float& v) const { return !(*this == v); }
 
 bool Point::operator > (const Point& p) const { return x > p.x && y > p.y; }
@@ -46,10 +48,10 @@ const Point Point::operator - (const float& v) const { return Point(*this) -= v;
 const Point Point::operator * (const float& v) const { return Point(*this) *= v; }
 const Point Point::operator / (const float& v) const { return Point(*this) /= v; }
 
-Point Point::abs() const { return Point(mabs(x), mabs(y)); }
-float Point::length() const { return std::sqrt(x * x + y * y); }
-bool Point::nan() const { return isNaN(x) || isNaN(y); }
-Point_i Point::toPoint_i() const { return Point_i(x, y); }
+Point Point::abs() const { return Point(x.abs(), y.abs()); }
+float Point::length() const { return (x.sq() + y.sq()).sqrt().f(); }
+bool Point::nan() const { return x.isNaN() || y.isNaN(); }
+Point_i Point::toPoint_i() const { return Point_i(x.f(), y.f()); }
 
 std::istream& operator >> (std::istream& in, Point& p) {
 	in >> p.x >> p.y;
@@ -76,7 +78,7 @@ const Point_i Point_i::dONE(1, 1);
 const Point_i Point_i::ZERO(0, 0);
 
 Point_i::Point_i() { this->x = this->y = 0; }
-Point_i::Point_i(const Point &point) { this->x = point.x; this->y = point.y; }
+Point_i::Point_i(const Point &point) { this->x = point.x.f(); this->y = point.y.f(); }
 Point_i::Point_i(int x, int y) { this->x = x; this->y = y; }
 bool Point_i::operator == (const Point_i& p) const { return x == p.x && y == p.y; }
 bool Point_i::operator != (const Point_i& p) const { return !(*this == p); }
