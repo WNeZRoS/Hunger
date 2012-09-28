@@ -124,6 +124,14 @@ public:
 		return _items[_size - 1];
 	}
 
+	T * items() {
+		return _items;
+	}
+
+	const T * items() const {
+		return _items;
+	}
+
 	unsigned int size() const {
 		return _size;
 	}

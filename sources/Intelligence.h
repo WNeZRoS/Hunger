@@ -15,20 +15,24 @@ public:
 		NONE, FRONT_ATTACK, BACK_ATTACK, SIDE_ATTACK, GUARD
 	};
 
+	enum Events {
+		WHAT_ME_DO = 1,
+	};
+
 	Intelligence();
 	~Intelligence();
 
-	virtual void clear();
-	virtual void setTarget(Player *target);
-	virtual RoleType addMonster(Monster *npc);
-	virtual void removeMonster(Monster *npc);
-	virtual void whatMeDo(Monster *npc);
-	virtual void run();
+	void clear();
+	void setTarget(Player *target);
+	void addMonster(Monster *npc);
+	void removeMonster(Monster *npc);
+	void whatMeDo(Monster *npc);
 
 protected:
 	struct NpcRole {
 		Monster *npc;
 		RoleType role;
+		Array<PathFinder::PathElement> path;
 	};
 
 	LevelMap *_map;
@@ -38,7 +42,11 @@ protected:
 	Point _lastTargetPosition;
 	float _motionSense;
 
-	virtual RoleType addMonster(Monster *npc, bool lockMutex);
+	NpcRole addMonster(Monster *npc, bool lockMutex);
+
+	bool run();
+	void onExit();
+	void onEvent(int command, void *param);
 };
 
 #endif // INTELLIGENCE_H

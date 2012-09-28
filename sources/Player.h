@@ -40,7 +40,7 @@ private:
 	PlayerController *_controller;
 	Timestamp _angryTime;
 
-	bool move(float x, float y);
+	MoveState move(float x, float y);
 };
 
 #endif // PLAYER_H

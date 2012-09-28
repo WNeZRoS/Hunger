@@ -44,8 +44,6 @@ bool Npc::moveTo(const Point& to) {
 	if(dir.y.abs() > _map->getOne() * 5) dir.y *= -1;
 	_moveDirection = Point_i(dir.x.sign(), dir.y.sign());
 
-	#warning TODO
-
 	return false;
 }
 
@@ -121,11 +119,11 @@ void Npc::updateSpritePosition() {
 	_sprite->setPosition(position.x.f(), position.y.f());
 }
 
-bool Npc::move() {
-	if(_moveDirection == 0) return false;
+Npc::MoveState Npc::move() {
+	if(_moveDirection == 0) return Npc::NOT_MOVED;
 
 	Timestamp current = getCurrentTime();
-	if(_lastMoveTime + 50 > current) return false;
+	if(_lastMoveTime + 50 > current) return Npc::NOT_MOVED;
 
 	Timestamp deltaTime = current - _lastMoveTime;
 	if(deltaTime > 300) deltaTime = 300;
@@ -135,10 +133,19 @@ bool Npc::move() {
 	return move(multiply * _moveDirection.x, multiply * _moveDirection.y);
 }
 
-bool Npc::move(float x, float y) {
+Npc::MoveState Npc::move(float x, float y) {
 	Point position = getPosition();
 	Point safePosition = position;
 	Point wannaPosition = position + Point(x, y);
+
+	if(!_stopPosition.nan()) {
+		if(_stopPosition.y == position.y && _stopPosition.y == wannaPosition.y
+				&& (position.x < _stopPosition.x && _stopPosition.x < wannaPosition.x))
+			wannaPosition = _stopPosition;
+		else if(_stopPosition.x == position.x && _stopPosition.x == wannaPosition.x
+				&& (position.y < _stopPosition.y && _stopPosition.y < wannaPosition.y))
+			wannaPosition = _stopPosition;
+	}
 
 	if(_map->getPathFinder()->correctMotion(position, wannaPosition)) {
 		Point direction = position - safePosition;
@@ -151,8 +158,10 @@ bool Npc::move(float x, float y) {
 
 		_world->updated(this);
 
-		return true;
+		if(wannaPosition == _stopPosition) return Npc::MOVED_TO_STOP;
+
+		return Npc::MOVED;
 	}
 
-	return false;
+	return Npc::NOT_MOVED;
 }

@@ -35,12 +35,17 @@ SOURCES += \
     ../sources/Api/Core/FileManager.cpp \
     ../sources/Api/Core/Control.cpp \
     ../sources/Api/Content/World.cpp \
-    ../sources/Api/Content/Point.cpp \
     ../sources/Api/Interface/View.cpp \
     ../sources/Api/Interface/TextView.cpp \
     ../sources/Api/Interface/Interface.cpp \
     ../sources/Api/Interface/FreeTypeFont.cpp \
-    ../sources/Api/Interface/ButtonView.cpp
+    ../sources/Api/Interface/ButtonView.cpp \
+    ../sources/Tile.cpp \
+    ../sources/Npc.cpp \
+    ../sources/PathFinder.cpp \
+    ../sources/Api/Type/Array.cpp \
+    ../sources/Api/Type/Point.cpp \
+    ../sources/Api/Type/Float.cpp
 
 HEADERS += \
     ../sources/Api/compatibility.h \
@@ -84,7 +89,13 @@ HEADERS += \
     ../sources/Api/Interface/ButtonView.h \
     ../sources/Api/Core.h \
     ../sources/Api/Content.h \
-    ../sources/Api/Interface.h
+    ../sources/Api/Interface.h \
+    ../sources/Tile.h \
+    ../sources/Npc.h \
+    ../sources/PathFinder.h \
+    ../sources/Api/Type/Array.h \
+    ../sources/Api/Type/Point.h \
+    ../sources/Api/Type/Float.h
 
 INCLUDEPATH += ../sources ../libs/include
 Debug: QMAKE_CXXFLAGS += -DDEBUG

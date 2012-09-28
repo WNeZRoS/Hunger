@@ -190,6 +190,13 @@ void LevelMap::closeGates() {
 	}
 }
 
+bool LevelMap::isOneTile(const Point &p1, const Point &p2) const {
+	Point_i t1, t2;
+	this->globalToMap(p1, t1);
+	this->globalToMap(p2, t2);
+	return t1 == t2;
+}
+
 bool LevelMap::isRoad(const Point &globalPos) const {
 	Point_i tilePos;
 	this->globalToMap(globalPos, tilePos);

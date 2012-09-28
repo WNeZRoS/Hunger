@@ -1,25 +1,8 @@
 #ifndef THREAD_H
 #define THREAD_H
 
+#include <list>
 #include <pthread.h>
-
-class Thread
-{
-public:
-	Thread();
-	virtual ~Thread() = 0;
-
-	bool isRunning() const;
-	virtual void run();
-	void stop();
-	void wait();
-
-private:
-	pthread_t _thread;
-	bool _running;
-
-	static void * ThreadFunc(void *arg);
-};
 
 class Mutex
 {
@@ -48,6 +31,37 @@ private:
 	const char *_file;
 	int _line;
 #endif
+};
+
+class Thread
+{
+public:
+	Thread();
+	virtual ~Thread() = 0;
+
+	void addEvent(int command, void *param);
+	bool isRunning() const;
+	void stop();
+	void wait();
+
+protected:
+	virtual bool run();
+	virtual void onEvent(int command, void *param);
+	virtual void onStart();
+	virtual void onExit();
+
+private:
+	struct Event {
+		int command;
+		void *param;
+	};
+
+	pthread_t _thread;
+	bool _running;
+	std::list<Event> _events;
+	Mutex _eventMutex;
+
+	static void * ThreadFunc(void *arg);
 };
 
 class FuncMutex {

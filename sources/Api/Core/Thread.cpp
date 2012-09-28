@@ -2,13 +2,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#ifdef lock
-#undef lock
-#undef onelock
-#undef trylock
-#undef LocalMutex
-#endif
-
 Thread::Thread() {
 	_running = false;
 	pthread_attr_t attr;
@@ -22,11 +15,31 @@ Thread::~Thread() {
 	_running = false;
 }
 
+void Thread::addEvent(int command, void *param) {
+	Event event = { command, param };
+
+	_eventMutex.lock();
+	_events.push_back(event);
+	_eventMutex.unlock();
+}
+
 bool Thread::isRunning() const {
 	return _running;
 }
 
-void Thread::run() {
+bool Thread::run() {
+	return false;
+}
+
+void Thread::onEvent(int command, void *param) {
+
+}
+
+void Thread::onStart() {
+
+}
+
+void Thread::onExit() {
 
 }
 
@@ -41,14 +54,36 @@ void Thread::wait() {
 void * Thread::ThreadFunc(void *arg) {
 	Thread *thread = static_cast<Thread *>(arg);
 	thread->_running = true;
-	thread->run();
-	thread->_running = false;
+
+	thread->onStart();
+
+	while(thread->_running) {
+
+		for(std::list<Event>::iterator it = thread->_events.begin(); it != thread->_events.end(); it++) {
+			thread->onEvent((*it).command, (*it).param);
+		}
+
+		thread->_eventMutex.lock();
+		thread->_events.clear();
+		thread->_eventMutex.unlock();
+
+		if(!thread->run()) thread->stop();
+	}
+
+	thread->onExit();
 
 	pthread_exit(NULL);
 	return 0;
 }
 
 // Mutex
+
+#ifdef lock
+#undef lock
+#undef onelock
+#undef trylock
+#undef LocalMutex
+#endif
 
 Mutex::Mutex() {
 	pthread_mutex_init(&_mutex, NULL);

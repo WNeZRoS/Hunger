@@ -58,8 +58,8 @@ bool Main::initialize() {
 	Monster *monster = new Monster("monster", killCallback, 15, _intelligence);
 	_world->addEntity(monster);
 
-	Monster *monster2 = new Monster("monster2", killCallback, 16, _intelligence);
-	_world->addEntity(monster2);
+	//Monster *monster2 = new Monster("monster2", killCallback, 16, _intelligence);
+	//_world->addEntity(monster2);
 
 	Array<Point> roads;
 	_map->getRoads(roads);

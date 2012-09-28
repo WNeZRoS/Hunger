@@ -22,28 +22,27 @@ void Intelligence::setTarget(Player *target) {
 	_target = target;
 	_lastTargetPosition = _target->getPosition();
 	_map = static_cast<LevelMap*>(target->getWorld()->getMap());
-	_motionSense = _map->getOne() / 15.0f;
+	_motionSense = _map->getOne() / 10.0f;
 }
 
-Intelligence::RoleType Intelligence::addMonster(Monster *npc) {
+void Intelligence::addMonster(Monster *npc) {
 	Log::Debug << "Add monster intelligence " << npc;
-	return this->addMonster(npc, true);
+	this->addMonster(npc, true);
 }
 
-Intelligence::RoleType Intelligence::addMonster(Monster *npc, bool lockMutex) {
-	if(!this->_rolesMutex || !_map) return NONE;
+Intelligence::NpcRole Intelligence::addMonster(Monster *npc, bool lockMutex) {
+	NpcRole role = { npc, NONE };
+
+	if(!this->_rolesMutex || !_map) return role;
 	if(lockMutex) _rolesMutex->lock();
 
-	RoleType role = NONE;
-
 	for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
-		if((*it).npc == npc) role = (*it).role;
+		if((*it).npc == npc) role.role = (*it).role;
 	}
 
-	if(role == NONE) {
-		role = static_cast<RoleType>(FRONT_ATTACK + static_cast<RoleType>(_roles.size() % 4));
-		NpcRole npcRole = { npc, role };
-		_roles.push_back(npcRole);
+	if(role.role == NONE) {
+		role.role = static_cast<RoleType>(FRONT_ATTACK + static_cast<RoleType>(_roles.size() % 4));
+		_roles.push_back(role);
 	}
 	if(lockMutex) _rolesMutex->unlock();
 
@@ -66,14 +65,13 @@ void Intelligence::removeMonster(Monster *npc) {
 void Intelligence::whatMeDo(Monster *npc) {
 	if(!_target) return;
 	if(_target->getWorld() != npc->getWorld()) return;
-	RoleType role = addMonster(npc, false);
-	if(role == NONE) return;
+	NpcRole role = addMonster(npc, false);
+	if(role.role == NONE) return;
 
 	//Log::Debug << "What me do???";
 
 	Point tPos = _target->getPosition();
-	Point mPos = npc->getPosition() - (_map->getOne() / 2.0f);
-	Point delta = (mPos - tPos).abs(); // TODO change to path length
+	Point mPos = npc->getPosition();
 	Point targetPos(0, 0);
 
 	if(_target->isAngry()) { // Run
@@ -83,123 +81,55 @@ void Intelligence::whatMeDo(Monster *npc) {
 		// find path to point
 		// if no path: move in player direction or stop
 		// say: move in direction in stop at turn position.
-	} else if((delta.x == 0 && delta.y <= _map->getOne()) || (delta.x <= _map->getOne() && delta.y == 0)) { // Attack
-		targetPos = tPos - (_map->getOne() / 2.0f);
-		//Log::Debug << "You must go to player, to " << targetPos;
-
-		if(delta.y == 0) {
-			npc->stop();
-			return;
-		}
-	} else { // Move
-		Point vector = tPos - _target->getLastPosition();
-		if(vector == 0) vector = Point(0, -1);
-		else if(vector.abs() < Point(0.1f, 0.1f)) vector *= 10;
-
-		unsigned short targetFounded = 0;
-		do {
-			targetFounded++;
-
-			switch(role) {
-			case FRONT_ATTACK:
-				targetPos = tPos;
-				do {
-					targetPos += vector;
-					_map->turnToBounds(targetPos);
-				} while(_map->isOneTile(tPos, targetPos));
-
-				if(_map->isRoad(targetPos)) targetFounded = -1;
-				else role = BACK_ATTACK;
-				break;
-			case BACK_ATTACK:
-				targetPos = tPos;
-				do {
-					targetPos -= vector;
-					_map->turnToBounds(targetPos);
-				} while(_map->isOneTile(tPos, targetPos));
-
-				if(_map->isRoad(targetPos)) targetFounded = -1;
-				else role = SIDE_ATTACK;
-				break;
-			case SIDE_ATTACK:
-				do {
-					targetPos.x -= vector.y;
-					targetPos.y -= vector.x;
-					_map->turnToBounds(targetPos);
-				} while(_map->isOneTile(tPos, targetPos));
-
-				if(_map->isRoad(targetPos)) targetFounded = -1;
-				else role = GUARD;
-				break;
-			case GUARD:
-				targetPos = tPos;
-
-				if(_map->isRoad(targetPos)) targetFounded = -1;
-				else role = FRONT_ATTACK;
-				break;
-			default: break;
-			}
-		} while(targetFounded <= 4); // search other coordinates
-
-		if(targetFounded != static_cast<unsigned short>(-1)) {
-			targetPos = mPos;
-			for(targetFounded = 0; targetFounded < 4; targetFounded++) {
-				targetPos.x += _map->getOne() * Random::rand(-1, 1);
-				targetPos.y += _map->getOne() * Random::rand(-1, 1);
-				if(_map->isRoad(targetPos)) targetFounded = -1;
-			}
-		}
-
-		if(targetFounded != static_cast<unsigned short>(-1)) {
-			npc->stop();
-			return;
-		}
+	} else if( (tPos - mPos).length() <= _map->getOne() ) {
+		npc->moveTo(tPos);
+		return;
+	} else {
+		targetPos = tPos;
 	}
-
-	// get path to.
-	Array<LevelMap::PathSegment> path;
-	if(_map->isOneTile(targetPos, tPos)) _map->findPath(mPos, targetPos, path);
-	else _map->findPath(mPos, targetPos, path, tPos);
 
 	// if no path: go random tile around mPos.
-	if(path.size() == 0) {
-		std::vector<Point> targets;		
-
-		for(int y = -1; y <= 1; y += 2) {
-			Point t = mPos; t.y += y * _map->getOne();
-			if(_map->isRoad(t)) targets.push_back(t);
+	if(!_map->getPathFinder()->findPath(mPos, targetPos, role.path)) {
+		int x = Random::rand(-1, 1), y = Random::rand(-1, 1);
+		while(x == 0 && y == 0) {
+			x = Random::rand(-1, 1);
+			y = Random::rand(-1, 1);
 		}
+		npc->moveInDirection(x, y);
+		return;
+	} else {
+		Array<PathFinder::PathElement> path;
+		path.copy(role.path.items(), role.path.size() + 1);
+		path[role.path.size()].pos = tPos - (_map->getOne() / 2.0f);
 
-		for(int x = -1; x <= 1; x += 2) {
-			Point t = mPos; t.x += x * _map->getOne();
-			if(_map->isRoad(t)) targets.push_back(t);
-		}
-
-		targetPos = targets.at(Random::rand(targets.size()));
-		LevelMap::PathSegment segment = { targetPos };
-		path.copy(&segment, 1);
+		// say: move in direction with stop at (turn position)
+		npc->moveByPath(path);
 	}
-
-	// say: move in direction with stop at (turn position)
-	npc->moveTo(path[0].target);
 }
 
-void Intelligence::run() {
-	while(isRunning()) {
-		if(_target) {
-			bool needNewPath = (_lastTargetPosition - _target->getPosition()).abs().length() > _motionSense;
-			_rolesMutex->lock();
-			for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
-				if(needNewPath || (*it).npc->lastMotion() >= 1000) {
-					this->whatMeDo((*it).npc);
-				}
-				(*it).npc->move();
-			}
-			_rolesMutex->unlock();
-			_lastTargetPosition = _target->getPosition();
-		}
-		msSleep(2);
-	}
+void Intelligence::onExit() {
 	delete _rolesMutex;
-	this->_rolesMutex = NULL;
+	_rolesMutex = NULL;
+}
+
+void Intelligence::onEvent(int command, void *param) {
+	if(command == WHAT_ME_DO) {
+		this->whatMeDo(static_cast<Monster*>(param));
+	}
+}
+
+bool Intelligence::run() {
+	if(_target) {
+		bool needNewPath = (_lastTargetPosition - _target->getPosition()).abs().length() > _motionSense;
+		_rolesMutex->lock();
+		for(std::vector<NpcRole>::iterator it = _roles.begin(); it != _roles.end(); it++) {
+			if(needNewPath) {
+				this->whatMeDo((*it).npc);
+			}
+		}
+		_rolesMutex->unlock();
+		if(needNewPath) _lastTargetPosition = _target->getPosition();
+	}
+	msSleep(2);
+	return true;
 }

@@ -29,6 +29,7 @@ public:
 	void openGates();
 	void closeGates();
 
+	bool isOneTile(const Point& p1, const Point& p2) const;
 	bool isRoad(const Point& globalPos) const;
 	void turnToBounds(Point& globalPos) const;
 

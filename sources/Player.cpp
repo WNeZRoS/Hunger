@@ -4,6 +4,8 @@
 Player::Player(const Texture::Name texture, KillCallback killCallback, float speed)
 	: Npc(texture, killCallback, speed) {
 
+	_angryTime = 0;
+
 	for(int i = 0; i < 4; i++) {
 		_moveAnimation[i].frames = new TileSprite::Animation::Frame[2];
 		_moveAnimation[i].framesCount = 2;
@@ -60,13 +62,13 @@ void Player::draw() {
 	}
 }
 
-bool Player::move(float x, float y) {
-	if(Npc::move(x, y)) {
+Npc::MoveState Player::move(float x, float y) {
+	Npc::MoveState moveState = Npc::move(x, y);
+	if(moveState != Npc::NOT_MOVED) {
 		_world->setCenter(_position.x.f(), _position.y.f());
-		return true;
 	}
 
-	return false;
+	return moveState;
 }
 
 void Player::setAngry(Timestamp angry) {

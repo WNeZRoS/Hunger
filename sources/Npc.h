@@ -41,6 +41,10 @@ public:
 	virtual bool isOverlap(const Point& start, const Point& end) const;
 
 protected:
+	enum MoveState {
+		MOVED, MOVED_TO_STOP, NOT_MOVED
+	};
+
 	static const unsigned int LEFT = 0;
 	static const unsigned int RIGHT = 1;
 	static const unsigned int TOP = 2;
@@ -61,8 +65,8 @@ protected:
 
 	//mutable Mutex _positionMutex;
 
-	virtual bool move();
-	virtual bool move(float x, float y);
+	virtual MoveState move();
+	virtual MoveState move(float x, float y);
 	virtual void updateSpritePosition();
 };
 

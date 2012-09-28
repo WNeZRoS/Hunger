@@ -5,7 +5,6 @@ Monster::Monster(const Texture::Name texture, KillCallback killCallback, float s
 				 Intelligence *intelligence) : Npc(texture, killCallback, speed) {
 	_intelligence = intelligence;
 
-
 	for(int i = 0; i < 4; i++) {
 		_moveAnimation[i].frames = new TileSprite::Animation::Frame[2];
 		_moveAnimation[i].framesCount = 2;
@@ -19,6 +18,22 @@ Monster::Monster(const Texture::Name texture, KillCallback killCallback, float s
 
 Monster::~Monster() {
 	if(_intelligence) _intelligence->removeMonster(this);
+}
+
+void Monster::draw() {
+	this->move();
+
+	for(unsigned int i = 1; i < _path.size(); i++) {
+		if(i == _step) Render::getPainter()->setColor(0x0, 0xFF, 0x0);
+		else Render::getPainter()->setColor(0xFF, 0xFF, 0x0);
+
+		Point pos, lpos;
+		_map->globalToScreen(_path[i-1].pos + _positionOffset, lpos);
+		_map->globalToScreen(_path[i].pos + _positionOffset, pos);
+		Render::getPainter()->line(lpos.x.f(), lpos.y.f(), pos.x.f(), pos.y.f());
+	}
+	Render::getPainter()->setColor(0xFF, 0xFF, 0xFF);
+	Npc::draw();
 }
 
 void Monster::onChangeWorld(const World *world) {
@@ -45,15 +60,42 @@ void Monster::onOverlapBy(const Entity *overlap, const World *world) {
 	}
 }
 
-bool Monster::move() {
+unsigned int Monster::getCurrentPathStep() const {
+	for(unsigned int i = 0; i < _path.size(); i++) {
+		if(_map->isOneTile(_path[i].pos, _position)) return i;
+	}
+	return -1;
+}
+
+bool Monster::moveByPath(const Array<PathFinder::PathElement> &path) {
+	_path = path;
+	unsigned int step = this->getCurrentPathStep();
+	this->moveToStep(++step);
+	return true;
+}
+
+void Monster::moveToStep(unsigned int step) {
+	_step = step;
+	this->moveTo(_path[_step].pos);
+}
+
+Npc::MoveState Monster::move() {
 	return Npc::move();
 }
 
-bool Monster::move(float x, float y) {
-	if(!Npc::move(x, y)) {
-		this->stop();
-		if(_intelligence) _intelligence->whatMeDo(this);
-		return false;
-	}
-	return true;
+Npc::MoveState Monster::move(float x, float y) {
+	Npc::MoveState moveState = Npc::move(x, y);
+	unsigned int step = this->getCurrentPathStep();
+
+#warning FIXIT // over move on turns
+
+	if(moveState != Npc::MOVED) {
+		if(step != _step && step + 1 != _path.size()) {
+			this->moveToStep(++step);
+		} else {
+			this->stop();
+			if(_intelligence) _intelligence->addEvent(Intelligence::WHAT_ME_DO, this);
+		}
+	} else if(step != _step) this->moveToStep(++step);
+	return moveState;
 }
