@@ -87,7 +87,8 @@ Npc::MoveState Monster::move(float x, float y) {
 	Npc::MoveState moveState = Npc::move(x, y);
 	unsigned int step = this->getCurrentPathStep();
 
-#warning FIXIT // over move on turns
+#warning TODO over move on turn to player
+#warning FIX lag when move okolo quad
 
 	if(moveState != Npc::MOVED) {
 		if(step != _step && step + 1 != _path.size()) {
