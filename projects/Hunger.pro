@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-win32:LIBS += -L../libs/lib-x86 -lopengl32 -lgdi32 -lfreetype -lpthread -static
+win32:LIBS += -L../libs/lib-win32 -lopengl32 -lgdi32 -lfreetype -lpthread -static
 unix:LIBS += -lgl -lfreetype -lpthread
 
 SOURCES += \

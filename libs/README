@@ -1,7 +1,0 @@
-Requirements:
-	* freetype ( http://freetype.org )
-	
-1. Put {requirement lib path}/include contents in {project path}/libs/include
-2. Build lib and put files (.a, .la, .lib) to {project path}/libs/lib-{PLATFORM}
-
-* PLATFORM can be x86, armeabi, armeabi-v7a
