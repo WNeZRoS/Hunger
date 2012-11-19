@@ -140,10 +140,12 @@ Npc::MoveState Npc::move(float x, float y) {
 
 	if(!_stopPosition.nan()) {
 		if(_stopPosition.y == position.y && _stopPosition.y == wannaPosition.y
-				&& (position.x < _stopPosition.x && _stopPosition.x < wannaPosition.x))
+				&& ((position.x < _stopPosition.x && _stopPosition.x < wannaPosition.x)
+					|| (position.x > _stopPosition.x && _stopPosition.x > wannaPosition.x)))
 			wannaPosition = _stopPosition;
 		else if(_stopPosition.x == position.x && _stopPosition.x == wannaPosition.x
-				&& (position.y < _stopPosition.y && _stopPosition.y < wannaPosition.y))
+				&& ((position.y < _stopPosition.y && _stopPosition.y < wannaPosition.y)
+					|| (position.y > _stopPosition.y && _stopPosition.y > wannaPosition.y)))
 			wannaPosition = _stopPosition;
 	}
 
